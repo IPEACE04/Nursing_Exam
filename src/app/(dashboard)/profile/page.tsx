@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { User, Mail, Building, Save, Lock, KeyRound } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
@@ -21,8 +21,11 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordSaved, setPasswordSaved] = useState(false);
 
+  const hasInitialized = useRef(false);
+
   useEffect(() => {
-    if (profile) {
+    if (profile && !hasInitialized.current) {
+      hasInitialized.current = true;
       setName(profile.name || "");
       setUniversity(profile.university || "");
     }

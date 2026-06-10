@@ -10,9 +10,33 @@ import {
   GraduationCap,
   ArrowLeft,
   BarChart3,
+  Clock,
+  Target,
 } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { PageHeader } from "@/components/premium/page-header";
+import { GlassCard } from "@/components/premium/glass-card";
+import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import type { QuestionResult } from "@/types";
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.04 },
+  },
+};
+
+const itemAnim = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0 },
+};
+
+function formatTime(seconds: number) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 export default function ResultPage({
   params,
@@ -86,183 +110,217 @@ export default function ResultPage({
     fetchResults();
   }, [attemptId, router]);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="size-6 animate-spin rounded-full border-2 border-[#1a2744] border-t-transparent" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
-  const minutes = Math.floor(timeSpent / 60);
-  const secs = timeSpent % 60;
   const passed = percentage >= 50;
+  const incorrectCount = total - score;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
-      <button
-        onClick={() => router.push("/dashboard")}
-        className="mb-6 flex items-center gap-1.5 text-sm text-slate-500 transition-colors hover:text-slate-900"
-      >
-        <ArrowLeft className="size-4" />
-        กลับไปแดชบอร์ด
-      </button>
-
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-slate-200 bg-white p-8 text-center"
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="space-y-8"
       >
-        <div
-          className={`mx-auto mb-4 flex size-20 items-center justify-center rounded-full ${
-            passed ? "bg-emerald-50" : "bg-red-50"
-          }`}
-        >
-          {passed ? (
-            <CheckCircle2 className="size-10 text-emerald-500" />
-          ) : (
-            <XCircle className="size-10 text-red-400" />
-          )}
+        <div>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="mb-4 btn-ghost"
+          >
+            <ArrowLeft className="size-4" />
+            กลับไปแดชบอร์ด
+          </button>
+          <PageHeader
+            badge={passed ? "ผ่าน" : "ไม่ผ่าน"}
+            title={examTitle}
+            description="ผลการสอบของคุณ"
+          />
         </div>
-        <h1 className="text-xl font-semibold text-slate-900">
-          {examTitle}
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">ผลการสอบ</p>
 
-        <div className="mt-6 grid grid-cols-3 gap-4">
-          <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-2xl font-bold text-[#1a2744]">{percentage}%</p>
-            <p className="text-xs text-slate-500">คะแนน</p>
-          </div>
-          <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-2xl font-bold text-[#1a2744]">
-              {score}/{total}
-            </p>
-            <p className="text-xs text-slate-500">ข้อที่ถูก</p>
-          </div>
-          <div className="rounded-xl bg-slate-50 p-4">
-            <p className="text-2xl font-bold text-[#1a2744]">
-              {minutes}:{String(secs).padStart(2, "0")}
-            </p>
-            <p className="text-xs text-slate-500">เวลาที่ใช้</p>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className="mt-8 space-y-4">
-        <h2 className="text-base font-semibold text-slate-900">
-          เฉลยละเอียด
-        </h2>
-
-        {results.map((r, i) => {
-          const optionLabels = r.options as Record<string, string>;
-
-          return (
+        <motion.div variants={itemAnim}>
+          <GlassCard className="p-8 text-center">
             <motion.div
-              key={r.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="rounded-2xl border border-slate-200 bg-white p-6"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
+              className={`mx-auto mb-5 flex size-24 items-center justify-center rounded-full ${
+                passed ? "bg-chart-3/10" : "bg-destructive/10"
+              }`}
             >
-              <div className="mb-1 flex items-center gap-2">
-                <span className="text-xs font-medium text-slate-400">
-                  ข้อ {i + 1}
-                </span>
-                {r.is_correct ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-600">
-                    <CheckCircle2 className="size-3" />
-                    ถูก
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-500">
-                    <XCircle className="size-3" />
-                    ผิด
-                  </span>
-                )}
-              </div>
-
-              <p className="text-sm leading-relaxed text-slate-900">
-                {r.question_text}
-              </p>
-
-              <div className="mt-3 space-y-1.5 text-sm">
-                {Object.entries(optionLabels).map(([key, value]) => {
-                  const isSelected = key === r.selected_option;
-                  const isCorrect = key === r.correct_option;
-                  return (
-                    <div
-                      key={key}
-                      className={`flex items-start gap-3 rounded-lg border px-3 py-2 ${
-                        isCorrect
-                          ? "border-emerald-200 bg-emerald-50"
-                          : isSelected && !isCorrect
-                            ? "border-red-200 bg-red-50"
-                            : "border-transparent bg-slate-50"
-                      }`}
-                    >
-                      <span
-                        className={`flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
-                          isCorrect
-                            ? "bg-emerald-500 text-white"
-                            : isSelected
-                              ? "bg-red-400 text-white"
-                              : "bg-slate-200 text-slate-500"
-                        }`}
-                      >
-                        {key}
-                      </span>
-                      <span
-                        className={`pt-0.5 ${
-                          isCorrect
-                            ? "font-medium text-emerald-700"
-                            : isSelected
-                              ? "text-red-600"
-                              : "text-slate-600"
-                        }`}
-                      >
-                        {value}
-                        {isCorrect && " (เฉลย)"}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {r.selected_option === null && (
-                <p className="mt-2 text-xs text-red-400">
-                  * ไม่ได้ตอบข้อนี้
-                </p>
-              )}
-
-              {r.explanation_text && (
-                <div className="mt-3 rounded-xl bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-800">
-                  <span className="font-medium">คำอธิบาย: </span>
-                  {r.explanation_text}
-                </div>
+              {passed ? (
+                <CheckCircle2 className="size-12 text-chart-3" />
+              ) : (
+                <XCircle className="size-12 text-destructive" />
               )}
             </motion.div>
-          );
-        })}
-      </div>
 
-      <div className="mt-6 flex justify-center gap-3 pb-8">
-        <button
-          onClick={() => router.push("/dashboard")}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
-        >
-          <BarChart3 className="size-4" />
-          ไปแดชบอร์ด
-        </button>
-        <button
-          onClick={() => router.push("/exam")}
-          className="flex items-center gap-2 rounded-xl bg-[#1a2744] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a2744]/90"
-        >
-          <GraduationCap className="size-4" />
-          ทำข้อสอบอื่น
-        </button>
-      </div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-5xl font-bold tracking-tight text-foreground"
+            >
+              {percentage}%
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-2 text-sm text-muted-foreground"
+            >
+              {passed ? "ยินดีด้วย! คุณสอบผ่าน" : "ยังไม่ผ่านเกณฑ์ ลองใหม่อีกครั้งนะ"}
+            </motion.p>
+
+            <div className="mt-8 grid grid-cols-3 gap-4">
+              {[
+                { icon: Target, label: "ข้อที่ถูก", value: `${score}/${total}`, bg: "bg-chart-3/10", color: "text-chart-3" },
+                { icon: XCircle, label: "ข้อที่ผิด", value: `${incorrectCount}`, bg: "bg-destructive/10", color: "text-destructive" },
+                { icon: Clock, label: "เวลาที่ใช้", value: formatTime(timeSpent), bg: "bg-primary/8", color: "text-primary" },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-xl border border-border/60 bg-card/50 p-4"
+                >
+                  <div className={`mx-auto mb-2 flex size-10 items-center justify-center rounded-lg ${stat.bg}`}>
+                    <stat.icon className={`size-5 ${stat.color}`} />
+                  </div>
+                  <p className="text-lg font-semibold text-foreground">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </GlassCard>
+        </motion.div>
+
+        <motion.div variants={itemAnim}>
+          <GlassCard>
+            <h2 className="mb-6 text-base font-semibold text-foreground">
+              เฉลยละเอียด
+            </h2>
+            <div className="space-y-4">
+              {results.map((r, i) => {
+                const optionLabels = r.options as Record<string, string>;
+                const isWrong = !r.is_correct;
+                const unanswered = r.selected_option === null;
+
+                return (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    className={`rounded-xl border p-5 ${
+                      isWrong
+                        ? "border-destructive/20 bg-destructive/[0.03]"
+                        : "border-chart-3/20 bg-chart-3/[0.03]"
+                    }`}
+                  >
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-xs font-medium text-muted-foreground">
+                        ข้อ {i + 1}
+                      </span>
+                      {r.is_correct ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-chart-3/10 px-2.5 py-0.5 text-[11px] font-medium text-chart-3">
+                          <CheckCircle2 className="size-3" />
+                          ถูก
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-[11px] font-medium text-destructive">
+                          <XCircle className="size-3" />
+                          ผิด
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-sm leading-relaxed text-foreground">
+                      {r.question_text}
+                    </p>
+
+                    <div className="mt-3 space-y-1.5 text-sm">
+                      {Object.entries(optionLabels).map(([key, value]) => {
+                        const isSelected = key === r.selected_option;
+                        const isCorrect = key === r.correct_option;
+                        return (
+                          <div
+                            key={key}
+                            className={`flex items-start gap-3 rounded-lg border px-3.5 py-2 ${
+                              isCorrect
+                                ? "border-chart-3/30 bg-chart-3/8"
+                                : isSelected && !isCorrect
+                                  ? "border-destructive/30 bg-destructive/8"
+                                  : "border-transparent bg-muted/50"
+                            }`}
+                          >
+                            <span
+                              className={`flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
+                                isCorrect
+                                  ? "bg-chart-3 text-white"
+                                  : isSelected
+                                    ? "bg-destructive text-destructive-foreground"
+                                    : "bg-muted-foreground/20 text-muted-foreground"
+                              }`}
+                            >
+                              {key}
+                            </span>
+                            <span
+                              className={`pt-0.5 ${
+                                isCorrect
+                                  ? "font-medium text-chart-3"
+                                  : isSelected
+                                    ? "text-destructive"
+                                    : "text-muted-foreground"
+                              }`}
+                            >
+                              {value}
+                              {isCorrect && (
+                                <span className="ml-1.5 text-[11px] text-muted-foreground">
+                                  (เฉลย)
+                                </span>
+                              )}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {unanswered && (
+                      <p className="mt-2 text-xs text-destructive">
+                        * ไม่ได้ตอบข้อนี้
+                      </p>
+                    )}
+
+                    {r.explanation_text && (
+                      <div className="mt-3 rounded-xl bg-accent/8 px-4 py-3 text-sm leading-relaxed text-accent-foreground">
+                        <span className="font-medium">คำอธิบาย: </span>
+                        {r.explanation_text}
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </div>
+          </GlassCard>
+        </motion.div>
+
+        <motion.div variants={itemAnim} className="flex justify-center gap-3 pb-8">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="btn-premium-outline"
+          >
+            <BarChart3 className="size-4" />
+            ไปแดชบอร์ด
+          </button>
+          <button
+            onClick={() => router.push("/exam")}
+            className="btn-premium"
+          >
+            <GraduationCap className="size-4" />
+            ทำข้อสอบอื่น
+          </button>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

@@ -26,6 +26,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -62,8 +63,9 @@
   --muted: oklch(0.965 0.006 250);
   --muted-foreground: oklch(0.52 0.03 260);
   --accent: oklch(0.78 0.11 85);
-  --accent-foreground: oklch(0.28 0.06 258);
+  --accent-foreground: oklch(0.35 0.06 260);
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.99 0.002 250);
   --border: oklch(0.91 0.012 250);
   --input: oklch(0.91 0.012 250);
   --ring: oklch(0.78 0.11 85);
@@ -99,6 +101,7 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -138,6 +141,14 @@
       var(--background);
   }
 
+  .premium-gradient-bg-intense {
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.78 0.11 85 / 20%), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 0%, oklch(0.48 0.08 165 / 14%), transparent),
+      radial-gradient(ellipse 50% 30% at 0% 100%, oklch(0.28 0.06 258 / 10%), transparent),
+      var(--background);
+  }
+
   .premium-mesh {
     background-image:
       radial-gradient(at 40% 20%, oklch(0.78 0.11 85 / 10%) 0px, transparent 50%),
@@ -145,18 +156,92 @@
       radial-gradient(at 0% 50%, oklch(0.28 0.06 258 / 6%) 0px, transparent 50%);
   }
 
+  .premium-glass {
+    @apply border border-border/60 bg-card/80 shadow-sm backdrop-blur-xl;
+  }
+
+  .premium-glass-strong {
+    @apply border border-border/40 bg-card/90 shadow-md backdrop-blur-2xl;
+  }
+
+  .premium-card-hover {
+    @apply transition-all hover:-translate-y-0.5 hover:shadow-lg;
+  }
+
   .text-gradient-gold {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, oklch(0.78 0.11 85), oklch(0.68 0.09 75));
   }
 
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, var(--primary), oklch(0.40 0.07 260));
+  }
+
+  .glow-sm {
+    box-shadow: 0 0 20px oklch(0.78 0.11 85 / 15%);
+  }
+
+  .glow-md {
+    box-shadow: 0 0 40px oklch(0.78 0.11 85 / 20%);
+  }
+
   .btn-premium {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all;
-    @apply hover:bg-primary/90 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    @apply hover:bg-primary/90 hover:shadow-md active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-premium-outline {
     @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card/80 px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur-sm transition-all;
-    @apply hover:bg-muted hover:shadow-sm active:scale-[0.98] disabled:opacity-50;
+    @apply hover:bg-muted hover:shadow-sm active:scale-[0.97] disabled:opacity-50;
   }
+
+  .btn-success {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all;
+    background: linear-gradient(135deg, oklch(0.48 0.08 165), oklch(0.42 0.09 170));
+    @apply hover:opacity-90 hover:shadow-md active:scale-[0.97] disabled:opacity-50;
+  }
+
+  .btn-destructive {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-destructive-foreground shadow-sm transition-all;
+    background: linear-gradient(135deg, oklch(0.577 0.245 27.325), oklch(0.50 0.22 30));
+    @apply hover:opacity-90 hover:shadow-md active:scale-[0.97] disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-muted-foreground transition-all;
+    @apply hover:bg-muted hover:text-foreground active:scale-[0.97];
+  }
+
+  .animate-in {
+    animation: fadeInUp 0.5s ease-out both;
+  }
+
+  .animate-in-delay-1 { animation-delay: 0.1s; }
+  .animate-in-delay-2 { animation-delay: 0.2s; }
+  .animate-in-delay-3 { animation-delay: 0.3s; }
+  .animate-in-delay-4 { animation-delay: 0.4s; }
+  .animate-in-delay-5 { animation-delay: 0.5s; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--muted) 25%, oklch(0.93 0.006 250) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  @apply rounded-xl;
+}
+
+.dark .skeleton {
+  background: linear-gradient(90deg, oklch(0.22 0 0) 25%, oklch(0.28 0 0) 50%, oklch(0.22 0 0) 75%);
+  background-size: 200% 100%;
 }

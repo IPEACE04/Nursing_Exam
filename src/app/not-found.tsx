@@ -1,17 +1,24 @@
 import Link from "next/link";
+import { GraduationCap, ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8f9fc] p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 text-center">
-        <h1 className="text-4xl font-bold text-[#1a2744]">404</h1>
-        <p className="mt-2 text-sm text-slate-500">
+    <div className="flex min-h-screen items-center justify-center premium-gradient-bg p-4">
+      <div className="w-full max-w-sm rounded-2xl border border-border/60 bg-card/80 p-8 text-center shadow-lg backdrop-blur-xl">
+        <div className="mx-auto mb-5 flex size-20 items-center justify-center rounded-full bg-primary/8">
+          <GraduationCap className="size-10 text-primary/60" />
+        </div>
+        <h1 className="text-5xl font-bold tracking-tight text-foreground">
+          404
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground">
           ไม่พบหน้าที่คุณต้องการ
         </p>
         <Link
           href="/dashboard"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#1a2744] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a2744]/90"
+          className="btn-premium mt-6 inline-flex"
         >
+          <ArrowLeft className="size-4" />
           กลับหน้าแรก
         </Link>
       </div>

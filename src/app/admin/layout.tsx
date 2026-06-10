@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { AdminNavbar } from "@/components/shared/admin-navbar";
 import { AdminSidebar } from "@/components/shared/admin-sidebar";
+import { LoadingSpinner } from "@/components/premium/loading-spinner";
 
 export default function AdminLayout({
   children,
@@ -25,8 +26,8 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f8f9fc]">
-        <span className="size-6 animate-spin rounded-full border-2 border-[#1a2744] border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center premium-gradient-bg">
+        <LoadingSpinner />
       </div>
     );
   }
@@ -40,8 +41,8 @@ export default function AdminLayout({
       <AdminNavbar />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />
-        <main className="flex-1 overflow-y-auto p-6 bg-[#f8f9fc]">
-          {children}
+        <main className="flex-1 overflow-y-auto premium-gradient-bg">
+          <div className="mx-auto max-w-6xl p-6">{children}</div>
         </main>
       </div>
     </div>

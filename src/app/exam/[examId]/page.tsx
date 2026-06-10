@@ -10,6 +10,10 @@ import {
   Send,
   Clock,
   GraduationCap,
+  FileText,
+  List,
+  X,
+  Play,
 } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
@@ -28,13 +32,15 @@ export default function ExamPage({
   const router = useRouter();
   const { user } = useAuth();
 
-  const [exam, setExam] = useState<{ title: string; time_limit_minutes: number } | null>(null);
+  const [exam, setExam] = useState<{ title: string; description: string | null; time_limit_minutes: number } | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const hasAutoSubmitted = useRef(false);
 
   const storageKey = `${STORAGE_ANSWERS_PREFIX}${examId}`;
@@ -50,7 +56,7 @@ export default function ExamPage({
 
       const { data: examData } = await supabase
         .from("exams")
-        .select("title, time_limit_minutes")
+        .select("title, description, time_limit_minutes")
         .eq("id", examId)
         .single();
 
@@ -102,18 +108,18 @@ export default function ExamPage({
   const goTo = (index: number) => {
     if (index >= 0 && index < questions.length) {
       setCurrentIndex(index);
+      setShowMobileNav(false);
     }
   };
 
   const timer = useTimer(examId, exam?.time_limit_minutes ?? 60);
 
   useEffect(() => {
-    if (timer.isExpired && !hasAutoSubmitted.current && !submitting) {
+    if (started && timer.isExpired && !hasAutoSubmitted.current && !submitting) {
       hasAutoSubmitted.current = true;
       handleSubmit();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timer.isExpired]);
+  }, [timer.isExpired, started]);
 
   async function handleSubmit() {
     if (submitting) return;
@@ -141,9 +147,13 @@ export default function ExamPage({
     }
   }
 
+  function handleStart() {
+    setStarted(true);
+  }
+
   if (loading || !exam) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <span className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
@@ -153,18 +163,98 @@ export default function ExamPage({
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === questions.length;
 
+  if (!started) {
+    return (
+      <div className="mx-auto flex min-h-[80vh] max-w-lg items-center justify-center px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full space-y-6"
+        >
+          <div className="rounded-2xl border border-border/60 bg-card/80 p-8 text-center shadow-lg backdrop-blur-xl">
+            <div className="mx-auto mb-5 flex size-20 items-center justify-center rounded-full bg-primary/8">
+              <GraduationCap className="size-10 text-primary" />
+            </div>
+            <h1 className="text-xl font-semibold text-foreground">
+              {exam.title}
+            </h1>
+            {exam.description && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                {exam.description}
+              </p>
+            )}
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border/60 bg-card/50 p-4">
+                <FileText className="mx-auto mb-1 size-5 text-primary" />
+                <p className="text-lg font-semibold text-foreground">
+                  {questions.length}
+                </p>
+                <p className="text-xs text-muted-foreground">จำนวนข้อ</p>
+              </div>
+              <div className="rounded-xl border border-border/60 bg-card/50 p-4">
+                <Clock className="mx-auto mb-1 size-5 text-chart-2" />
+                <p className="text-lg font-semibold text-foreground">
+                  {exam.time_limit_minutes}
+                </p>
+                <p className="text-xs text-muted-foreground">นาที</p>
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3 text-left text-sm text-muted-foreground">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-chart-3/10 text-[11px] font-bold text-chart-3">
+                  1
+                </div>
+                <span>เมื่อเริ่มแล้ว จับเวลาทันที และไม่สามารถหยุดได้</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-chart-2/15 text-[11px] font-bold text-chart-2">
+                  2
+                </div>
+                <span>เลือกคำตอบโดยกดที่ตัวเลือกที่ต้องการ</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-[11px] font-bold text-destructive">
+                  3
+                </div>
+                <span>เมื่อหมดเวลาหรือส่งคำตอบแล้ว จะเห็นผลและเฉลยทันที</span>
+              </div>
+            </div>
+
+            <button
+              onClick={handleStart}
+              className="btn-premium mt-8 w-full py-3 text-base"
+            >
+              <Play className="size-5" />
+              เริ่มทำข้อสอบ
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-card/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
         <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <GraduationCap className="size-5 text-primary" />
+          <div className="flex items-center gap-3 min-w-0">
+            <GraduationCap className="size-5 shrink-0 text-primary" />
             <span className="line-clamp-1 text-sm font-semibold text-foreground">
               {exam.title}
             </span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowMobileNav(true)}
+              className="btn-ghost p-2 lg:hidden"
+              aria-label="แสดงรายการข้อ"
+            >
+              <List className="size-5" />
+            </button>
+            <span className="hidden text-xs text-muted-foreground sm:inline">
               {currentIndex + 1}/{questions.length}
             </span>
             <div
@@ -182,7 +272,7 @@ export default function ExamPage({
       </header>
 
       <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6 sm:px-6">
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentIndex}
@@ -191,11 +281,16 @@ export default function ExamPage({
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="rounded-2xl border border-border/60 bg-card/90 p-6 shadow-sm backdrop-blur-sm sm:p-8">
-                <p className="mb-2 text-xs font-medium text-muted-foreground">
-                  ข้อ {currentIndex + 1}
-                </p>
-                <h2 className="text-base leading-relaxed text-foreground sm:text-lg">
+              <div className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-sm backdrop-blur-sm sm:p-8">
+                <div className="mb-1 flex items-center justify-between">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    ข้อ {currentIndex + 1} จาก {questions.length}
+                  </p>
+                  <span className="text-xs text-muted-foreground">
+                    ตอบแล้ว {answeredCount} ข้อ
+                  </span>
+                </div>
+                <h2 className="mt-3 text-base leading-relaxed text-foreground sm:text-lg">
                   {currentQuestion?.question_text}
                 </h2>
 
@@ -215,7 +310,7 @@ export default function ExamPage({
                           className={`flex w-full items-start gap-4 rounded-xl border p-4 text-left text-sm transition-all ${
                             isSelected
                               ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                              : "border-border bg-card hover:border-primary/20 hover:bg-muted/50"
+                              : "border-border bg-card/50 hover:border-primary/20 hover:bg-muted/50"
                           }`}
                         >
                           <span
@@ -260,7 +355,7 @@ export default function ExamPage({
               <button
                 onClick={() => setShowConfirm(true)}
                 disabled={submitting}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-chart-3 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-chart-3/90 disabled:opacity-50"
+                className="btn-success px-5 py-2"
               >
                 <Send className="size-4" />
                 ส่งกระดาษคำตอบ
@@ -270,9 +365,9 @@ export default function ExamPage({
         </div>
 
         <aside className="hidden w-48 shrink-0 lg:block">
-          <div className="sticky top-24 rounded-2xl border border-border/60 bg-card/90 p-4 backdrop-blur-sm">
+          <div className="sticky top-24 rounded-2xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm">
             <p className="mb-3 text-xs font-medium text-muted-foreground">
-              ข้อที่ตอบแล้ว {answeredCount}/{questions.length}
+              ข้อที่ตอบแล้ว
             </p>
             <div className="grid grid-cols-4 gap-2">
               {questions.map((q, i) => {
@@ -296,10 +391,21 @@ export default function ExamPage({
               })}
             </div>
 
+            <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <span className="inline-block size-3 rounded border border-chart-3/30 bg-chart-3/10" />
+                ตอบแล้ว
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="inline-block size-3 rounded border border-border bg-muted" />
+                ยังไม่ตอบ
+              </span>
+            </div>
+
             <button
               onClick={() => setShowConfirm(true)}
               disabled={submitting}
-              className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-chart-3 py-2 text-xs font-medium text-white transition-colors hover:bg-chart-3/90 disabled:opacity-50"
+              className="btn-success mt-4 w-full py-2 text-xs"
             >
               <Send className="size-3.5" />
               ส่งคำตอบ
@@ -320,7 +426,7 @@ export default function ExamPage({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="mx-4 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl"
+              className="mx-4 w-full max-w-sm rounded-2xl border border-border/60 bg-card p-6 shadow-xl backdrop-blur-xl"
             >
               <h3 className="text-base font-semibold text-foreground">
                 ยืนยันส่งคำตอบ
@@ -340,10 +446,76 @@ export default function ExamPage({
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className="flex-1 rounded-xl bg-chart-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-chart-3/90 disabled:opacity-50"
+                  className="btn-success flex-1 py-2.5"
                 >
                   {submitting ? "กำลังส่ง..." : "ยืนยันส่ง"}
                 </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showMobileNav && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 lg:hidden"
+          >
+            <div
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+              onClick={() => setShowMobileNav(false)}
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border border-border/60 bg-card p-5 shadow-xl backdrop-blur-xl"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-medium text-foreground">
+                  รายการข้อสอบ
+                </p>
+                <button
+                  onClick={() => setShowMobileNav(false)}
+                  className="btn-ghost p-1"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+              <div className="grid grid-cols-5 gap-2.5">
+                {questions.map((q, i) => {
+                  const isAnswered = !!answers[q.id];
+                  const isActive = i === currentIndex;
+                  return (
+                    <button
+                      key={q.id}
+                      onClick={() => goTo(i)}
+                      className={`flex h-12 items-center justify-center rounded-xl text-sm font-medium transition-all ${
+                        isActive
+                          ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
+                          : isAnswered
+                            ? "border border-chart-3/30 bg-chart-3/10 text-chart-3"
+                            : "border border-border bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block size-3 rounded border border-chart-3/30 bg-chart-3/10" />
+                  ตอบแล้ว
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block size-3 rounded border border-border bg-muted" />
+                  ยังไม่ตอบ
+                </span>
               </div>
             </motion.div>
           </motion.div>

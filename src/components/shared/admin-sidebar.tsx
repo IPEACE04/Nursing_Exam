@@ -14,8 +14,8 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-64 flex-col border-r border-slate-200/60 bg-white">
-      <nav className="flex flex-1 flex-col gap-1 p-4">
+    <aside className="hidden w-64 flex-col border-r border-border/40 bg-card/50 backdrop-blur-xl lg:flex">
+      <div className="flex flex-1 flex-col gap-1 p-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -27,8 +27,8 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all",
                 isActive
-                  ? "bg-amber-600 text-white"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
               <Icon className="size-5" />
@@ -36,7 +36,7 @@ export function AdminSidebar() {
             </Link>
           );
         })}
-      </nav>
+      </div>
     </aside>
   );
 }

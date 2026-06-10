@@ -44,7 +44,7 @@ export async function register(_prevState: unknown, formData: FormData) {
     return { error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { error, data } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -58,7 +58,17 @@ export async function register(_prevState: unknown, formData: FormData) {
       : error.message };
   }
 
+  if (data.user?.identities?.length === 0) {
+    return { error: "อีเมลนี้ลงทะเบียนแล้ว" };
+  }
+
   revalidatePath("/", "layout");
+
+  // If email confirmation is disabled, go straight to dashboard
+  if (data.session) {
+    redirect("/dashboard");
+  }
+
   redirect("/login?registered=true");
 }
 

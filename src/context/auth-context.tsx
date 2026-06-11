@@ -9,8 +9,8 @@ import {
   type ReactNode,
 } from "react";
 import type { User } from "@supabase/supabase-js";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import type { Profile } from "@/types";
+import { getCurrentProfile } from "@/actions/profile";
 
 interface AuthState {
   user: User | null;
@@ -34,98 +34,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const refreshProfile = useCallback(async () => {
-    const supabase = createSupabaseBrowserClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    if (!session?.user) {
-      setState({ user: null, profile: null, isLoading: false });
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", session.user.id)
-      .single();
-
+    const result = await getCurrentProfile();
     setState({
-      user: session.user,
-      profile: (profile as Profile) ?? null,
+      user: result.user as unknown as User | null,
+      profile: result.profile,
       isLoading: false,
     });
   }, []);
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
     let cancelled = false;
 
     async function init() {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (cancelled) return;
-
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-
-          if (!cancelled) {
-            setState({
-              user: session.user,
-              profile: (profile as Profile) ?? null,
-              isLoading: false,
-            });
-          }
-        } else if (!cancelled) {
-          setState({ user: null, profile: null, isLoading: false });
-        }
-      } catch {
-        if (!cancelled) {
-          setState({ user: null, profile: null, isLoading: false });
-        }
+      const result = await getCurrentProfile();
+      if (!cancelled) {
+        setState({
+          user: result.user as unknown as User | null,
+          profile: result.profile,
+          isLoading: false,
+        });
       }
     }
 
     init();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      try {
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-
-          if (!cancelled) {
-            setState({
-              user: session.user,
-              profile: (profile as Profile) ?? null,
-              isLoading: false,
-            });
-          }
-        } else if (!cancelled) {
-          setState({ user: null, profile: null, isLoading: false });
-        }
-      } catch {
-        if (!cancelled) {
-          setState({ user: null, profile: null, isLoading: false });
-        }
-      }
-    });
-
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
     };
   }, []);
 

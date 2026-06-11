@@ -2,14 +2,13 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { getSessionUserId } from "@/lib/auth";
 
 export async function submitExam(formData: FormData) {
-  const supabase = await createSupabaseServerClient();
+  const userId = await getSessionUserId();
+  if (!userId) throw new Error("Unauthorized");
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
+  const supabase = await createSupabaseServerClient();
 
   const examId = formData.get("examId") as string;
   const answersRaw = formData.get("answers") as string;
@@ -43,7 +42,7 @@ export async function submitExam(formData: FormData) {
   const { data: attempt, error: aError } = await supabase
     .from("exam_attempts")
     .insert({
-      user_id: user.id,
+      user_id: userId,
       exam_id: examId,
       score,
       total_questions: totalQuestions,

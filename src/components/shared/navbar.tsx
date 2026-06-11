@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { logout } from "@/actions/auth";
 import { LogOut, GraduationCap, User, Shield } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,13 +20,6 @@ export function Navbar() {
   const initials = profile?.name
     ? profile.name.charAt(0).toUpperCase()
     : "?";
-
-  async function handleLogout() {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
-  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-card/70 backdrop-blur-xl">
@@ -81,7 +74,7 @@ export function Navbar() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer text-destructive focus:text-destructive"
-              onClick={handleLogout}
+              onClick={() => logout()}
             >
               <LogOut className="size-4" />
               ออกจากระบบ

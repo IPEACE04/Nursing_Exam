@@ -3,10 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import {
+  hashPassword,
+  verifyPassword,
+  createJWT,
+  setSessionCookie,
+  clearSessionCookie,
+  getSessionUserId,
+} from "@/lib/auth";
 
 export async function login(_prevState: unknown, formData: FormData) {
-  const supabase = await createSupabaseServerClient();
-
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -14,24 +20,31 @@ export async function login(_prevState: unknown, formData: FormData) {
     return { error: "กรุณากรอกอีเมลและรหัสผ่าน" };
   }
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const supabase = await createSupabaseServerClient();
 
-  if (error) {
-    return { error: error.message === "Invalid login credentials"
-      ? "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
-      : error.message };
+  const { data: user, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("email", email)
+    .single();
+
+  if (error || !user) {
+    return { error: "Incorrect Email or Password" };
   }
+
+  const valid = await verifyPassword(password, user.password_hash);
+  if (!valid) {
+    return { error: "Incorrect Email or Password" };
+  }
+
+  const token = await createJWT(user.id);
+  await setSessionCookie(token);
 
   revalidatePath("/", "layout");
   redirect("/dashboard");
 }
 
 export async function register(_prevState: unknown, formData: FormData) {
-  const supabase = await createSupabaseServerClient();
-
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -44,37 +57,72 @@ export async function register(_prevState: unknown, formData: FormData) {
     return { error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" };
   }
 
-  const { error, data } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { name },
-    },
-  });
+  const supabase = await createSupabaseServerClient();
 
-  if (error) {
-    return { error: error.message === "User already registered"
-      ? "อีเมลนี้ลงทะเบียนแล้ว"
-      : error.message };
-  }
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
 
-  if (data.user?.identities?.length === 0) {
+  if (existing) {
     return { error: "อีเมลนี้ลงทะเบียนแล้ว" };
   }
 
-  revalidatePath("/", "layout");
+  const password_hash = await hashPassword(password);
 
-  // If email confirmation is disabled, go straight to dashboard
-  if (data.session) {
-    redirect("/dashboard");
+  const { data: newUser, error } = await supabase
+    .from("profiles")
+    .insert({
+      name,
+      email,
+      password_hash,
+      role: "student",
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
   }
 
-  redirect("/login?registered=true");
+  const token = await createJWT(newUser.id);
+  await setSessionCookie(token);
+
+  revalidatePath("/", "layout");
+  redirect("/dashboard");
+}
+
+export async function changePassword(formData: FormData) {
+  const userId = await getSessionUserId();
+  if (!userId) return { error: "Unauthorized" };
+
+  const newPassword = formData.get("newPassword") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (newPassword.length < 6) {
+    return { error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" };
+  }
+  if (newPassword !== confirmPassword) {
+    return { error: "รหัสผ่านไม่ตรงกัน" };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const password_hash = await hashPassword(newPassword);
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ password_hash })
+    .eq("id", userId);
+
+  if (error) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
+
+  revalidatePath("/profile");
+  return { success: true };
 }
 
 export async function logout() {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
+  await clearSessionCookie();
   revalidatePath("/", "layout");
   redirect("/login");
 }

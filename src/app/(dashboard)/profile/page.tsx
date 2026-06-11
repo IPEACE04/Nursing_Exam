@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { User, Mail, Building, Save, Lock, KeyRound } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
+import { changePassword } from "@/actions/auth";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { FormField } from "@/components/premium/form-field";
@@ -52,20 +53,14 @@ export default function ProfilePage() {
     e.preventDefault();
     setPasswordError("");
 
-    if (newPassword.length < 6) {
-      setPasswordError("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError("รหัสผ่านไม่ตรงกัน");
-      return;
-    }
+    const formData = new FormData();
+    formData.set("newPassword", newPassword);
+    formData.set("confirmPassword", confirmPassword);
 
-    const supabase = createSupabaseBrowserClient();
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    const result = await changePassword(formData);
 
-    if (error) {
-      setPasswordError(error.message);
+    if (result?.error) {
+      setPasswordError(result.error);
       return;
     }
 

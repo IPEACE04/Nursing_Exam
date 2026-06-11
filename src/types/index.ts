@@ -1,8 +1,10 @@
 export interface Profile {
   id: string;
   name: string;
+  email: string;
   avatar_url: string | null;
   university: string | null;
+  password_hash: string;
   role: "student" | "admin";
   created_at: string;
   updated_at: string;

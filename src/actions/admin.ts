@@ -3,24 +3,25 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
+import { getSessionUserId } from "@/lib/auth";
 
 async function requireAdmin() {
+  const userId = await getSessionUserId();
+  if (!userId) throw new Error("Unauthorized");
+
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
+
   if (profile?.role !== "admin") throw new Error("Forbidden");
-  return { supabase, user };
+  return { supabase, userId };
 }
 
 export async function createExam(formData: FormData) {
-  const { supabase, user } = await requireAdmin();
+  const { supabase, userId } = await requireAdmin();
   const title = formData.get("title") as string;
   const description = formData.get("description") as string;
   const timeLimit = parseInt(formData.get("timeLimit") as string, 10) || 60;
@@ -30,7 +31,7 @@ export async function createExam(formData: FormData) {
     description,
     time_limit_minutes: timeLimit,
     is_published: false,
-    created_by: user.id,
+    created_by: userId,
   });
 
   if (error) throw new Error(error.message);

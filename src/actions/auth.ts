@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { randomUUID } from "crypto";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
   hashPassword,
@@ -28,7 +29,7 @@ export async function login(_prevState: unknown, formData: FormData) {
     .eq("email", email)
     .single();
 
-  if (error || !user) {
+  if (error || !user || !user.password_hash) {
     return { error: "Incorrect Email or Password" };
   }
 
@@ -74,6 +75,7 @@ export async function register(_prevState: unknown, formData: FormData) {
   const { data: newUser, error } = await supabase
     .from("profiles")
     .insert({
+      id: randomUUID(),
       name,
       email,
       password_hash,

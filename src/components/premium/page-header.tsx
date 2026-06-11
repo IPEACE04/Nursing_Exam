@@ -13,22 +13,23 @@ interface PageHeaderProps {
 export function PageHeader({ title, description, action, badge }: PageHeaderProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
       className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
     >
       <div>
         {badge && (
-          <span className="mb-2 inline-flex items-center rounded-full bg-accent/15 px-3 py-1 text-xs font-medium tracking-wide text-accent-foreground uppercase">
+          <span className="mb-2.5 inline-flex items-center gap-1.5 rounded-full bg-primary/8 border border-primary/15 px-3 py-1 text-xs font-medium text-primary">
+            <span className="size-1.5 rounded-full bg-primary" />
             {badge}
           </span>
         )}
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
           {title}
         </h1>
         {description && (
-          <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-2 max-w-xl text-base leading-relaxed text-muted-foreground">
             {description}
           </p>
         )}

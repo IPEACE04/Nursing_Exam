@@ -165,58 +165,58 @@ export default function ExamPage({
 
   if (!started) {
     return (
-      <div className="mx-auto flex min-h-[80vh] max-w-lg items-center justify-center px-4">
+      <div className="mx-auto flex min-h-[80vh] max-w-lg items-center justify-center px-3 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="w-full space-y-6"
+          className="w-full space-y-5 sm:space-y-6"
         >
-          <div className="rounded-2xl border border-border/60 bg-card/80 p-8 text-center shadow-lg backdrop-blur-xl">
-            <div className="mx-auto mb-5 flex size-20 items-center justify-center rounded-full bg-primary/8">
-              <GraduationCap className="size-10 text-primary" />
+          <div className="rounded-2xl border border-border/60 bg-card/80 p-6 sm:p-8 text-center shadow-lg backdrop-blur-xl">
+            <div className="mx-auto mb-4 sm:mb-5 flex size-16 sm:size-20 items-center justify-center rounded-full bg-primary/8">
+              <GraduationCap className="size-8 sm:size-10 text-primary" />
             </div>
-            <h1 className="text-xl font-semibold text-foreground">
+            <h1 className="text-lg sm:text-xl font-semibold text-foreground">
               {exam.title}
             </h1>
             {exam.description && (
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-muted-foreground">
                 {exam.description}
               </p>
             )}
 
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-border/60 bg-card/50 p-4">
-                <FileText className="mx-auto mb-1 size-5 text-primary" />
-                <p className="text-lg font-semibold text-foreground">
+            <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-2.5 sm:gap-3">
+              <div className="rounded-xl border border-border/60 bg-card/50 p-3 sm:p-4">
+                <FileText className="mx-auto mb-1 size-4 sm:size-5 text-primary" />
+                <p className="text-base sm:text-lg font-semibold text-foreground">
                   {questions.length}
                 </p>
-                <p className="text-xs text-muted-foreground">จำนวนข้อ</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">จำนวนข้อ</p>
               </div>
-              <div className="rounded-xl border border-border/60 bg-card/50 p-4">
-                <Clock className="mx-auto mb-1 size-5 text-chart-2" />
-                <p className="text-lg font-semibold text-foreground">
+              <div className="rounded-xl border border-border/60 bg-card/50 p-3 sm:p-4">
+                <Clock className="mx-auto mb-1 size-4 sm:size-5 text-chart-2" />
+                <p className="text-base sm:text-lg font-semibold text-foreground">
                   {exam.time_limit_minutes}
                 </p>
-                <p className="text-xs text-muted-foreground">นาที</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">นาที</p>
               </div>
             </div>
 
-            <div className="mt-6 space-y-3 text-left text-sm text-muted-foreground">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-chart-3/10 text-[11px] font-bold text-chart-3">
+            <div className="mt-4 sm:mt-6 space-y-2.5 sm:space-y-3 text-left text-xs sm:text-sm text-muted-foreground">
+              <div className="flex items-start gap-2.5 sm:gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-chart-3/10 text-[10px] sm:text-[11px] font-bold text-chart-3">
                   1
                 </div>
                 <span>เมื่อเริ่มแล้ว จับเวลาทันที และไม่สามารถหยุดได้</span>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-chart-2/15 text-[11px] font-bold text-chart-2">
+              <div className="flex items-start gap-2.5 sm:gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-chart-2/15 text-[10px] sm:text-[11px] font-bold text-chart-2">
                   2
                 </div>
                 <span>เลือกคำตอบโดยกดที่ตัวเลือกที่ต้องการ</span>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-[11px] font-bold text-destructive">
+              <div className="flex items-start gap-2.5 sm:gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-[10px] sm:text-[11px] font-bold text-destructive">
                   3
                 </div>
                 <span>เมื่อหมดเวลาหรือส่งคำตอบแล้ว จะเห็นผลและเฉลยทันที</span>
@@ -225,9 +225,9 @@ export default function ExamPage({
 
             <button
               onClick={handleStart}
-              className="btn-premium mt-8 w-full py-3 text-base"
+              className="btn-premium mt-6 sm:mt-8 w-full py-2.5 sm:py-3 text-sm sm:text-base"
             >
-              <Play className="size-5" />
+              <Play className="size-4 sm:size-5" />
               เริ่มทำข้อสอบ
             </button>
           </div>
@@ -239,39 +239,39 @@ export default function ExamPage({
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
-        <div className="flex h-14 items-center justify-between px-4 sm:px-6">
+        <div className="flex h-16 sm:h-18 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3 min-w-0">
-            <GraduationCap className="size-5 shrink-0 text-primary" />
-            <span className="line-clamp-1 text-sm font-semibold text-foreground">
+            <GraduationCap className="size-6 shrink-0 text-primary" />
+            <span className="line-clamp-1 text-base sm:text-lg font-semibold text-foreground">
               {exam.title}
             </span>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowMobileNav(true)}
-              className="btn-ghost p-2 lg:hidden"
+              className="btn-ghost p-2.5 lg:hidden"
               aria-label="แสดงรายการข้อ"
             >
-              <List className="size-5" />
+              <List className="size-6" />
             </button>
-            <span className="hidden text-xs text-muted-foreground sm:inline">
+            <span className="hidden text-sm text-muted-foreground sm:inline">
               {currentIndex + 1}/{questions.length}
             </span>
             <div
-              className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium ${
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-base font-medium ${
                 timer.isLow
                   ? "bg-destructive/10 text-destructive"
                   : "bg-muted text-foreground"
               }`}
             >
-              <Clock className="size-4" />
+              <Clock className="size-5" />
               {timer.display}
             </div>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6 sm:px-6">
+      <div className="mx-auto flex max-w-6xl gap-4 sm:gap-6 px-3 sm:px-4 md:px-6 py-4 sm:py-6">
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -281,20 +281,20 @@ export default function ExamPage({
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-sm backdrop-blur-sm sm:p-8">
-                <div className="mb-1 flex items-center justify-between">
-                  <p className="text-xs font-medium text-muted-foreground">
+              <div className="rounded-2xl border border-border/60 bg-card/80 p-5 sm:p-8 shadow-sm backdrop-blur-sm">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-sm font-medium text-muted-foreground">
                     ข้อ {currentIndex + 1} จาก {questions.length}
                   </p>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-sm text-muted-foreground">
                     ตอบแล้ว {answeredCount} ข้อ
                   </span>
                 </div>
-                <h2 className="mt-3 text-base leading-relaxed text-foreground sm:text-lg">
+                <h2 className="mt-4 text-lg sm:text-xl leading-relaxed text-foreground">
                   {currentQuestion?.question_text}
                 </h2>
 
-                <div className="mt-6 space-y-3">
+                <div className="mt-6 space-y-3 sm:space-y-4">
                   {currentQuestion &&
                     Object.entries(
                       currentQuestion.options as Record<string, string>
@@ -307,14 +307,14 @@ export default function ExamPage({
                           onClick={() =>
                             selectAnswer(currentQuestion.id, key)
                           }
-                          className={`flex w-full items-start gap-4 rounded-xl border p-4 text-left text-sm transition-all ${
+                          className={`flex w-full items-start gap-4 rounded-xl border p-4 sm:p-5 text-left text-base transition-all ${
                             isSelected
                               ? "border-primary bg-primary/5 ring-1 ring-primary/20"
                               : "border-border bg-card/50 hover:border-primary/20 hover:bg-muted/50"
                           }`}
                         >
                           <span
-                            className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                            className={`flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
                               isSelected
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-muted text-muted-foreground"
@@ -322,7 +322,7 @@ export default function ExamPage({
                           >
                             {key}
                           </span>
-                          <span className="pt-1.5 leading-relaxed text-foreground/80">
+                          <span className="pt-1.5 sm:pt-2 leading-relaxed text-foreground/80">
                             {value}
                           </span>
                         </button>
@@ -333,31 +333,31 @@ export default function ExamPage({
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 sm:mt-5 flex items-center justify-between gap-3">
             <button
               onClick={() => goTo(currentIndex - 1)}
               disabled={currentIndex === 0}
-              className="btn-premium-outline px-4 py-2 disabled:opacity-30"
+              className="btn-premium-outline px-5 py-2.5 disabled:opacity-30"
             >
-              <ChevronLeft className="size-4" />
+              <ChevronLeft className="size-5" />
               ก่อนหน้า
             </button>
 
             {currentIndex < questions.length - 1 ? (
               <button
                 onClick={() => goTo(currentIndex + 1)}
-                className="btn-premium px-4 py-2"
+                className="btn-premium px-5 py-2.5"
               >
                 ถัดไป
-                <ChevronRight className="size-4" />
+                <ChevronRight className="size-5" />
               </button>
             ) : (
               <button
                 onClick={() => setShowConfirm(true)}
                 disabled={submitting}
-                className="btn-success px-5 py-2"
+                className="btn-success px-6 py-2.5"
               >
-                <Send className="size-4" />
+                <Send className="size-5" />
                 ส่งกระดาษคำตอบ
               </button>
             )}
@@ -365,11 +365,11 @@ export default function ExamPage({
         </div>
 
         <aside className="hidden w-48 shrink-0 lg:block">
-          <div className="sticky top-24 rounded-2xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm">
-            <p className="mb-3 text-xs font-medium text-muted-foreground">
+          <div className="sticky top-24 rounded-xl sm:rounded-2xl border border-border/60 bg-card/80 p-3 sm:p-4 shadow-sm backdrop-blur-sm">
+            <p className="mb-2.5 sm:mb-3 text-[10px] sm:text-xs font-medium text-muted-foreground">
               ข้อที่ตอบแล้ว
             </p>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
               {questions.map((q, i) => {
                 const isAnswered = !!answers[q.id];
                 const isActive = i === currentIndex;
@@ -377,7 +377,7 @@ export default function ExamPage({
                   <button
                     key={q.id}
                     onClick={() => goTo(i)}
-                    className={`flex size-9 items-center justify-center rounded-lg text-xs font-medium transition-all ${
+                    className={`flex size-7.5 sm:size-9 items-center justify-center rounded-lg text-[10px] sm:text-xs font-medium transition-all ${
                       isActive
                         ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
                         : isAnswered
@@ -391,13 +391,13 @@ export default function ExamPage({
               })}
             </div>
 
-            <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+            <div className="mt-2.5 sm:mt-3 flex items-center gap-2 sm:gap-3 text-[9px] sm:text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1">
-                <span className="inline-block size-3 rounded border border-chart-3/30 bg-chart-3/10" />
+                <span className="inline-block size-2.5 sm:size-3 rounded border border-chart-3/30 bg-chart-3/10" />
                 ตอบแล้ว
               </span>
               <span className="flex items-center gap-1">
-                <span className="inline-block size-3 rounded border border-border bg-muted" />
+                <span className="inline-block size-2.5 sm:size-3 rounded border border-border bg-muted" />
                 ยังไม่ตอบ
               </span>
             </div>
@@ -405,9 +405,9 @@ export default function ExamPage({
             <button
               onClick={() => setShowConfirm(true)}
               disabled={submitting}
-              className="btn-success mt-4 w-full py-2 text-xs"
+              className="btn-success mt-3 sm:mt-4 w-full py-1.5 sm:py-2 text-[10px] sm:text-xs"
             >
-              <Send className="size-3.5" />
+              <Send className="size-3 sm:size-3.5" />
               ส่งคำตอบ
             </button>
           </div>
@@ -486,7 +486,7 @@ export default function ExamPage({
                   <X className="size-5" />
                 </button>
               </div>
-              <div className="grid grid-cols-5 gap-2.5">
+              <div className="grid grid-cols-5 gap-2 sm:gap-2.5">
                 {questions.map((q, i) => {
                   const isAnswered = !!answers[q.id];
                   const isActive = i === currentIndex;
@@ -494,7 +494,7 @@ export default function ExamPage({
                     <button
                       key={q.id}
                       onClick={() => goTo(i)}
-                      className={`flex h-12 items-center justify-center rounded-xl text-sm font-medium transition-all ${
+                      className={`flex h-10 sm:h-12 items-center justify-center rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
                         isActive
                           ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
                           : isAnswered
@@ -507,13 +507,13 @@ export default function ExamPage({
                   );
                 })}
               </div>
-              <div className="mt-4 flex items-center justify-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block size-3 rounded border border-chart-3/30 bg-chart-3/10" />
+              <div className="mt-3 sm:mt-4 flex items-center justify-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-muted-foreground">
+                <span className="flex items-center gap-1 sm:gap-1.5">
+                  <span className="inline-block size-2.5 sm:size-3 rounded border border-chart-3/30 bg-chart-3/10" />
                   ตอบแล้ว
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block size-3 rounded border border-border bg-muted" />
+                <span className="flex items-center gap-1 sm:gap-1.5">
+                  <span className="inline-block size-2.5 sm:size-3 rounded border border-border bg-muted" />
                   ยังไม่ตอบ
                 </span>
               </div>

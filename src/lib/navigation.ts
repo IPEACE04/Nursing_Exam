@@ -1,11 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  LayoutDashboard,
-  ClipboardList,
-  BarChart3,
-  Trophy,
-  User,
-} from "lucide-react";
+import { LayoutDashboard, ClipboardList, BarChart3, Trophy, User } from "lucide-react";
 
 export interface NavItem {
   href: string;

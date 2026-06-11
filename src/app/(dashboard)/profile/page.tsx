@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Building, Save, Lock, KeyRound } from "lucide-react";
+import { User, Mail, Building, Save, Lock, KeyRound, Shield } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
 import { changePassword } from "@/actions/auth";
@@ -78,7 +78,7 @@ export default function ProfilePage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-2xl space-y-8"
+      className="mx-auto max-w-2xl space-y-8 sm:space-y-10"
     >
       <PageHeader
         badge="Profile"
@@ -86,22 +86,39 @@ export default function ProfilePage() {
         description="จัดการข้อมูลส่วนตัวและความปลอดภัยของบัญชี"
       />
 
-      <GlassCard>
-        <div className="mb-6 flex items-center gap-4">
-          <Avatar className="size-16 ring-2 ring-accent/30">
-            <AvatarFallback className="bg-primary text-xl font-semibold text-primary-foreground">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="text-lg font-semibold text-foreground">
+      <GlassCard className="p-5 sm:p-8">
+        <div className="mb-8 flex items-center gap-4 sm:gap-6">
+          <div className="relative shrink-0">
+            <Avatar className="size-16 sm:size-20 ring-2 ring-primary/20 shadow-clinic">
+              <AvatarFallback className="bg-primary text-xl sm:text-2xl font-bold text-primary-foreground">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="absolute -bottom-1 -right-1 rounded-full bg-card border-2 border-card p-0.5">
+              <div className="rounded-full bg-primary/10 p-1">
+                <User className="size-3 sm:size-4 text-primary" />
+              </div>
+            </div>
+          </div>
+          <div className="min-w-0">
+            <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
               {profile?.name || "ผู้ใช้"}
             </p>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <p className="text-sm sm:text-base text-muted-foreground truncate">{user?.email}</p>
+              <span className="text-muted-foreground/30 hidden sm:inline">·</span>
+              <span className="flex items-center gap-1 text-xs sm:text-sm font-medium text-primary">
+                {profile?.role === "admin" ? (
+                  <><Shield className="size-3.5" /> ผู้ดูแลระบบ</>
+                ) : (
+                  "นักศึกษา"
+                )}
+              </span>
+            </div>
           </div>
         </div>
 
-        <form onSubmit={handleSaveProfile} className="space-y-5">
+        <form onSubmit={handleSaveProfile} className="space-y-5 sm:space-y-6">
           <FormField
             id="email"
             label="อีเมล"
@@ -129,26 +146,26 @@ export default function ProfilePage() {
           />
 
           <button type="submit" disabled={saving} className="btn-premium">
-            <Save className="size-4" />
+            <Save className="size-5" />
             {saving ? "กำลังบันทึก..." : saved ? "บันทึกแล้ว ✓" : "บันทึกข้อมูล"}
           </button>
         </form>
       </GlassCard>
 
-      <GlassCard>
-        <div className="mb-5 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/8">
-            <Lock className="size-5 text-primary" />
+      <GlassCard className="p-5 sm:p-8">
+        <div className="mb-6 flex items-center gap-3 sm:gap-4">
+          <div className="flex size-11 sm:size-13 items-center justify-center rounded-xl bg-primary/8 border border-primary/15 shrink-0">
+            <Lock className="size-5 sm:size-6 text-primary" />
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">เปลี่ยนรหัสผ่าน</h2>
-            <p className="text-xs text-muted-foreground">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground">เปลี่ยนรหัสผ่าน</h2>
+            <p className="text-sm text-muted-foreground">
               ตั้งรหัสผ่านใหม่สำหรับบัญชีของคุณ
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleChangePassword} className="space-y-5">
+        <form onSubmit={handleChangePassword} className="space-y-5 sm:space-y-6">
           <FormField
             id="newPassword"
             label="รหัสผ่านใหม่"
@@ -171,13 +188,13 @@ export default function ProfilePage() {
           />
 
           {passwordError && (
-            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <p className="rounded-xl bg-destructive/10 px-4 py-3 text-base text-destructive border border-destructive/20">
               {passwordError}
             </p>
           )}
 
           <button type="submit" className="btn-premium-outline">
-            <KeyRound className="size-4" />
+            <KeyRound className="size-5" />
             {passwordSaved ? "เปลี่ยนรหัสผ่านแล้ว ✓" : "เปลี่ยนรหัสผ่าน"}
           </button>
         </form>

@@ -14,12 +14,12 @@ const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.06 },
+    transition: { staggerChildren: 0.05 },
   },
 };
 
 const itemAnim = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 },
 };
 
@@ -65,7 +65,7 @@ export default function ExamListPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 px-5 py-6 sm:py-8 sm:px-6">
       <PageHeader
         badge="Exam Library"
         title="คลังข้อสอบ"
@@ -79,9 +79,9 @@ export default function ExamListPage() {
         className="space-y-4"
       >
         {exams.length === 0 ? (
-          <GlassCard className="py-16 text-center">
-            <BookOpen className="mx-auto mb-4 size-14 text-muted-foreground/30" />
-            <p className="text-sm text-muted-foreground">
+          <GlassCard className="py-20 text-center">
+            <BookOpen className="mx-auto mb-4 size-16 text-muted-foreground/30" />
+            <p className="text-base text-muted-foreground">
               ยังไม่มีชุดข้อสอบในขณะนี้
             </p>
           </GlassCard>
@@ -92,23 +92,26 @@ export default function ExamListPage() {
               variants={itemAnim}
               className="group"
             >
-              <GlassCard hover className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex-1">
-                  <h3 className="text-base font-semibold text-foreground">
+              <GlassCard
+                hover
+                className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg sm:text-xl font-semibold text-foreground line-clamp-1">
                     {exam.title}
                   </h3>
                   {exam.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                    <p className="mt-1.5 line-clamp-2 text-sm sm:text-base text-muted-foreground">
                       {exam.description}
                     </p>
                   )}
-                  <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1.5">
-                      <FileText className="size-3.5" />
+                      <FileText className="size-4" />
                       {exam.question_count} ข้อ
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Clock className="size-3.5" />
+                      <Clock className="size-4" />
                       {exam.time_limit_minutes} นาที
                     </span>
                   </div>
@@ -117,7 +120,7 @@ export default function ExamListPage() {
                   href={`/exam/${exam.id}`}
                   className="btn-premium shrink-0"
                 >
-                  <Play className="size-4" />
+                  <Play className="size-5" />
                   เริ่มสอบ
                 </Link>
               </GlassCard>

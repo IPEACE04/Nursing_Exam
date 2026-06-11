@@ -20,13 +20,13 @@ export default function AdminLayout({
     if (!user) {
       router.push("/login");
     } else if (profile?.role !== "admin") {
-      router.push("/dashboard");
+      router.push("/community");
     }
   }, [user, profile, isLoading, router]);
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center premium-gradient-bg">
+      <div className="flex min-h-screen items-center justify-center bg-clinical-grid premium-gradient-bg-intense">
         <LoadingSpinner />
       </div>
     );
@@ -37,12 +37,12 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col bg-clinical-grid premium-gradient-bg">
       <AdminNavbar />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />
-        <main className="flex-1 overflow-y-auto premium-gradient-bg">
-          <div className="mx-auto max-w-6xl p-6">{children}</div>
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-6xl p-5 sm:p-6 md:p-8">{children}</div>
         </main>
       </div>
     </div>

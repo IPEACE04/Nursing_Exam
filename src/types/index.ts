@@ -77,3 +77,35 @@ export type LeaderboardEntry = {
   avg_score: number;
   total_score: number;
 };
+
+// ── Community ─────────────────────────────────────────────────────
+export interface CommunityPost {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  category: string;
+  created_at: string;
+}
+
+export interface CommunityComment {
+  id: string;
+  post_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface CommunityPostWithAuthor extends CommunityPost {
+  author_name: string;
+  like_count: number;
+  comment_count: number;
+}
+
+export interface CommunityPostDetail extends CommunityPostWithAuthor {
+  has_liked: boolean;
+}
+
+export interface CommunityCommentWithAuthor extends CommunityComment {
+  author_name: string;
+}

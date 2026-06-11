@@ -4,7 +4,37 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { GraduationCap, Sparkles, ArrowRight, Clock, BarChart3, Target, Shield, ChevronRight } from "lucide-react";
+import {
+  ArrowRight,
+  Activity,
+  BarChart3,
+  Radio,
+  CheckLine,
+  TestTubeDiagonal,
+} from "lucide-react";
+
+const features = [
+  {
+    icon: Activity,
+    title: "Exam Mode",
+    desc: "หน้าสอบได้ครบถ้วน พร้อมจับเวลา",
+  },
+  {
+    icon: BarChart3,
+    title: "Progress",
+    desc: "วิเคราะห์พัฒนาการเป็นกราฟ",
+  },
+  {
+    icon: Radio,
+    title: "Community",
+    desc: "คอมมูนิตี้เพื่อแบ่งปันความรู้ และเทคนิคในการทำข้อสอบ",
+  },
+  {
+    icon: CheckLine,
+    title: "Answer Keys",
+    desc: "เฉลยพร้อมอธิบายอย่างละเอียด",
+  },
+];
 
 export default function Home() {
   const router = useRouter();
@@ -13,11 +43,15 @@ export default function Home() {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const { createSupabaseBrowserClient } = await import("@/lib/supabase-client");
+        const { createSupabaseBrowserClient } = await import(
+          "@/lib/supabase-client"
+        );
         const supabase = createSupabaseBrowserClient();
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (session) {
-          router.push("/dashboard");
+          router.push("/community");
           return;
         }
       } catch {}
@@ -28,153 +62,111 @@ export default function Home() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center premium-gradient-bg-intense">
-        <span className="size-7 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
   }
 
-  const features = [
-    { icon: Clock, title: "ระบบจับเวลา", desc: "จับเวลาเสมือนจริง ฝึกทำภายใต้แรงกดดันเหมือนสอบจริง" },
-    { icon: BarChart3, title: "วิเคราะห์พัฒนาการ", desc: "กราฟแสดงคะแนนและความก้าวหน้าแบบ Real-time" },
-    { icon: Target, title: "เฉลยละเอียด", desc: "คำอธิบายทุกข้อ รู้ว่าผิดเพราะอะไรและต้องแก้ไขตรงไหน" },
-    { icon: Shield, title: "มั่นใจได้", desc: "ข้อสอบครอบคลุมเนื้อหาสอบใบประกอบวิชาชีพการพยาบาล" },
-  ];
-
   return (
-    <div className="min-h-screen premium-gradient-bg-intense">
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-card/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-primary shadow-sm">
-              <GraduationCap className="size-5 text-primary-foreground" />
+    <div className="min-h-screen bg-clinical-grid">
+      {/* ── Navbar ──────────────────────────────────────────────── */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-card/95 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-primary">
+              <TestTubeDiagonal className="size-5 text-primary-foreground" />
             </div>
-            <span className="text-base font-semibold text-foreground">Nursing Exam</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="btn-premium-outline px-4 py-2 text-sm">
+            <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+              NurseSim
+            </span>
+          </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/login"
+              className="px-4 py-2 text-base text-muted-foreground hover:text-foreground transition-colors font-medium"
+            >
               เข้าสู่ระบบ
             </Link>
-            <Link href="/register" className="btn-premium px-4 py-2 text-sm">
-              ลงทะเบียน
+            <Link href="/register" className="btn-premium px-5 py-2.5 text-sm">
+              เริ่มฟรี
+              <ArrowRight className="size-4" />
             </Link>
           </div>
         </div>
       </header>
 
       <main>
-        <section className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-40 -right-40 size-[500px] rounded-full bg-accent/8 blur-3xl" />
-            <div className="absolute -bottom-40 -left-40 size-[400px] rounded-full bg-chart-3/8 blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] rounded-full bg-primary/5 blur-3xl" />
-          </div>
-
-          <div className="relative mx-auto max-w-4xl px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-accent/15 px-4 py-1.5 text-xs font-medium text-accent-foreground">
-                <Sparkles className="size-3.5 text-accent" />
-                แพลตฟอร์มฝึกทำข้อสอบสภาการพยาบาล
-              </div>
-            </motion.div>
+        {/* ── Hero ────────────────────────────────────────────── */}
+        <section className="pt-28 pb-14 sm:pt-36 sm:pb-20 md:pt-40 md:pb-24">
+          <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center">
 
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+              transition={{ duration: 0.5, delay: 0.05 }}
+              className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[3.75rem] leading-[1.15]"
             >
-              เตรียมสอบใบประกอบวิชาชีพ
+              ฝึกสอบอย่าง{" "}
+              <span className="text-primary font-extrabold">มืออาชีพ</span>
               <br />
-              <span className="text-gradient-gold">อย่างมั่นใจ</span>
+              ก่อนลงสนามจริง
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground"
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mx-auto mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-muted-foreground"
             >
-              ฝึกทำข้อสอบจำลอง พร้อมระบบจับเวลาเสมือนจริง เฉลยละเอียดทุกข้อ 
-              และวิเคราะห์พัฒนาการแบบเรียลไทม์ เตรียมพร้อมก่อนวันสอบจริง
+              แพลตฟอร์มข้อสอบสำหรับนักศึกษาพยาบาล — วิเคราะห์ผล ติดตามพัฒนาการ
+              <br className="hidden sm:block" />
+              และวัดความพร้อมก่อนสอบใบประกอบ ในประสบการณ์ที่ได้จากข้อสอบจริง
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-10 flex items-center justify-center gap-4"
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none mx-auto"
             >
               <Link
                 href="/register"
-                className="btn-premium px-8 py-3 text-base shadow-lg"
+                className="btn-premium px-8 py-3.5 text-base w-full sm:w-auto justify-center"
               >
-                เริ่มเรียนฟรี
+                สมัครใช้งานฟรี
                 <ArrowRight className="size-5" />
               </Link>
-              <Link href="/login" className="btn-premium-outline px-8 py-3 text-base">
-                เข้าสู่ระบบ
+              <Link
+                href="/login"
+                className="btn-premium-outline px-8 py-3.5 text-base w-full sm:w-auto justify-center"
+              >
+                มีบัญชีอยู่แล้ว
               </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-12 grid grid-cols-3 gap-6 rounded-2xl border border-border/40 bg-card/50 p-6 backdrop-blur-sm"
-            >
-              {[
-                { value: "50+", label: "ชุดข้อสอบ" },
-                { value: "500+", label: "ข้อสอบ" },
-                { value: "Real", label: "สมจริง" },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-2xl font-bold text-foreground sm:text-3xl">{stat.value}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
             </motion.div>
           </div>
         </section>
 
-        <section className="border-t border-border/40 py-20">
-          <div className="mx-auto max-w-6xl px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-12 text-center"
-            >
-              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
-                ทำไมต้องเรียนกับเรา?
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                ครบทุกเครื่องมือที่ช่วยให้คุณพร้อมสอบ
-              </p>
-            </motion.div>
-
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {features.map((feature, i) => {
-                const Icon = feature.icon;
+        {/* ── Features ────────────────────────────────────────── */}
+        <section className="pb-20 sm:pb-24 md:pb-28">
+          <div className="mx-auto max-w-4xl px-5 sm:px-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-5 sm:grid-cols-4">
+              {features.map((f, i) => {
+                const Icon = f.icon;
                 return (
                   <motion.div
-                    key={feature.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08 }}
-                    className="rounded-2xl border border-border/60 bg-card/80 p-6 backdrop-blur-sm transition-all hover:-translate-y-1 hover:shadow-md"
+                    key={f.title}
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + i * 0.06 }}
+                    className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-shadow duration-200 hover:shadow-md"
                   >
-                    <div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/8">
-                      <Icon className="size-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold text-foreground">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {feature.desc}
+                    <Icon className="mb-3 size-6 text-muted-foreground" />
+                    <h3 className="text-base sm:text-lg font-semibold text-foreground">
+                      {f.title}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                      {f.desc}
                     </p>
                   </motion.div>
                 );
@@ -182,36 +174,13 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <section className="border-t border-border/40 py-20">
-          <div className="mx-auto max-w-4xl px-6 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-2xl font-semibold text-foreground sm:text-3xl">
-                พร้อมแล้วหรือยัง?
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground">
-                เริ่มฝึกทำข้อสอบวันนี้ ก้าวสู่อนาคตวิชาชีพการพยาบาล
-              </p>
-              <Link
-                href="/register"
-                className="btn-premium mt-8 inline-flex px-8 py-3 text-base shadow-lg"
-              >
-                สมัครใช้งานฟรี
-                <ChevronRight className="size-5" />
-              </Link>
-            </motion.div>
-          </div>
-        </section>
       </main>
 
+      {/* ── Footer ────────────────────────────────────────────── */}
       <footer className="border-t border-border/40 py-8">
-        <div className="mx-auto max-w-7xl px-6 text-center text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} Nursing Exam Platform. All rights reserved.
-        </div>
+        <p className="text-center text-sm text-muted-foreground">
+          © {new Date().getFullYear()} NurseSim · Rangsit University
+        </p>
       </footer>
     </div>
   );

@@ -38,11 +38,11 @@ export async function login(_prevState: unknown, formData: FormData) {
     return { error: "Incorrect Email or Password" };
   }
 
-  const token = await createJWT(user.id);
+  const token = await createJWT(user.id, user.role);
   await setSessionCookie(token);
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return { success: true };
 }
 
 export async function register(_prevState: unknown, formData: FormData) {
@@ -88,11 +88,11 @@ export async function register(_prevState: unknown, formData: FormData) {
     return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
   }
 
-  const token = await createJWT(newUser.id);
+  const token = await createJWT(newUser.id, "student");
   await setSessionCookie(token);
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return { success: true };
 }
 
 export async function changePassword(formData: FormData) {

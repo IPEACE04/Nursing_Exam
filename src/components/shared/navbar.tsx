@@ -1,87 +1,65 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/context/auth-context";
 import { logout } from "@/actions/auth";
-import { LogOut, GraduationCap, User, Shield } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { LogOut, TestTubeDiagonal } from "lucide-react";
+import { studentNavItems } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
 
 export function Navbar() {
-  const router = useRouter();
-  const { profile } = useAuth();
-  const initials = profile?.name
-    ? profile.name.charAt(0).toUpperCase()
-    : "?";
+  const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-card/70 backdrop-blur-xl">
-      <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary shadow-sm">
-            <GraduationCap className="size-5 text-primary-foreground" />
+    <div className="sticky top-0 z-40 mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-8 pt-3">
+      <header className="flex h-14 sm:h-16 items-center justify-between rounded-2xl border border-border/50 bg-card px-4 sm:px-5 shadow-sm">
+        {/* Left: Logo */}
+        <Link href="/community" className="flex items-center gap-2.5 shrink-0">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary">
+            <TestTubeDiagonal className="size-5 text-primary-foreground" />
           </div>
-          <div>
-            <span className="text-base font-semibold tracking-tight text-foreground">
-              Nursing Exam
-            </span>
-            <p className="hidden text-[11px] text-muted-foreground sm:block">
-              สภาการพยาบาล
-            </p>
-          </div>
+          <span className="hidden sm:inline text-base font-bold tracking-tight text-foreground whitespace-nowrap">
+            NurseSim
+          </span>
         </Link>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-3 rounded-xl p-1.5 transition-colors hover:bg-muted">
-            <div className="hidden text-right sm:block">
-              <p className="text-sm font-medium text-foreground">
-                {profile?.name || "ผู้ใช้"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {profile?.role === "admin" ? "ผู้ดูแลระบบ" : "นักศึกษา"}
-              </p>
-            </div>
-            <Avatar className="size-9 ring-2 ring-accent/30">
-              <AvatarFallback className="bg-primary text-xs font-semibold text-primary-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => router.push("/profile")}
-            >
-              <User className="size-4" />
-              จัดการโปรไฟล์
-            </DropdownMenuItem>
-            {profile?.role === "admin" && (
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => router.push("/admin")}
+        {/* Center: Nav links */}
+        <nav className="hidden md:flex items-center gap-1 mx-4">
+          {studentNavItems.map((item) => {
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/dashboard" && pathname.startsWith(item.href));
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
-                <Shield className="size-4" />
-                แอดมิน
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="cursor-pointer text-destructive focus:text-destructive"
-              onClick={() => logout()}
-            >
-              <LogOut className="size-4" />
-              ออกจากระบบ
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    </header>
+                <Icon className="size-4 shrink-0" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right: Logout */}
+        <div className="flex items-center shrink-0">
+          <button
+            onClick={() => logout()}
+            className="flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+            title="ออกจากระบบ"
+          >
+            <LogOut className="size-5" />
+          </button>
+        </div>
+      </header>
+    </div>
   );
 }

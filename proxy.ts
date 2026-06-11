@@ -5,22 +5,18 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET || "fallback-secret-change-in-production"
 );
 
-const protectedRoutes = [
-  "/dashboard",
-  "/exam",
-  "/history",
-  "/ranking",
-  "/profile",
-  "/admin",
-];
+const adminRoutes = ["/admin"];
+const studentRoutes = ["/dashboard", "/exam", "/history", "/ranking", "/profile"];
 const authRoutes = ["/login", "/register"];
 
-async function getUserIdFromCookie(req: NextRequest): Promise<string | null> {
+async function getSessionFromCookie(
+  req: NextRequest
+): Promise<{ userId: string; role?: string } | null> {
   const token = req.cookies.get("session")?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return (payload as unknown as { userId: string }).userId;
+    return payload as unknown as { userId: string; role?: string };
   } catch {
     return null;
   }
@@ -30,24 +26,61 @@ export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const res = NextResponse.next();
 
-  const userId = await getUserIdFromCookie(req);
+  const session = await getSessionFromCookie(req);
 
-  const isProtected = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-  const isAuth = authRoutes.some((route) => pathname.startsWith(route));
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+  const isStudentRoute = studentRoutes.some((route) => pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isRoot = pathname === "/";
 
-  if (isProtected && !userId) {
+  // Not authenticated → protect all non-auth routes
+  if (!session && (isAdminRoute || isStudentRoute || isRoot)) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }
 
-  if (isAuth && userId) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+  if (session) {
+    const role = session.role;
+
+    // Old JWT without role → skip role-based routing, let client handle it
+    if (!role) {
+      if (isAuthRoute || isRoot) {
+        const url = req.nextUrl.clone();
+        url.pathname = "/dashboard";
+        return NextResponse.redirect(url);
+      }
+      return res;
+    }
+
+    // Authenticated on auth pages → redirect based on role
+    if (isAuthRoute) {
+      const url = req.nextUrl.clone();
+      url.pathname = role === "admin" ? "/admin/dashboard" : "/dashboard";
+      return NextResponse.redirect(url);
+    }
+
+    // Root path → redirect based on role
+    if (isRoot) {
+      const url = req.nextUrl.clone();
+      url.pathname = role === "admin" ? "/admin/dashboard" : "/dashboard";
+      return NextResponse.redirect(url);
+    }
+
+    // Non-admin on admin routes → redirect to dashboard
+    if (isAdminRoute && role !== "admin") {
+      const url = req.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+
+    // Admin on student routes → redirect to admin dashboard
+    if (role === "admin" && isStudentRoute) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/admin/dashboard";
+      return NextResponse.redirect(url);
+    }
   }
 
   return res;

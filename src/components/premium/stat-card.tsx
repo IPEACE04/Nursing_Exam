@@ -11,9 +11,15 @@ interface StatCardProps {
   value: number;
   suffix?: string;
   delay?: number;
-  iconBg?: string;
-  iconColor?: string;
+  accent?: "primary" | "emerald" | "amber" | "purple";
 }
+
+const accentStyles = {
+  primary: { bg: "bg-primary/8", color: "text-primary", border: "border-primary/15" },
+  emerald: { bg: "bg-emerald-500/8", color: "text-emerald-500", border: "border-emerald-500/15" },
+  amber: { bg: "bg-amber-500/8", color: "text-amber-500", border: "border-amber-500/15" },
+  purple: { bg: "bg-purple-500/8", color: "text-purple-500", border: "border-purple-500/15" },
+};
 
 export function StatCard({
   icon,
@@ -21,18 +27,18 @@ export function StatCard({
   value,
   suffix = "",
   delay = 0,
-  iconBg = "bg-primary/8",
-  iconColor = "text-primary",
+  accent = "primary",
 }: StatCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const hasAnimated = useRef(false);
+  const s = accentStyles[accent];
 
   useEffect(() => {
     if (hasAnimated.current) return;
     hasAnimated.current = true;
 
-    const duration = 800;
-    const steps = 20;
+    const duration = 1000;
+    const steps = 30;
     const increment = value / steps;
     let current = 0;
     const interval = setInterval(() => {
@@ -50,30 +56,20 @@ export function StatCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4, ease: "easeOut" }}
-      whileHover={{ y: -3, boxShadow: "0 12px 40px rgba(15, 23, 42, 0.08)" }}
-      className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-sm backdrop-blur-sm transition-shadow"
+      transition={{ delay, duration: 0.35, ease: "easeOut" }}
+      className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-all hover:shadow-md"
     >
-      <div className="flex items-center gap-4">
-        <div
-          className={cn(
-            "flex size-12 items-center justify-center rounded-xl",
-            iconBg
-          )}
-        >
-          <div className={iconColor}>{icon}</div>
+      <div className="flex flex-col gap-2">
+        <div className={cn("size-6", s.color)}>
+          {icon}
         </div>
-        <div>
-          <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
-            {label}
-          </p>
-          <p className="text-2xl font-semibold tracking-tight text-foreground">
-            {displayValue}
-            {suffix}
-          </p>
-        </div>
+        <p className="text-sm font-medium text-muted-foreground">{label}</p>
+        <p className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-serif">
+          {displayValue}
+          {suffix && <span className="text-base font-medium ml-1 font-sans text-muted-foreground">{suffix}</span>}
+        </p>
       </div>
     </motion.div>
   );

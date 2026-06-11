@@ -18,17 +18,22 @@ export async function verifyPassword(
   return bcrypt.compare(password, hash);
 }
 
-export async function createJWT(userId: string): Promise<string> {
-  return new SignJWT({ userId })
+export async function createJWT(
+  userId: string,
+  role: string
+): Promise<string> {
+  return new SignJWT({ userId, role })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime("7d")
     .sign(JWT_SECRET);
 }
 
-export async function verifyJWT(token: string): Promise<{ userId: string } | null> {
+export async function verifyJWT(
+  token: string
+): Promise<{ userId: string; role?: string } | null> {
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    return payload as unknown as { userId: string };
+    return payload as unknown as { userId: string; role?: string };
   } catch {
     return null;
   }

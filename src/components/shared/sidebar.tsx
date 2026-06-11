@@ -9,9 +9,9 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-border/60 bg-card/60 backdrop-blur-xl lg:flex">
-      <div className="border-b border-border/60 px-5 py-5">
-        <p className="text-xs font-medium tracking-widest text-muted-foreground uppercase">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-border/40 bg-card lg:flex">
+      <div className="border-b border-border/40 px-5 py-5">
+        <p className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
           เมนูหลัก
         </p>
       </div>
@@ -27,31 +27,18 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200",
+                "flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-colors duration-150",
                 isActive
-                  ? "bg-primary text-primary-foreground shadow-sm"
+                  ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <Icon
-                className={cn(
-                  "size-5 transition-transform duration-200 group-hover:scale-105",
-                  isActive ? "text-primary-foreground" : "text-muted-foreground"
-                )}
-              />
+              <Icon className="size-5" />
               {item.label}
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-border/60 p-4">
-        <div className="rounded-xl bg-primary/5 p-4">
-          <p className="text-xs font-medium text-primary">Premium Study</p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            ฝึกทำข้อสอบอย่างเป็นระบบ พร้อมวิเคราะห์พัฒนาการ
-          </p>
-        </div>
-      </div>
     </aside>
   );
 }

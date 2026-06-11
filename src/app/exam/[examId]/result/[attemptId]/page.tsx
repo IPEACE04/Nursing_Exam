@@ -117,19 +117,19 @@ export default function ResultPage({
   const incorrectCount = total - score;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-3xl px-5 py-8 sm:px-6 md:px-8">
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="space-y-8"
+        className="space-y-8 sm:space-y-10"
       >
         <div>
           <button
-            onClick={() => router.push("/dashboard")}
-            className="mb-4 btn-ghost"
+            onClick={() => router.push("/community")}
+            className="mb-5 btn-ghost"
           >
-            <ArrowLeft className="size-4" />
+            <ArrowLeft className="size-5" />
             กลับไปแดชบอร์ด
           </button>
           <PageHeader
@@ -140,19 +140,19 @@ export default function ResultPage({
         </div>
 
         <motion.div variants={itemAnim}>
-          <GlassCard className="p-8 text-center">
+          <GlassCard className="p-6 sm:p-10 text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-              className={`mx-auto mb-5 flex size-24 items-center justify-center rounded-full ${
+              className={`mx-auto mb-6 flex size-24 sm:size-28 items-center justify-center rounded-full ${
                 passed ? "bg-chart-3/10" : "bg-destructive/10"
               }`}
             >
               {passed ? (
-                <CheckCircle2 className="size-12 text-chart-3" />
+                <CheckCircle2 className="size-12 sm:size-14 text-chart-3" />
               ) : (
-                <XCircle className="size-12 text-destructive" />
+                <XCircle className="size-12 sm:size-14 text-destructive" />
               )}
             </motion.div>
 
@@ -160,7 +160,7 @@ export default function ResultPage({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-5xl font-bold tracking-tight text-foreground"
+              className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground"
             >
               {percentage}%
             </motion.p>
@@ -168,12 +168,12 @@ export default function ResultPage({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-2 text-sm text-muted-foreground"
+              className="mt-3 text-base sm:text-lg text-muted-foreground"
             >
               {passed ? "ยินดีด้วย! คุณสอบผ่าน" : "ยังไม่ผ่านเกณฑ์ ลองใหม่อีกครั้งนะ"}
             </motion.p>
 
-            <div className="mt-8 grid grid-cols-3 gap-4">
+            <div className="mt-8 sm:mt-10 grid grid-cols-3 gap-3 sm:gap-5">
               {[
                 { icon: Target, label: "ข้อที่ถูก", value: `${score}/${total}`, bg: "bg-chart-3/10", color: "text-chart-3" },
                 { icon: XCircle, label: "ข้อที่ผิด", value: `${incorrectCount}`, bg: "bg-destructive/10", color: "text-destructive" },
@@ -181,13 +181,13 @@ export default function ResultPage({
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-border/60 bg-card/50 p-4"
+                  className="rounded-xl border border-border/60 bg-card/50 p-4 sm:p-5"
                 >
-                  <div className={`mx-auto mb-2 flex size-10 items-center justify-center rounded-lg ${stat.bg}`}>
-                    <stat.icon className={`size-5 ${stat.color}`} />
+                  <div className={`mx-auto mb-2.5 flex size-11 sm:size-12 items-center justify-center rounded-xl ${stat.bg}`}>
+                    <stat.icon className={`size-5 sm:size-6 ${stat.color}`} />
                   </div>
-                  <p className="text-lg font-semibold text-foreground">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
+                  <p className="text-lg sm:text-xl font-semibold text-foreground">{stat.value}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -195,11 +195,11 @@ export default function ResultPage({
         </motion.div>
 
         <motion.div variants={itemAnim}>
-          <GlassCard>
-            <h2 className="mb-6 text-base font-semibold text-foreground">
+          <GlassCard className="p-5 sm:p-6">
+            <h2 className="mb-6 text-lg sm:text-xl font-semibold text-foreground">
               เฉลยละเอียด
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-5">
               {results.map((r, i) => {
                 const optionLabels = r.options as Record<string, string>;
                 const isWrong = !r.is_correct;
@@ -211,41 +211,41 @@ export default function ResultPage({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
-                    className={`rounded-xl border p-5 ${
+                    className={`rounded-xl border p-5 sm:p-6 ${
                       isWrong
                         ? "border-destructive/20 bg-destructive/[0.03]"
                         : "border-chart-3/20 bg-chart-3/[0.03]"
                     }`}
                   >
-                    <div className="mb-2 flex items-center gap-2">
-                      <span className="text-xs font-medium text-muted-foreground">
+                    <div className="mb-3 flex items-center gap-2.5">
+                      <span className="text-sm font-medium text-muted-foreground">
                         ข้อ {i + 1}
                       </span>
                       {r.is_correct ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-chart-3/10 px-2.5 py-0.5 text-[11px] font-medium text-chart-3">
-                          <CheckCircle2 className="size-3" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-chart-3/10 px-3 py-1 text-xs font-medium text-chart-3">
+                          <CheckCircle2 className="size-3.5" />
                           ถูก
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-[11px] font-medium text-destructive">
-                          <XCircle className="size-3" />
+                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
+                          <XCircle className="size-3.5" />
                           ผิด
                         </span>
                       )}
                     </div>
 
-                    <p className="text-sm leading-relaxed text-foreground">
+                    <p className="text-base leading-relaxed text-foreground">
                       {r.question_text}
                     </p>
 
-                    <div className="mt-3 space-y-1.5 text-sm">
+                    <div className="mt-4 space-y-2 text-sm">
                       {Object.entries(optionLabels).map(([key, value]) => {
                         const isSelected = key === r.selected_option;
                         const isCorrect = key === r.correct_option;
                         return (
                           <div
                             key={key}
-                            className={`flex items-start gap-3 rounded-lg border px-3.5 py-2 ${
+                            className={`flex items-start gap-3 rounded-xl border px-4 py-2.5 ${
                               isCorrect
                                 ? "border-chart-3/30 bg-chart-3/8"
                                 : isSelected && !isCorrect
@@ -254,7 +254,7 @@ export default function ResultPage({
                             }`}
                           >
                             <span
-                              className={`flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-bold ${
+                              className={`flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
                                 isCorrect
                                   ? "bg-chart-3 text-white"
                                   : isSelected
@@ -265,7 +265,7 @@ export default function ResultPage({
                               {key}
                             </span>
                             <span
-                              className={`pt-0.5 ${
+                              className={`pt-1 ${
                                 isCorrect
                                   ? "font-medium text-chart-3"
                                   : isSelected
@@ -275,7 +275,7 @@ export default function ResultPage({
                             >
                               {value}
                               {isCorrect && (
-                                <span className="ml-1.5 text-[11px] text-muted-foreground">
+                                <span className="ml-2 text-xs text-muted-foreground">
                                   (เฉลย)
                                 </span>
                               )}
@@ -286,13 +286,13 @@ export default function ResultPage({
                     </div>
 
                     {unanswered && (
-                      <p className="mt-2 text-xs text-destructive">
+                      <p className="mt-3 text-sm text-destructive">
                         * ไม่ได้ตอบข้อนี้
                       </p>
                     )}
 
                     {r.explanation_text && (
-                      <div className="mt-3 rounded-xl bg-accent/8 px-4 py-3 text-sm leading-relaxed text-accent-foreground">
+                      <div className="mt-4 rounded-xl bg-accent/8 px-5 py-3.5 text-sm leading-relaxed text-accent-foreground">
                         <span className="font-medium">คำอธิบาย: </span>
                         {r.explanation_text}
                       </div>
@@ -304,19 +304,19 @@ export default function ResultPage({
           </GlassCard>
         </motion.div>
 
-        <motion.div variants={itemAnim} className="flex justify-center gap-3 pb-8">
+        <motion.div variants={itemAnim} className="flex justify-center gap-4 pb-8">
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/community")}
             className="btn-premium-outline"
           >
-            <BarChart3 className="size-4" />
+            <BarChart3 className="size-5" />
             ไปแดชบอร์ด
           </button>
           <button
             onClick={() => router.push("/exam")}
             className="btn-premium"
           >
-            <GraduationCap className="size-4" />
+            <GraduationCap className="size-5" />
             ทำข้อสอบอื่น
           </button>
         </motion.div>

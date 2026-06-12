@@ -36,7 +36,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         onChange={(e) => setContent(e.target.value)}
         placeholder="เขียนความคิดเห็น..."
         rows={3}
-        className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+        className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-y focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
       />
       {error && (
         <p className="text-sm text-destructive">{error}</p>

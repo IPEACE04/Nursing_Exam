@@ -2,14 +2,14 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Building, Save, Lock, KeyRound, Shield } from "lucide-react";
+import { User, Mail, Building, Save, Lock, KeyRound, Shield, Camera } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
 import { changePassword } from "@/actions/auth";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { FormField } from "@/components/premium/form-field";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ProfilePage() {
   const { profile, user, refreshProfile } = useAuth();
@@ -21,6 +21,8 @@ export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSaved, setPasswordSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hasInitialized = useRef(false);
 
@@ -47,6 +49,38 @@ export default function ProfilePage() {
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
+  }
+
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploading(true);
+    const supabase = createSupabaseBrowserClient();
+
+    const filePath = `${user.id}/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(filePath);
+
+    const avatarUrl = urlData.publicUrl;
+
+    await supabase
+      .from("profiles")
+      .update({ avatar_url: avatarUrl })
+      .eq("id", user.id);
+
+    await refreshProfile();
+    setUploading(false);
   }
 
   async function handleChangePassword(e: React.FormEvent) {
@@ -88,12 +122,36 @@ export default function ProfilePage() {
 
       <GlassCard className="p-5 sm:p-8">
         <div className="mb-8 flex items-center gap-4 sm:gap-6">
-          <div className="relative shrink-0">
-            <Avatar className="size-16 sm:size-20 ring-2 ring-primary/20 shadow-clinic">
-              <AvatarFallback className="bg-primary text-xl sm:text-2xl font-bold text-primary-foreground">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+          <div className="relative shrink-0 group">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="relative cursor-pointer disabled:cursor-wait"
+            >
+              <Avatar className="size-16 sm:size-20 ring-2 ring-primary/20 shadow-clinic transition-opacity group-hover:opacity-80">
+                <AvatarImage src={profile?.avatar_url ?? undefined} />
+                <AvatarFallback className="bg-primary text-xl sm:text-2xl font-bold text-primary-foreground">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              {uploading ? (
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40">
+                  <div className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                </div>
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="size-5 text-white" />
+                </div>
+              )}
+            </button>
             <div className="absolute -bottom-1 -right-1 rounded-full bg-card border-2 border-card p-0.5">
               <div className="rounded-full bg-primary/10 p-1">
                 <User className="size-3 sm:size-4 text-primary" />

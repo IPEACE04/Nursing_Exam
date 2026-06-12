@@ -1,29 +1,42 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/context/auth-context";
 import { logout } from "@/actions/auth";
-import { LogOut, TestTubeDiagonal } from "lucide-react";
+import { LogOut, User, Shield, TestTubeDiagonal } from "lucide-react";
 import { studentNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function Navbar() {
+  const router = useRouter();
   const pathname = usePathname();
+  const { profile } = useAuth();
+
+  const initials = profile?.name
+    ? profile.name.charAt(0).toUpperCase()
+    : "?";
 
   return (
     <div className="sticky top-0 z-40 mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-8 pt-3">
       <header className="flex h-14 sm:h-16 items-center justify-between rounded-2xl border border-border/50 bg-card px-4 sm:px-5 shadow-sm">
-        {/* Left: Logo */}
         <Link href="/community" className="flex items-center gap-2.5 shrink-0">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary">
             <TestTubeDiagonal className="size-5 text-primary-foreground" />
           </div>
-          <span className="hidden sm:inline text-base font-bold tracking-tight text-foreground whitespace-nowrap">
+          <span className="text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap">
             NurseSim
           </span>
         </Link>
 
-        {/* Center: Nav links */}
         <nav className="hidden md:flex items-center gap-1 mx-4">
           {studentNavItems.map((item) => {
             const isActive =
@@ -49,15 +62,55 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right: Logout */}
-        <div className="flex items-center shrink-0">
-          <button
-            onClick={() => logout()}
-            className="flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-            title="ออกจากระบบ"
-          >
-            <LogOut className="size-5" />
-          </button>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
+              <Avatar className="size-9 ring-1 ring-border">
+                <AvatarImage src={profile?.avatar_url ?? undefined} />
+                <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="w-56 rounded-xl border-border/40 p-1.5 shadow-clinic-lg"
+            >
+              <div className="mb-1 px-3 py-2">
+                <p className="text-sm font-semibold text-foreground truncate">
+                  {profile?.name || "ผู้ใช้"}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {profile?.email}
+                </p>
+              </div>
+              <DropdownMenuSeparator className="my-1 bg-border/40" />
+              <DropdownMenuItem
+                className="cursor-pointer rounded-lg py-2.5 text-sm"
+                onClick={() => router.push("/profile")}
+              >
+                <User className="mr-2.5 size-4" />
+                โปรไฟล์
+              </DropdownMenuItem>
+              {profile?.role === "admin" && (
+                <DropdownMenuItem
+                  className="cursor-pointer rounded-lg py-2.5 text-sm"
+                  onClick={() => router.push("/admin")}
+                >
+                  <Shield className="mr-2.5 size-4" />
+                  แอดมิน
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator className="my-1 bg-border/40" />
+              <DropdownMenuItem
+                className="cursor-pointer rounded-lg py-2.5 text-sm text-destructive focus:text-destructive"
+                onClick={() => logout()}
+              >
+                <LogOut className="mr-2.5 size-4" />
+                ออกจากระบบ
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
     </div>

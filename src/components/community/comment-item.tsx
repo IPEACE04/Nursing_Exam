@@ -47,7 +47,7 @@ export function CommentItem({
               {formatDate(comment.created_at)}
             </span>
           </div>
-          <p className="text-sm text-foreground/80 leading-relaxed">
+          <p className="text-sm text-foreground/80 leading-relaxed break-words">
             {comment.content}
           </p>
         </div>
@@ -55,7 +55,7 @@ export function CommentItem({
         {isOwner && (
           <button
             onClick={handleDelete}
-            className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+            className="shrink-0 rounded-lg p-2.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
             title="ลบคอมเมนต์"
           >
             <Trash2 className="size-4" />

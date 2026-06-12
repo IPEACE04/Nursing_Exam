@@ -58,12 +58,12 @@ export default function CommunityPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/30 backdrop-blur-sm p-4 pt-16 sm:pt-4"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-2xl border border-border/50 bg-card p-6 shadow-xl max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-lg rounded-2xl border border-border/50 bg-card p-4 sm:p-6 shadow-xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-foreground">
@@ -87,7 +87,7 @@ export default function CommunityPage() {
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
+            className={`rounded-full px-4 py-2.5 text-sm font-medium transition-all ${
               activeCategory === cat
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
@@ -102,7 +102,7 @@ export default function CommunityPage() {
       {loading ? (
         <LoadingSpinner />
       ) : posts.length === 0 ? (
-        <div className="rounded-xl border border-border/50 bg-card py-16 text-center">
+        <div className="rounded-xl border border-border/50 bg-card py-8 sm:py-16 text-center">
           <p className="text-base text-muted-foreground">
             ยังไม่มีโพสต์ในขณะนี้
           </p>

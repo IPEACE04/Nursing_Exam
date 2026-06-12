@@ -37,7 +37,7 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
           {post.content}
         </p>
 
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <span className="font-medium text-foreground">
               {post.author_name}
@@ -46,7 +46,7 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
             <span>{formatDate(post.created_at)}</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <span className="flex items-center gap-1.5">
               <Heart className="size-4" />
               {post.like_count}

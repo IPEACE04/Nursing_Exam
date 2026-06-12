@@ -98,14 +98,14 @@ export default function PostDetailPage({
       {/* Back */}
       <Link
         href="/community"
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-2 py-2 -ml-2 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-4" />
         กลับไป Community
       </Link>
 
       {/* Post */}
-      <article className="rounded-xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm">
+      <article className="rounded-xl border border-border/50 bg-card p-4 sm:p-6 lg:p-8 shadow-sm">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex-1">
             <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-3">
@@ -139,7 +139,7 @@ export default function PostDetailPage({
           <span>{formatDate(post.created_at)}</span>
         </div>
 
-        <div className="prose prose-sm max-w-none text-foreground/80 leading-relaxed whitespace-pre-wrap">
+        <div className="prose prose-sm max-w-none text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">
           {post.content}
         </div>
 
@@ -153,7 +153,7 @@ export default function PostDetailPage({
       </article>
 
       {/* Comments */}
-      <div className="rounded-xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm">
+      <div className="rounded-xl border border-border/50 bg-card p-4 sm:p-6 lg:p-8 shadow-sm">
         <h2 className="text-lg font-bold text-foreground mb-6">
           ความคิดเห็น ({comments.length})
         </h2>

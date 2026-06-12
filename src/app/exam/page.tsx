@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Clock, FileText, Play, BookOpen } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getPublishedExams } from "@/actions/exam";
 import type { ExamWithQuestionCount } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
@@ -29,27 +29,8 @@ export default function ExamListPage() {
 
   useEffect(() => {
     async function fetchExams() {
-      const supabase = createSupabaseBrowserClient();
-      const { data } = await supabase
-        .from("exams")
-        .select(`*, questions ( id )`)
-        .eq("is_published", true)
-        .order("created_at", { ascending: false });
-
-      if (data) {
-        setExams(
-          data
-            .filter((e) => {
-              const qs = e.questions as unknown as { id: string }[] | null;
-              return (qs?.length ?? 0) > 0;
-            })
-            .map((e) => ({
-              ...e,
-              question_count: (e.questions as unknown as { id: string }[])
-                .length,
-            }))
-        );
-      }
+      const data = await getPublishedExams();
+      setExams(data as ExamWithQuestionCount[]);
       setLoading(false);
     }
 

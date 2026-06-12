@@ -6,6 +6,28 @@ import { getSessionUserId } from "@/lib/auth";
 
 const SUBMIT_COOLDOWN_MS = 30_000;
 
+export async function getPublishedExams() {
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("exams")
+    .select("*, questions ( id )")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false });
+
+  if (!data) return [];
+
+  return data
+    .filter((e) => {
+      const qs = e.questions as unknown as { id: string }[] | null;
+      return (qs?.length ?? 0) > 0;
+    })
+    .map((e) => ({
+      ...e,
+      question_count: (e.questions as unknown as { id: string }[]).length,
+    }));
+}
+
 export async function submitExam(formData: FormData) {
   const userId = await getSessionUserId();
   if (!userId) throw new Error("Unauthorized");

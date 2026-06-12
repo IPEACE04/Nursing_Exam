@@ -12,12 +12,12 @@ import {
   X,
   HelpCircle,
 } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import {
   updateExam,
   createQuestion,
   updateQuestion,
   deleteQuestion,
+  getExamWithQuestions,
 } from "@/actions/admin";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
@@ -44,41 +44,20 @@ export default function EditExamPage({
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
-
     async function load() {
-      const supabase = createSupabaseBrowserClient();
+      const result = await getExamWithQuestions(examId);
 
-      const { data: examData } = await supabase
-        .from("exams")
-        .select("title, description, time_limit_minutes")
-        .eq("id", examId)
-        .single();
-
-      if (cancelled) return;
-
-      if (!examData) {
+      if (!result) {
         router.push("/admin/exams");
         return;
       }
 
-      setExam(examData);
-
-      const { data: questionsData } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("exam_id", examId)
-        .order("sort_order", { ascending: true });
-
-      if (!cancelled && questionsData) {
-        setQuestions(questionsData as unknown as Question[]);
-      }
-
+      setExam(result.exam);
+      setQuestions(result.questions as unknown as Question[]);
       setLoading(false);
     }
 
     load();
-    return () => { cancelled = true; };
   }, [examId, router, refreshKey]);
 
   if (loading || !exam) return <LoadingSpinner />;

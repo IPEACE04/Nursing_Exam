@@ -167,3 +167,27 @@ export async function getAdminExams() {
     created_at: e.created_at as string,
   }));
 }
+
+export async function getExamWithQuestions(examId: string) {
+  await requireAdmin();
+  const supabase = createSupabaseServerClient();
+
+  const { data: exam } = await supabase
+    .from("exams")
+    .select("title, description, time_limit_minutes")
+    .eq("id", examId)
+    .single();
+
+  if (!exam) return null;
+
+  const { data: questions } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("exam_id", examId)
+    .order("sort_order", { ascending: true });
+
+  return {
+    exam: exam as { title: string; description: string | null; time_limit_minutes: number },
+    questions: (questions ?? []) as Record<string, unknown>[],
+  };
+}

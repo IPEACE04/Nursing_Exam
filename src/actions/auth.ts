@@ -102,6 +102,9 @@ export async function changePassword(formData: FormData) {
   const newPassword = formData.get("newPassword") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
 
+  if (!newPassword || !confirmPassword) {
+    return { error: "กรุณากรอกรหัสผ่าน" };
+  }
   if (newPassword.length < 6) {
     return { error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" };
   }

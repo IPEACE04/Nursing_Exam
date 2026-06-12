@@ -16,7 +16,12 @@ export async function submitExam(formData: FormData) {
 
   if (!examId || !answersRaw) throw new Error("Missing data");
 
-  const answers: Record<string, string> = JSON.parse(answersRaw);
+  let answers: Record<string, string>;
+  try {
+    answers = JSON.parse(answersRaw);
+  } catch {
+    throw new Error("Invalid answers data");
+  }
   const timeSpentSeconds = parseInt(timeSpentRaw, 10) || 0;
 
   const { data: questions, error: qError } = await supabase

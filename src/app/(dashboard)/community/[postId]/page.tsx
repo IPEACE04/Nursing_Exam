@@ -41,13 +41,19 @@ export default function PostDetailPage({
   const [deleting, setDeleting] = useState(false);
 
   const fetchData = useCallback(async () => {
-    const [postData, commentsData] = await Promise.all([
-      getPost(postId),
-      getComments(postId),
-    ]);
-    setPost(postData);
-    setComments(commentsData);
-    setLoading(false);
+    try {
+      const [postData, commentsData] = await Promise.all([
+        getPost(postId),
+        getComments(postId),
+      ]);
+      setPost(postData);
+      setComments(commentsData);
+    } catch {
+      setPost(null);
+      setComments([]);
+    } finally {
+      setLoading(false);
+    }
   }, [postId]);
 
   useEffect(() => {
@@ -60,6 +66,8 @@ export default function PostDetailPage({
     const result = await deletePost(postId);
     if (result.success) {
       router.push("/community");
+    } else if (result.error) {
+      alert(result.error);
     }
     setDeleting(false);
   }

@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
-import { CATEGORIES } from "@/lib/community-constants";
 import type {
   CommunityPostWithAuthor,
   CommunityPostDetail,
@@ -33,10 +32,13 @@ export async function getPosts(category?: string) {
 
   const postsWithCounts: CommunityPostWithAuthor[] = await Promise.all(
     posts.map(async (post) => {
-      const [{ count: likeCount }, { count: commentCount }] = await Promise.all([
+      const [likeResult, commentResult] = await Promise.all([
         supabase.rpc("get_like_count", { p_post_id: post.id }),
         supabase.rpc("get_comment_count", { p_post_id: post.id }),
       ]);
+
+      const likeCount = (likeResult.data as number) ?? 0;
+      const commentCount = (commentResult.data as number) ?? 0;
 
       const author = post.profiles as unknown as { name: string } | null;
 
@@ -74,7 +76,7 @@ export async function getPost(postId: string) {
 
   if (!post) return null;
 
-  const [{ count: likeCount }, { count: commentCount }, likedResult] =
+  const [likeResult, commentResult, likedResult] =
     await Promise.all([
       supabase.rpc("get_like_count", { p_post_id: postId }),
       supabase.rpc("get_comment_count", { p_post_id: postId }),
@@ -82,6 +84,9 @@ export async function getPost(postId: string) {
         ? supabase.rpc("has_liked", { p_post_id: postId })
         : Promise.resolve({ data: false }),
     ]);
+
+  const likeCount = (likeResult.data as number) ?? 0;
+  const commentCount = (commentResult.data as number) ?? 0;
 
   const author = post.profiles as unknown as { name: string } | null;
 

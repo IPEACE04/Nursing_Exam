@@ -18,9 +18,14 @@ export default function CommunityPage() {
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
-    const data = await getPosts(activeCategory);
-    setPosts(data);
-    setLoading(false);
+    try {
+      const data = await getPosts(activeCategory);
+      setPosts(data);
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
   }, [activeCategory]);
 
   useEffect(() => {

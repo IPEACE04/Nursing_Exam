@@ -224,32 +224,32 @@ export default function ExamPage({
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
-        <div className="flex h-16 sm:h-18 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3 min-w-0">
-            <GraduationCap className="size-6 shrink-0 text-primary" />
-            <span className="line-clamp-1 text-base sm:text-lg font-semibold text-foreground">
+          <div className="flex h-14 sm:h-18 items-center justify-between px-3 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <GraduationCap className="size-5 sm:size-6 shrink-0 text-primary" />
+            <span className="line-clamp-1 text-sm sm:text-lg font-semibold text-foreground">
               {exam.title}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setShowMobileNav(true)}
-              className="btn-ghost p-2.5 lg:hidden"
+              className="btn-ghost p-2 lg:hidden"
               aria-label="แสดงรายการข้อ"
             >
-              <List className="size-6" />
+              <List className="size-5 sm:size-6" />
             </button>
             <span className="hidden text-sm text-muted-foreground sm:inline">
               {currentIndex + 1}/{questions.length}
             </span>
             <div
-              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-base font-medium ${
+              className={`flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base font-medium ${
                 timer.isLow
                   ? "bg-destructive/10 text-destructive"
                   : "bg-muted text-foreground"
               }`}
             >
-              <Clock className="size-5" />
+              <Clock className="size-4 sm:size-5" />
               {timer.display}
             </div>
           </div>

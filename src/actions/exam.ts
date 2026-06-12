@@ -200,5 +200,5 @@ export async function submitExam(formData: FormData) {
 
   if (uaError) throw new Error("Failed to save answers");
 
-  redirect(`/exam/${examId}/result/${attempt.id}`);
+  redirect(`/history`);
 }

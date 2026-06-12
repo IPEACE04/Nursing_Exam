@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   title: "NurseSim — ฝึกทำข้อสอบสภาการพยาบาล",
   description:
     "แพลตฟอร์มฝึกทำข้อสอบจำลองเตรียมสอบใบประกอบวิชาชีพของสภาการพยาบาล พร้อมระบบจับเวลา เฉลยละเอียด และกราฟวิเคราะห์พัฒนาการ",
+  icons: { icon: "/kk.png" },
   openGraph: {
     title: "NurseSim — ฝึกทำข้อสอบสภาการพยาบาล",
     description:

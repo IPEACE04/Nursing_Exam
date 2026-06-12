@@ -10,7 +10,6 @@ import {
   BarChart3,
   Radio,
   CheckLine,
-  TestTubeDiagonal,
 } from "lucide-react";
 
 const features = [
@@ -74,9 +73,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-card/95 backdrop-blur-xl">
         <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex size-9 sm:size-10 items-center justify-center rounded-xl bg-primary">
-              <TestTubeDiagonal className="size-5 text-primary-foreground" />
-            </div>
+            <img src="/kk.png" alt="NurseSim" className="size-9 sm:size-10 rounded-xl object-cover" />
             <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
               NurseSim
             </span>

@@ -20,10 +20,9 @@ export const metadata: Metadata = {
   description:
     "แพลตฟอร์มฝึกทำข้อสอบจำลองเตรียมสอบใบประกอบวิชาชีพของสภาการพยาบาล พร้อมระบบจับเวลา เฉลยละเอียด และกราฟวิเคราะห์พัฒนาการ",
   icons: {
-    icon: "/favicon-rounded.png",
-    apple: "/favicon-rounded.png",
+    icon: "/kk.png",
+    apple: "/kk.png",
   },
-  icons: { icon: "/kk.png" },
   openGraph: {
     title: "NurseUp — ฝึกทำข้อสอบสภาการพยาบาล",
     description:

@@ -28,14 +28,14 @@ function Avatar({
 function AvatarImage({ className, src, ...props }: AvatarPrimitive.Image.Props & { src?: string }) {
   if (!src) return null;
   return (
-    <img
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
       src={src}
-      alt=""
       className={cn(
         "aspect-square size-full rounded-full object-cover",
         className
       )}
-      {...props as React.ImgHTMLAttributes<HTMLImageElement>}
+      {...props}
     />
   );
 }

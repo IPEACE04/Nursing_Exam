@@ -12,7 +12,7 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getDashboardData } from "@/actions/exam";
 import type { AttemptWithExam } from "@/types";
 import { StatCard } from "@/components/premium/stat-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
@@ -61,20 +61,12 @@ export default function DashboardPage() {
     const uid = user.id;
 
     async function fetchData() {
-      const supabase = createSupabaseBrowserClient();
+      const data = await getDashboardData(uid);
 
-      const [attemptsRes, rankRes] = await Promise.all([
-        supabase
-          .from("exam_attempts")
-          .select(`*, exams ( title )`)
-          .eq("user_id", uid)
-          .order("completed_at", { ascending: false }),
-        supabase.rpc("get_user_rank", { target_user_id: uid }),
-      ]);
-
-      if (attemptsRes.data) {
+      const attemptsData = data.attempts as unknown as ExamAttemptRow[];
+      if (attemptsData.length > 0) {
         setAttempts(
-          (attemptsRes.data as ExamAttemptRow[]).map((a) => ({
+          attemptsData.map((a) => ({
             id: a.id,
             user_id: a.user_id,
             exam_id: a.exam_id,
@@ -91,9 +83,7 @@ export default function DashboardPage() {
         );
       }
 
-      if (rankRes.data != null) {
-        setUserRank(rankRes.data as number);
-      }
+      setUserRank(data.rank as number);
 
       setLoadingData(false);
     }

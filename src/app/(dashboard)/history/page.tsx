@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BarChart3, Clock, Target, ExternalLink, TrendingUp, ClipboardList } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getHistory } from "@/actions/exam";
 import { useAuth } from "@/context/auth-context";
 import type { AttemptWithExam } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
@@ -53,17 +53,11 @@ export default function HistoryPage() {
     const uid = user.id;
 
     async function fetchHistory() {
-      const supabase = createSupabaseBrowserClient();
+      const data = await getHistory(uid);
 
-      const { data } = await supabase
-        .from("exam_attempts")
-        .select(`*, exams ( title )`)
-        .eq("user_id", uid)
-        .order("completed_at", { ascending: false });
-
-      if (data) {
+      if (data && data.length > 0) {
         setAttempts(
-          (data as ExamAttemptRow[]).map((a) => ({
+          (data as unknown as ExamAttemptRow[]).map((a) => ({
             id: a.id,
             user_id: a.user_id,
             exam_id: a.exam_id,

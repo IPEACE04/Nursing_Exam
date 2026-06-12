@@ -28,6 +28,102 @@ export async function getPublishedExams() {
     }));
 }
 
+export async function getExamSession(examId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const { data: exam } = await supabase
+    .from("exams")
+    .select("title, description, time_limit_minutes")
+    .eq("id", examId)
+    .single();
+
+  if (!exam) return null;
+
+  const { data: questions } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("exam_id", examId)
+    .order("sort_order", { ascending: true });
+
+  return {
+    exam: exam as { title: string; description: string | null; time_limit_minutes: number },
+    questions: (questions ?? []) as Record<string, unknown>[],
+  };
+}
+
+export async function getExamResult(attemptId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const { data: attempt } = await supabase
+    .from("exam_attempts")
+    .select("*, exams ( title )")
+    .eq("id", attemptId)
+    .single();
+
+  if (!attempt) return null;
+
+  const { data: answers } = await supabase
+    .from("user_answers")
+    .select("*, questions ( question_text, options, correct_option, explanation_text )")
+    .eq("attempt_id", attemptId)
+    .order("answered_at", { ascending: true });
+
+  return {
+    attempt: attempt as Record<string, unknown>,
+    answers: (answers ?? []) as Record<string, unknown>[],
+  };
+}
+
+export async function getLeaderboard() {
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase.rpc("get_leaderboard", { limit_count: 50 });
+  return (data ?? []) as Record<string, unknown>[];
+}
+
+export async function getUserRank(userId: string) {
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.rpc("get_user_rank", { target_user_id: userId });
+  return (data as number) ?? 0;
+}
+
+export async function getDashboardData(userId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const { data: attempts } = await supabase
+    .from("exam_attempts")
+    .select("*, exams ( title )")
+    .eq("user_id", userId)
+    .order("completed_at", { ascending: false });
+
+  const { data: exams } = await supabase
+    .from("exams")
+    .select("*, questions ( id )")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(3);
+
+  const { data: rank } = await supabase.rpc("get_user_rank", { target_user_id: userId });
+
+  return {
+    attempts: (attempts ?? []) as Record<string, unknown>[],
+    exams: (exams ?? []) as Record<string, unknown>[],
+    rank: rank ?? 0,
+  };
+}
+
+export async function getHistory(userId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("exam_attempts")
+    .select("*, exams ( title )")
+    .eq("user_id", userId)
+    .order("completed_at", { ascending: false });
+
+  return (data ?? []) as Record<string, unknown>[];
+}
+
 export async function submitExam(formData: FormData) {
   const userId = await getSessionUserId();
   if (!userId) throw new Error("Unauthorized");

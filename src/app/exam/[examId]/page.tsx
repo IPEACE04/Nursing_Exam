@@ -15,10 +15,9 @@ import {
   X,
   Play,
 } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
 import { useTimer } from "@/hooks/use-timer";
-import { submitExam } from "@/actions/exam";
+import { submitExam, getExamSession } from "@/actions/exam";
 import type { Question } from "@/types";
 
 const STORAGE_ANSWERS_PREFIX = "exam_answers_";
@@ -52,30 +51,15 @@ export default function ExamPage({
     }
 
     async function fetchData() {
-      const supabase = createSupabaseBrowserClient();
+      const data = await getExamSession(examId);
 
-      const { data: examData } = await supabase
-        .from("exams")
-        .select("title, description, time_limit_minutes")
-        .eq("id", examId)
-        .single();
-
-      if (!examData) {
+      if (!data) {
         router.push("/exam");
         return;
       }
 
-      setExam(examData);
-
-      const { data: questionsData } = await supabase
-        .from("questions")
-        .select("*")
-        .eq("exam_id", examId)
-        .order("sort_order", { ascending: true });
-
-      if (questionsData) {
-        setQuestions(questionsData as Question[]);
-      }
+      setExam(data.exam);
+      setQuestions(data.questions as unknown as Question[]);
 
       const stored = localStorage.getItem(storageKey);
       if (stored) {

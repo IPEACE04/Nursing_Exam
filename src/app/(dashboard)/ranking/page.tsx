@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Medal, Award, Crown } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getLeaderboard } from "@/actions/exam";
 import { useAuth } from "@/context/auth-context";
 import type { LeaderboardEntry } from "@/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -31,26 +31,15 @@ export default function RankingPage() {
 
   useEffect(() => {
     async function fetchRanking() {
-      const supabase = createSupabaseBrowserClient();
+      const data = await getLeaderboard();
 
-      const { data, error } = await supabase.rpc("get_leaderboard", {
-        limit_count: 50,
-      });
-
-      if (!error && data) {
+      if (data && data.length > 0) {
         setEntries(
           data.map(
-            (row: {
-              user_id: string;
-              name: string;
-              avatar_url: string | null;
-              total_exams: number;
-              avg_score: number;
-              total_score: number;
-            }) => ({
-              user_id: row.user_id,
-              name: row.name ?? "ไม่ระบุ",
-              avatar_url: row.avatar_url,
+            (row) => ({
+              user_id: row.user_id as string,
+              name: (row.name as string) ?? "ไม่ระบุ",
+              avatar_url: row.avatar_url as string | null,
               total_exams: Number(row.total_exams),
               avg_score: Number(row.avg_score),
               total_score: Number(row.total_score),

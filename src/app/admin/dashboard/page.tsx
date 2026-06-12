@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Users, ClipboardList, BarChart3, AlertTriangle, BookOpen } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getAdminStats } from "@/actions/admin";
 import {
   ChartContainer,
   ChartTooltip,
@@ -41,72 +41,14 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const supabase = createSupabaseBrowserClient();
-
-      const [{ count: totalUsers }, { count: totalAttempts }, { count: totalExams }] =
-        await Promise.all([
-          supabase.from("profiles").select("*", { count: "exact", head: true }),
-          supabase.from("exam_attempts").select("*", { count: "exact", head: true }),
-          supabase.from("exams").select("*", { count: "exact", head: true }),
-        ]);
-
-      const { data: attempts } = await supabase
-        .from("exam_attempts")
-        .select("score, total_questions");
-
-      let avgScore = 0;
-      if (attempts && attempts.length > 0) {
-        const totalPct = attempts.reduce(
-          (sum, a) =>
-            sum +
-            (a.total_questions > 0
-              ? (a.score / a.total_questions) * 100
-              : 0),
-          0
-        );
-        avgScore = Math.round(totalPct / attempts.length);
-      }
-
+      const data = await getAdminStats();
       setStats({
-        totalUsers: totalUsers ?? 0,
-        totalAttempts: totalAttempts ?? 0,
-        avgScore,
-        totalExams: totalExams ?? 0,
+        totalUsers: data.totalUsers,
+        totalAttempts: data.totalAttempts,
+        avgScore: data.avgScore,
+        totalExams: data.totalExams,
       });
-
-      const { data: wrongAnswers } = await supabase
-        .from("user_answers")
-        .select("is_correct, questions!inner ( question_text )");
-
-      if (wrongAnswers) {
-        const grouped: Record<
-          string,
-          { question_text: string; wrong: number; total: number }
-        > = {};
-        wrongAnswers.forEach((a) => {
-          const q = a.questions as unknown as { question_text: string };
-          const text = q?.question_text ?? "Unknown";
-          if (!grouped[text]) {
-            grouped[text] = { question_text: text, wrong: 0, total: 0 };
-          }
-          grouped[text].total++;
-          if (!a.is_correct) grouped[text].wrong++;
-        });
-
-        const sorted = Object.values(grouped)
-          .map((g) => ({
-            question: g.question_text.length > 40
-              ? g.question_text.slice(0, 40) + "..."
-              : g.question_text,
-            errorRate: Math.round((g.wrong / g.total) * 100),
-            total: g.total,
-          }))
-          .sort((a, b) => b.errorRate - a.errorRate)
-          .slice(0, 10);
-
-        setItemAnalysis(sorted);
-      }
-
+      setItemAnalysis(data.itemAnalysis);
       setLoading(false);
     }
 

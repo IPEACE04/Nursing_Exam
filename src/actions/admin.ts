@@ -168,6 +168,69 @@ export async function getAdminExams() {
   }));
 }
 
+export async function getAdminStats() {
+  await requireAdmin();
+  const supabase = createSupabaseServerClient();
+
+  const [{ count: totalUsers }, { count: totalAttempts }, { count: totalExams }] =
+    await Promise.all([
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("exam_attempts").select("*", { count: "exact", head: true }),
+      supabase.from("exams").select("*", { count: "exact", head: true }),
+    ]);
+
+  const { data: attempts } = await supabase
+    .from("exam_attempts")
+    .select("score, total_questions");
+
+  let avgScore = 0;
+  if (attempts && attempts.length > 0) {
+    const totalPct = attempts.reduce(
+      (sum, a) =>
+        sum +
+        (a.total_questions > 0
+          ? (a.score / a.total_questions) * 100
+          : 0),
+      0
+    );
+    avgScore = Math.round(totalPct / attempts.length);
+  }
+
+  const { data: wrongAnswers } = await supabase
+    .from("user_answers")
+    .select("is_correct, questions!inner ( question_text )");
+
+  let itemAnalysis: { question: string; errorRate: number; total: number }[] = [];
+  if (wrongAnswers) {
+    const grouped: Record<string, { question_text: string; wrong: number; total: number }> = {};
+    wrongAnswers.forEach((a) => {
+      const q = a.questions as unknown as { question_text: string };
+      const text = q?.question_text ?? "Unknown";
+      if (!grouped[text]) grouped[text] = { question_text: text, wrong: 0, total: 0 };
+      grouped[text].total++;
+      if (!a.is_correct) grouped[text].wrong++;
+    });
+    itemAnalysis = Object.values(grouped)
+      .map((g) => ({
+        question: g.question_text.length > 40
+          ? g.question_text.slice(0, 40) + "..."
+          : g.question_text,
+        errorRate: Math.round((g.wrong / g.total) * 100),
+        total: g.total,
+      }))
+      .sort((a, b) => b.errorRate - a.errorRate)
+      .slice(0, 10);
+  }
+
+  return {
+    totalUsers: totalUsers ?? 0,
+    totalAttempts: totalAttempts ?? 0,
+    avgScore,
+    totalExams: totalExams ?? 0,
+    itemAnalysis,
+  };
+}
+
 export async function getExamWithQuestions(examId: string) {
   await requireAdmin();
   const supabase = createSupabaseServerClient();

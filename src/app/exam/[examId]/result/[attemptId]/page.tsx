@@ -13,7 +13,7 @@ import {
   Clock,
   Target,
 } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
+import { getExamResult } from "@/actions/exam";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
@@ -81,33 +81,23 @@ export default function ResultPage({
 
   useEffect(() => {
     async function fetchResults() {
-      const supabase = createSupabaseBrowserClient();
+      const data = await getExamResult(attemptId);
 
-      const { data: attempt, error: aErr } = await supabase
-        .from("exam_attempts")
-        .select("*, exams ( title )")
-        .eq("id", attemptId)
-        .single();
-
-      if (aErr || !attempt) {
+      if (!data) {
         router.push("/exam");
         return;
       }
 
-      const a = attempt as AttemptRow;
+      const a = data.attempt as unknown as AttemptRow;
       setExamTitle(a.exams?.title ?? "");
       setScore(a.score);
       setTotal(a.total_questions);
       setTimeSpent(a.time_spent_seconds);
 
-      const { data: answers } = await supabase
-        .from("user_answers")
-        .select("*, questions!inner ( question_text, options, correct_option, explanation_text )")
-        .eq("attempt_id", attemptId);
-
-      if (answers) {
+      const answers = data.answers as unknown as UserAnswerRow[];
+      if (answers.length > 0) {
         setResults(
-          (answers as UserAnswerRow[]).map((a) => ({
+          answers.map((a) => ({
             id: a.id,
             attempt_id: a.attempt_id,
             question_id: a.question_id,

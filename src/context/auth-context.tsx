@@ -20,14 +20,14 @@ interface AuthState {
   user: AuthUser | null;
   profile: Profile | null;
   isLoading: boolean;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: () => Promise<Profile | null>;
 }
 
 const AuthContext = createContext<AuthState>({
   user: null,
   profile: null,
   isLoading: true,
-  refreshProfile: async () => {},
+  refreshProfile: async () => null,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -37,13 +37,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading: true,
   });
 
-  const refreshProfile = useCallback(async () => {
+  const refreshProfile = useCallback(async (): Promise<Profile | null> => {
     const result = await getCurrentProfile();
     setState({
       user: result.user as AuthUser | null,
       profile: result.profile,
       isLoading: false,
     });
+    return result.profile;
   }, []);
 
   useEffect(() => {

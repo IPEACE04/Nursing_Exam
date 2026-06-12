@@ -18,8 +18,8 @@ function LoginForm() {
 
   useEffect(() => {
     if (state?.success) {
-      refreshProfile().then(() => {
-        router.push("/community");
+      refreshProfile().then((profile) => {
+        router.push(profile?.role === "admin" ? "/admin" : "/community");
       });
     }
   }, [state, refreshProfile, router]);

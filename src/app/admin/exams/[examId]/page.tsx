@@ -66,7 +66,7 @@ export default function EditExamPage({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="mx-auto max-w-4xl space-y-6 sm:space-y-8"
     >
       <div>
         <button
@@ -83,7 +83,7 @@ export default function EditExamPage({
         />
       </div>
 
-      <GlassCard>
+      <GlassCard className="p-5 sm:p-6">
         <div className="mb-5 flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-xl bg-primary/8">
             <HelpCircle className="size-5 text-primary" />
@@ -138,7 +138,7 @@ export default function EditExamPage({
         </form>
       </GlassCard>
 
-      <GlassCard>
+      <GlassCard className="p-5 sm:p-6">
         <div className="mb-5 flex items-center justify-between">
           <div>
             <h2 className="font-semibold text-foreground">
@@ -196,7 +196,7 @@ export default function EditExamPage({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="group rounded-xl border border-border/60 bg-card/50 p-4 transition-all hover:border-border/80 hover:shadow-sm"
+                className="group rounded-xl border border-border/60 bg-card p-4 sm:p-5 transition-all hover:border-border/80 hover:shadow-sm"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -279,7 +279,7 @@ function QuestionForm({
   return (
     <form
       action={action}
-      className="rounded-xl border border-accent/20 bg-accent/[0.03] p-5 space-y-4"
+      className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 space-y-5"
     >
       <div className="flex items-center gap-2 mb-3">
         <div className="flex size-7 items-center justify-center rounded-lg bg-accent/15">

@@ -218,7 +218,7 @@ export default function DashboardPage() {
                   แบบประเมินความพึงพอใจ
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  ช่วยประเมินการใช้งาน NurseSim เพื่อให้เราปรับปรุงให้ดีขึ้น
+                  ช่วยประเมินการใช้งาน NurseCise เพื่อให้เราปรับปรุงให้ดีขึ้น
                 </p>
               </div>
             </div>

@@ -16,12 +16,15 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "NurseSim — ฝึกทำข้อสอบสภาการพยาบาล",
+  title: "NurseCise — ฝึกทำข้อสอบสภาการพยาบาล",
   description:
     "แพลตฟอร์มฝึกทำข้อสอบจำลองเตรียมสอบใบประกอบวิชาชีพของสภาการพยาบาล พร้อมระบบจับเวลา เฉลยละเอียด และกราฟวิเคราะห์พัฒนาการ",
-  icons: { icon: "/kk.png" },
+  icons: {
+    icon: "/favicon-rounded.png",
+    apple: "/favicon-rounded.png",
+  },
   openGraph: {
-    title: "NurseSim — ฝึกทำข้อสอบสภาการพยาบาล",
+    title: "NurseCise — ฝึกทำข้อสอบสภาการพยาบาล",
     description:
       "แพลตฟอร์มฝึกทำข้อสอบจำลองเตรียมสอบใบประกอบวิชาชีพของสภาการพยาบาล พร้อมระบบจับเวลา เฉลยละเอียด และกราฟวิเคราะห์พัฒนาการ",
     type: "website",

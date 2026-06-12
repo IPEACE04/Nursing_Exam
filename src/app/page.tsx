@@ -73,9 +73,9 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-card/95 backdrop-blur-xl">
         <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/kk.png" alt="NurseSim" className="size-9 sm:size-10 rounded-xl object-cover" />
+            <img src="/kk.png" alt="NurseCise" className="size-9 sm:size-10 rounded-3xl object-cover" />
             <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
-              NurseSim
+              NurseCise
             </span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
@@ -176,7 +176,7 @@ export default function Home() {
       {/* ── Footer ────────────────────────────────────────────── */}
       <footer className="border-t border-border/40 py-8">
         <p className="text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} NurseSim · Rangsit University
+          © {new Date().getFullYear()} NurseCise · Rangsit University
         </p>
       </footer>
     </div>

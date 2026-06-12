@@ -11,7 +11,7 @@ export async function getCurrentProfile(): Promise<{
   const userId = await getSessionUserId();
   if (!userId) return { user: null, profile: null };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data: profile } = await supabase
     .from("profiles")

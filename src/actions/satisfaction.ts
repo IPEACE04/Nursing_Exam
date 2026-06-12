@@ -9,7 +9,7 @@ import type {
 } from "@/types";
 
 export async function getQuestions() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data } = await supabase
     .from("satisfaction_questions")
@@ -24,7 +24,7 @@ export async function hasSubmitted() {
   const userId = await getSessionUserId();
   if (!userId) return false;
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { count } = await supabase
     .from("satisfaction_responses")
@@ -50,7 +50,7 @@ export async function submitSurvey(formData: FormData) {
     return { error: "ข้อมูลไม่ถูกต้อง" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   // Check already submitted
   const { count: existing } = await supabase
@@ -88,7 +88,7 @@ export async function submitSurvey(formData: FormData) {
 
 // ── Admin Actions ─────────────────────────────────────────────────
 export async function getAdminQuestions() {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data } = await supabase
     .from("satisfaction_questions")
@@ -102,7 +102,7 @@ export async function addQuestion(formData: FormData) {
   const questionText = formData.get("question_text") as string;
   if (!questionText) return { error: "กรุณากรอกคำถาม" };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { count } = await supabase
     .from("satisfaction_questions")
@@ -124,7 +124,7 @@ export async function updateQuestion(id: string, formData: FormData) {
 
   if (!questionText) return { error: "กรุณากรอกคำถาม" };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   await supabase
     .from("satisfaction_questions")
@@ -136,14 +136,14 @@ export async function updateQuestion(id: string, formData: FormData) {
 }
 
 export async function deleteQuestion(id: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   await supabase.from("satisfaction_questions").delete().eq("id", id);
   revalidatePath("/admin/satisfaction");
   return { success: true };
 }
 
 export async function getAnalysis(): Promise<SatisfactionAnalysis> {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { count: totalResponses } = await supabase
     .from("satisfaction_responses")

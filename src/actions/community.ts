@@ -10,7 +10,7 @@ import type {
 } from "@/types";
 
 export async function getPosts(category?: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   let query = supabase
     .from("community_posts")
@@ -72,7 +72,7 @@ export async function getPosts(category?: string) {
 
 export async function getPost(postId: string) {
   const userId = await getSessionUserId();
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data: post } = await supabase
     .from("community_posts")
@@ -137,7 +137,7 @@ export async function createPost(formData: FormData) {
     return { error: "กรุณากรอกหัวข้อและเนื้อหา" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { error } = await supabase.from("community_posts").insert({
     user_id: userId,
@@ -156,7 +156,7 @@ export async function deletePost(postId: string) {
   const userId = await getSessionUserId();
   if (!userId) return { error: "กรุณาเข้าสู่ระบบ" };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { error } = await supabase
     .from("community_posts")
@@ -178,7 +178,7 @@ export async function addComment(postId: string, content: string) {
     return { error: "กรุณาพิมพ์ความคิดเห็น" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { error } = await supabase.from("community_comments").insert({
     post_id: postId,
@@ -193,7 +193,7 @@ export async function addComment(postId: string, content: string) {
 }
 
 export async function getComments(postId: string) {
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data: comments } = await supabase
     .from("community_comments")
@@ -225,7 +225,7 @@ export async function deleteComment(commentId: string) {
   const userId = await getSessionUserId();
   if (!userId) return { error: "กรุณาเข้าสู่ระบบ" };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { error } = await supabase
     .from("community_comments")
@@ -242,7 +242,7 @@ export async function toggleLike(postId: string) {
   const userId = await getSessionUserId();
   if (!userId) return { error: "กรุณาเข้าสู่ระบบ" };
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { count: existingLike } = await supabase
     .from("community_likes")

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { randomUUID } from "crypto";
-import { createSupabaseServerClient, createSupabaseServiceClient } from "@/lib/supabase-server";
+import { createSupabaseServerClient } from "@/lib/supabase-server";
 import {
   hashPassword,
   verifyPassword,
@@ -21,7 +21,7 @@ export async function login(_prevState: unknown, formData: FormData) {
     return { error: "กรุณากรอกอีเมลและรหัสผ่าน" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const { data: user, error } = await supabase
     .from("profiles")
@@ -58,7 +58,7 @@ export async function register(_prevState: unknown, formData: FormData) {
     return { error: "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร" };
   }
 
-  const supabase = createSupabaseServiceClient();
+  const supabase = createSupabaseServerClient();
 
   const { data: existing } = await supabase
     .from("profiles")
@@ -112,7 +112,7 @@ export async function changePassword(formData: FormData) {
     return { error: "รหัสผ่านไม่ตรงกัน" };
   }
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const password_hash = await hashPassword(newPassword);
 
   const { error } = await supabase

@@ -9,7 +9,7 @@ async function requireAdmin() {
   const userId = await getSessionUserId();
   if (!userId) throw new Error("Unauthorized");
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")

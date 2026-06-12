@@ -10,7 +10,7 @@ export async function submitExam(formData: FormData) {
   const userId = await getSessionUserId();
   if (!userId) throw new Error("Unauthorized");
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = createSupabaseServerClient();
 
   const examId = formData.get("examId") as string;
   const answersRaw = formData.get("answers") as string;

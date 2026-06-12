@@ -6,7 +6,6 @@ import { Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { login } from "@/actions/auth";
-import { getCurrentProfile } from "@/actions/profile";
 import { useAuth } from "@/context/auth-context";
 import { FormField } from "@/components/premium/form-field";
 
@@ -19,13 +18,8 @@ function LoginForm() {
 
   useEffect(() => {
     if (state?.success) {
-      refreshProfile().then(async () => {
-        const { profile } = await getCurrentProfile();
-        if (profile?.role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/community");
-        }
+      refreshProfile().then(() => {
+        router.push("/community");
       });
     }
   }, [state, refreshProfile, router]);

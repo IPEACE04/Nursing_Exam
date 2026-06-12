@@ -5,7 +5,6 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
 import type {
   SatisfactionQuestion,
-  SatisfactionResponse,
   SatisfactionAnalysis,
 } from "@/types";
 

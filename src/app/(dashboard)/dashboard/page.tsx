@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
-import type { AttemptWithExam, ExamWithQuestionCount } from "@/types";
+import type { AttemptWithExam } from "@/types";
 import { StatCard } from "@/components/premium/stat-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import {
@@ -39,12 +39,20 @@ function formatDate(dateStr: string) {
   });
 }
 
+interface ExamAttemptRow {
+  id: string;
+  user_id: string;
+  exam_id: string;
+  score: number;
+  total_questions: number;
+  time_spent_seconds: number;
+  completed_at: string;
+  exams: { title: string } | null;
+}
+
 export default function DashboardPage() {
-  const { user, profile, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [attempts, setAttempts] = useState<AttemptWithExam[]>([]);
-  const [recommendedExams, setRecommendedExams] = useState<
-    ExamWithQuestionCount[]
-  >([]);
   const [userRank, setUserRank] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -55,54 +63,31 @@ export default function DashboardPage() {
     async function fetchData() {
       const supabase = createSupabaseBrowserClient();
 
-      const [attemptsRes, examsRes, rankRes] = await Promise.all([
+      const [attemptsRes, rankRes] = await Promise.all([
         supabase
           .from("exam_attempts")
           .select(`*, exams ( title )`)
           .eq("user_id", uid)
           .order("completed_at", { ascending: false }),
-        supabase
-          .from("exams")
-          .select(`*, questions ( id )`)
-          .eq("is_published", true)
-          .order("created_at", { ascending: false })
-          .limit(3),
         supabase.rpc("get_user_rank", { target_user_id: uid }),
       ]);
 
       if (attemptsRes.data) {
         setAttempts(
-          attemptsRes.data.map((a: Record<string, unknown>) => ({
-            id: a.id as string,
-            user_id: a.user_id as string,
-            exam_id: a.exam_id as string,
-            score: a.score as number,
-            total_questions: a.total_questions as number,
-            time_spent_seconds: a.time_spent_seconds as number,
-            completed_at: a.completed_at as string,
-            exam_title: ((a.exams as { title: string })?.title ?? "") as string,
+          (attemptsRes.data as ExamAttemptRow[]).map((a) => ({
+            id: a.id,
+            user_id: a.user_id,
+            exam_id: a.exam_id,
+            score: a.score,
+            total_questions: a.total_questions,
+            time_spent_seconds: a.time_spent_seconds,
+            completed_at: a.completed_at,
+            exam_title: a.exams?.title ?? "",
             percentage:
-              (a.total_questions as number) > 0
-                ? Math.round(
-                    ((a.score as number) / (a.total_questions as number)) * 100
-                  )
+              a.total_questions > 0
+                ? Math.round((a.score / a.total_questions) * 100)
                 : 0,
           }))
-        );
-      }
-
-      if (examsRes.data) {
-        setRecommendedExams(
-          examsRes.data
-            .filter((e) => {
-              const qs = e.questions as unknown as { id: string }[] | null;
-              return (qs?.length ?? 0) > 0;
-            })
-            .map((e) => ({
-              ...e,
-              question_count: (e.questions as unknown as { id: string }[])
-                .length,
-            }))
         );
       }
 

@@ -8,12 +8,16 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { User } from "@supabase/supabase-js";
 import type { Profile } from "@/types";
 import { getCurrentProfile } from "@/actions/profile";
 
+interface AuthUser {
+  id: string;
+  email: string;
+}
+
 interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   profile: Profile | null;
   isLoading: boolean;
   refreshProfile: () => Promise<void>;
@@ -36,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshProfile = useCallback(async () => {
     const result = await getCurrentProfile();
     setState({
-      user: result.user as unknown as User | null,
+      user: result.user as AuthUser | null,
       profile: result.profile,
       isLoading: false,
     });
@@ -49,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const result = await getCurrentProfile();
       if (!cancelled) {
         setState({
-          user: result.user as unknown as User | null,
+          user: result.user as AuthUser | null,
           profile: result.profile,
           isLoading: false,
         });

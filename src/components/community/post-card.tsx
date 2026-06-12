@@ -14,12 +14,6 @@ function formatDate(dateStr: string) {
   });
 }
 
-const categoryColors: Record<string, string> = {
-  เทคนิค: "bg-emerald-500/10 text-emerald-600",
-  "แชร์ความรู้": "bg-primary/10 text-primary",
-  "ถาม-ตอบ": "bg-amber-500/10 text-amber-600",
-};
-
 export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
   return (
     <Link href={`/community/${post.id}`}>

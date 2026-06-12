@@ -57,8 +57,20 @@ export default function PostDetailPage({
   }, [postId]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true);
+    Promise.all([getPost(postId), getComments(postId)])
+      .then(([postData, commentsData]) => {
+        if (!cancelled) {
+          setPost(postData);
+          setComments(commentsData);
+        }
+      })
+      .catch(() => { if (!cancelled) { setPost(null); setComments([]); } })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [postId]);
 
   async function handleDelete() {
     if (!confirm("ต้องการลบโพสต์นี้?")) return;

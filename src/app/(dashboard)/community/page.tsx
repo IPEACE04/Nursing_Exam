@@ -29,8 +29,15 @@ export default function CommunityPage() {
   }, [activeCategory]);
 
   useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setLoading(true);
+    getPosts(activeCategory)
+      .then((data) => { if (!cancelled) setPosts(data); })
+      .catch(() => { if (!cancelled) setPosts([]); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [activeCategory]);
 
   function handlePostCreated() {
     setShowCreateForm(false);

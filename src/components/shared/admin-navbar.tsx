@@ -1,10 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { logout } from "@/actions/auth";
-import { LogOut, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +13,6 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function AdminNavbar() {
-  const router = useRouter();
   const { profile } = useAuth();
   const initials = profile?.name
     ? profile.name.charAt(0).toUpperCase()
@@ -25,7 +22,7 @@ export function AdminNavbar() {
     <header className="sticky top-0 z-40 border-b border-border/40 bg-card/80 backdrop-blur-xl">
       <div className="flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <img src="/kk.png" alt="NurseUp" className="size-10 rounded-3xl object-cover" />
+          <div className="size-10 rounded-3xl bg-primary/10" />
           <div>
             <span className="text-lg font-semibold tracking-tight text-foreground">
               Admin Panel

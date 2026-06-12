@@ -29,34 +29,43 @@ export async function getPosts(category?: string) {
   const { data: posts } = await query;
   if (!posts) return [];
 
-  const postsWithCounts: CommunityPostWithAuthor[] = await Promise.all(
-    posts.map(async (post) => {
-      const [{ count: likeCount }, { count: commentCount }] = await Promise.all([
-        supabase
-          .from("community_likes")
-          .select("*", { count: "exact", head: true })
-          .eq("post_id", post.id),
-        supabase
-          .from("community_comments")
-          .select("*", { count: "exact", head: true })
-          .eq("post_id", post.id),
-      ]);
+  const postIds = posts.map((p) => p.id);
 
-      const author = post.profiles as unknown as { name: string } | null;
+  const [{ data: likes }, { data: comments }] = await Promise.all([
+    supabase
+      .from("community_likes")
+      .select("post_id")
+      .in("post_id", postIds),
+    supabase
+      .from("community_comments")
+      .select("post_id")
+      .in("post_id", postIds),
+  ]);
 
-      return {
-        id: post.id,
-        user_id: post.user_id,
-        title: post.title,
-        content: post.content,
-        category: post.category,
-        created_at: post.created_at,
-        author_name: author?.name ?? "ไม่ระบุ",
-        like_count: likeCount ?? 0,
-        comment_count: commentCount ?? 0,
-      };
-    })
-  );
+  const likeCounts: Record<string, number> = {};
+  const commentCounts: Record<string, number> = {};
+
+  (likes ?? []).forEach((l) => {
+    likeCounts[l.post_id] = (likeCounts[l.post_id] ?? 0) + 1;
+  });
+  (comments ?? []).forEach((c) => {
+    commentCounts[c.post_id] = (commentCounts[c.post_id] ?? 0) + 1;
+  });
+
+  const postsWithCounts: CommunityPostWithAuthor[] = posts.map((post) => {
+    const author = post.profiles as unknown as { name: string } | null;
+    return {
+      id: post.id,
+      user_id: post.user_id,
+      title: post.title,
+      content: post.content,
+      category: post.category,
+      created_at: post.created_at,
+      author_name: author?.name ?? "ไม่ระบุ",
+      like_count: likeCounts[post.id] ?? 0,
+      comment_count: commentCounts[post.id] ?? 0,
+    };
+  });
 
   return postsWithCounts;
 }

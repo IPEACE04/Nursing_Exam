@@ -73,7 +73,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-card/95 backdrop-blur-xl">
         <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/kk.png" alt="NurseUp" className="size-9 sm:size-10 rounded-3xl object-cover" />
+            <div className="size-9 sm:size-10 rounded-3xl bg-primary/10" />
             <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
               NurseUp
             </span>

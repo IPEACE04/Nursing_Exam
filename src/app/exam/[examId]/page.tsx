@@ -119,6 +119,7 @@ export default function ExamPage({
       hasAutoSubmitted.current = true;
       handleSubmit();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timer.isExpired, started]);
 
   async function handleSubmit() {

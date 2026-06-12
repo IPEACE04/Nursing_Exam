@@ -7,7 +7,6 @@ import { Mail, Lock, User } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { register } from "@/actions/auth";
-import { getCurrentProfile } from "@/actions/profile";
 import { useAuth } from "@/context/auth-context";
 import { FormField } from "@/components/premium/form-field";
 
@@ -18,13 +17,8 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (state?.success) {
-      refreshProfile().then(async () => {
-        const { profile } = await getCurrentProfile();
-        if (profile?.role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/community");
-        }
+      refreshProfile().then(() => {
+        router.push("/community");
       });
     }
   }, [state, refreshProfile, router]);

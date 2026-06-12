@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
 
+const SUBMIT_COOLDOWN_MS = 30_000;
+
 export async function submitExam(formData: FormData) {
   const userId = await getSessionUserId();
   if (!userId) throw new Error("Unauthorized");
@@ -15,6 +17,18 @@ export async function submitExam(formData: FormData) {
   const timeSpentRaw = formData.get("timeSpentSeconds") as string;
 
   if (!examId || !answersRaw) throw new Error("Missing data");
+
+  const { data: recentAttempt } = await supabase
+    .from("exam_attempts")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("exam_id", examId)
+    .gte("completed_at", new Date(Date.now() - SUBMIT_COOLDOWN_MS).toISOString())
+    .maybeSingle();
+
+  if (recentAttempt) {
+    redirect(`/exam/${examId}/result/${recentAttempt.id}`);
+  }
 
   let answers: Record<string, string>;
   try {

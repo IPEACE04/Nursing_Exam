@@ -12,7 +12,6 @@ import {
   Pencil,
   Trash2,
   GraduationCap,
-  Search,
 } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { togglePublish, deleteExam, createExam } from "@/actions/admin";
@@ -28,18 +27,28 @@ const container = {
   },
 };
 
+interface ExamRow {
+  id: string;
+  title: string;
+  description: string | null;
+  time_limit_minutes: number;
+  is_published: boolean;
+  created_at: string;
+  questions: { id: string }[] | null;
+}
+
+interface ExamWithCount {
+  id: string;
+  title: string;
+  description: string | null;
+  time_limit_minutes: number;
+  is_published: boolean;
+  question_count: number;
+  created_at: string;
+}
+
 export default function AdminExamsPage() {
-  const [exams, setExams] = useState<
-    {
-      id: string;
-      title: string;
-      description: string | null;
-      time_limit_minutes: number;
-      is_published: boolean;
-      question_count: number;
-      created_at: string;
-    }[]
-  >([]);
+  const [exams, setExams] = useState<ExamWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState("");
@@ -58,14 +67,14 @@ export default function AdminExamsPage() {
 
       if (data) {
         setExams(
-          data.map((e: Record<string, unknown>) => ({
-            id: e.id as string,
-            title: e.title as string,
-            description: e.description as string | null,
-            time_limit_minutes: e.time_limit_minutes as number,
-            is_published: e.is_published as boolean,
-            question_count: ((e.questions as { id: string }[]) || []).length,
-            created_at: e.created_at as string,
+          (data as ExamRow[]).map((e) => ({
+            id: e.id,
+            title: e.title,
+            description: e.description,
+            time_limit_minutes: e.time_limit_minutes,
+            is_published: e.is_published,
+            question_count: e.questions?.length ?? 0,
+            created_at: e.created_at,
           }))
         );
       }

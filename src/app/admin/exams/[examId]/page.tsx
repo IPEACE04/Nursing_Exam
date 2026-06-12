@@ -22,15 +22,7 @@ import {
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
-
-interface Question {
-  id: string;
-  question_text: string;
-  options: Record<string, string>;
-  correct_option: string;
-  explanation_text: string | null;
-  sort_order: number;
-}
+import type { Question } from "@/types";
 
 export default function EditExamPage({
   params,

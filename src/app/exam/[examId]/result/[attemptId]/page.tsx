@@ -38,6 +38,32 @@ function formatTime(seconds: number) {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+interface AttemptRow {
+  id: string;
+  user_id: string;
+  exam_id: string;
+  score: number;
+  total_questions: number;
+  time_spent_seconds: number;
+  completed_at: string;
+  exams: { title: string } | null;
+}
+
+interface UserAnswerRow {
+  id: string;
+  attempt_id: string;
+  question_id: string;
+  selected_option: string | null;
+  is_correct: boolean;
+  answered_at: string;
+  questions: {
+    question_text: string;
+    options: Record<string, string>;
+    correct_option: string;
+    explanation_text: string | null;
+  };
+}
+
 export default function ResultPage({
   params,
 }: {
@@ -68,11 +94,11 @@ export default function ResultPage({
         return;
       }
 
-      const examData = attempt.exams as unknown as { title: string };
-      setExamTitle(examData?.title ?? "");
-      setScore(attempt.score);
-      setTotal(attempt.total_questions);
-      setTimeSpent(attempt.time_spent_seconds);
+      const a = attempt as AttemptRow;
+      setExamTitle(a.exams?.title ?? "");
+      setScore(a.score);
+      setTotal(a.total_questions);
+      setTimeSpent(a.time_spent_seconds);
 
       const { data: answers } = await supabase
         .from("user_answers")
@@ -81,26 +107,18 @@ export default function ResultPage({
 
       if (answers) {
         setResults(
-          answers.map((a) => {
-            const q = a.questions as unknown as {
-              question_text: string;
-              options: Record<string, string>;
-              correct_option: string;
-              explanation_text: string | null;
-            };
-            return {
-              id: a.id,
-              attempt_id: a.attempt_id,
-              question_id: a.question_id,
-              selected_option: a.selected_option,
-              is_correct: a.is_correct,
-              answered_at: a.answered_at,
-              question_text: q.question_text,
-              options: q.options,
-              correct_option: q.correct_option,
-              explanation_text: q.explanation_text,
-            };
-          })
+          (answers as UserAnswerRow[]).map((a) => ({
+            id: a.id,
+            attempt_id: a.attempt_id,
+            question_id: a.question_id,
+            selected_option: a.selected_option,
+            is_correct: a.is_correct,
+            answered_at: a.answered_at,
+            question_text: a.questions.question_text,
+            options: a.questions.options,
+            correct_option: a.questions.correct_option,
+            explanation_text: a.questions.explanation_text,
+          }))
         );
       }
 

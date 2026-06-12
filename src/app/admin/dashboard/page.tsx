@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Users, ClipboardList, BarChart3, AlertTriangle, BookOpen, Shield } from "lucide-react";
+import { Users, ClipboardList, BarChart3, AlertTriangle, BookOpen } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import {
   ChartContainer,

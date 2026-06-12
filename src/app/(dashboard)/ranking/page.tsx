@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Medal, Award, Crown, Star } from "lucide-react";
+import { Medal, Award, Crown } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
 import type { LeaderboardEntry } from "@/types";

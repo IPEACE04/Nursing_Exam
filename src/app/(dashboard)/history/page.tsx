@@ -32,6 +32,17 @@ function formatShortDate(dateStr: string) {
   });
 }
 
+interface ExamAttemptRow {
+  id: string;
+  user_id: string;
+  exam_id: string;
+  score: number;
+  total_questions: number;
+  time_spent_seconds: number;
+  completed_at: string;
+  exams: { title: string } | null;
+}
+
 export default function HistoryPage() {
   const { user } = useAuth();
   const [attempts, setAttempts] = useState<AttemptWithExam[]>([]);
@@ -52,20 +63,18 @@ export default function HistoryPage() {
 
       if (data) {
         setAttempts(
-          data.map((a: Record<string, unknown>) => ({
-            id: a.id as string,
-            user_id: a.user_id as string,
-            exam_id: a.exam_id as string,
-            score: a.score as number,
-            total_questions: a.total_questions as number,
-            time_spent_seconds: a.time_spent_seconds as number,
-            completed_at: a.completed_at as string,
-            exam_title: ((a.exams as { title: string })?.title ?? "") as string,
+          (data as ExamAttemptRow[]).map((a) => ({
+            id: a.id,
+            user_id: a.user_id,
+            exam_id: a.exam_id,
+            score: a.score,
+            total_questions: a.total_questions,
+            time_spent_seconds: a.time_spent_seconds,
+            completed_at: a.completed_at,
+            exam_title: a.exams?.title ?? "",
             percentage:
-              (a.total_questions as number) > 0
-                ? Math.round(
-                    ((a.score as number) / (a.total_questions as number)) * 100
-                  )
+              a.total_questions > 0
+                ? Math.round((a.score / a.total_questions) * 100)
                 : 0,
           }))
         );
@@ -207,13 +216,6 @@ export default function HistoryPage() {
           </GlassCard>
         ) : (
           attempts.map((attempt, i) => {
-            const scoreColor =
-              attempt.percentage >= 80
-                ? "text-emerald-500"
-                : attempt.percentage >= 50
-                  ? "text-amber-500"
-                  : "text-destructive";
-
             return (
               <Link
                 key={attempt.id}

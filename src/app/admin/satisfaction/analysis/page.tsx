@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { BarChart3, FileText, Star, MessageSquare } from "lucide-react";
 import { getAnalysis } from "@/actions/satisfaction";
 import type { SatisfactionAnalysis } from "@/types";

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { Plus, Trash2, BarChart3 } from "lucide-react";
 import { getAdminQuestions, addQuestion, deleteQuestion, updateQuestion } from "@/actions/satisfaction";
@@ -24,7 +23,12 @@ export default function AdminSatisfactionPage() {
   }
 
   useEffect(() => {
-    fetchData();
+    let cancelled = false;
+     
+    getAdminQuestions()
+      .then((data) => { if (!cancelled) setQuestions(data); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   async function handleAdd() {

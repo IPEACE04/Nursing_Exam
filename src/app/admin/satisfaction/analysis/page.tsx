@@ -51,7 +51,7 @@ export default function AnalysisPage() {
         .feedback { background: #f9f9f9; padding: 15px; margin: 10px 0; border-radius: 8px; }
         .feedback-meta { font-size: 12px; color: #999; margin-bottom: 5px; }
       </style></head><body>
-        <h1>NurseCise — รายงานความพึงพอใจ</h1>
+        <h1>NurseUp — รายงานความพึงพอใจ</h1>
         <p class="subtitle">ผู้ตอบทั้งหมด ${analysis.total_responses} คน</p>
         <h2>คะแนนเฉลี่ยรายข้อ</h2>
         <table>

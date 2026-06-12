@@ -103,7 +103,7 @@ export default function SatisfactionPage() {
       <PageHeader
         badge="Survey"
         title="แบบประเมินความพึงพอใจ"
-        description="ประเมินการใช้งานเว็บไซต์ NurseCise (ทำได้ 1 ครั้ง)"
+        description="ประเมินการใช้งานเว็บไซต์ NurseUp (ทำได้ 1 ครั้ง)"
       />
 
       {questions.length === 0 ? (

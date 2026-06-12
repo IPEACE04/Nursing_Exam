@@ -29,9 +29,9 @@ export function Navbar() {
     <div className="sticky top-0 z-40 mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-8 pt-3">
       <header className="flex h-14 sm:h-16 items-center justify-between rounded-2xl border border-border/50 bg-card px-4 sm:px-5 shadow-sm">
         <Link href="/community" className="flex items-center gap-2.5 shrink-0">
-          <img src="/kk.png" alt="NurseCise" className="size-9 rounded-3xl object-cover" />
+          <img src="/kk.png" alt="NurseUp" className="size-9 rounded-3xl object-cover" />
           <span className="text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap">
-            NurseCise
+            NurseUp
           </span>
         </Link>
 

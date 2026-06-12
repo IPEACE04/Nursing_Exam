@@ -16,7 +16,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "NurseCise — ฝึกทำข้อสอบสภาการพยาบาล",
+  title: "NurseUp — ฝึกทำข้อสอบสภาการพยาบาล",
   description:
     "แพลตฟอร์มฝึกทำข้อสอบจำลองเตรียมสอบใบประกอบวิชาชีพของสภาการพยาบาล พร้อมระบบจับเวลา เฉลยละเอียด และกราฟวิเคราะห์พัฒนาการ",
   icons: {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     apple: "/favicon-rounded.png",
   },
   openGraph: {
-    title: "NurseCise — ฝึกทำข้อสอบสภาการพยาบาล",
+    title: "NurseUp — ฝึกทำข้อสอบสภาการพยาบาล",
     description:
       "แพลตฟอร์มฝึกทำข้อสอบจำลองเตรียมสอบใบประกอบวิชาชีพของสภาการพยาบาล พร้อมระบบจับเวลา เฉลยละเอียด และกราฟวิเคราะห์พัฒนาการ",
     type: "website",

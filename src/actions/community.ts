@@ -27,18 +27,20 @@ export async function getPosts(category?: string) {
   }
 
   const { data: posts } = await query;
-
   if (!posts) return [];
 
   const postsWithCounts: CommunityPostWithAuthor[] = await Promise.all(
     posts.map(async (post) => {
-      const [likeResult, commentResult] = await Promise.all([
-        supabase.rpc("get_like_count", { p_post_id: post.id }),
-        supabase.rpc("get_comment_count", { p_post_id: post.id }),
+      const [{ count: likeCount }, { count: commentCount }] = await Promise.all([
+        supabase
+          .from("community_likes")
+          .select("*", { count: "exact", head: true })
+          .eq("post_id", post.id),
+        supabase
+          .from("community_comments")
+          .select("*", { count: "exact", head: true })
+          .eq("post_id", post.id),
       ]);
-
-      const likeCount = (likeResult.data as number) ?? 0;
-      const commentCount = (commentResult.data as number) ?? 0;
 
       const author = post.profiles as unknown as { name: string } | null;
 
@@ -76,17 +78,27 @@ export async function getPost(postId: string) {
 
   if (!post) return null;
 
-  const [likeResult, commentResult, likedResult] =
-    await Promise.all([
-      supabase.rpc("get_like_count", { p_post_id: postId }),
-      supabase.rpc("get_comment_count", { p_post_id: postId }),
-      userId
-        ? supabase.rpc("has_liked", { p_post_id: postId })
-        : Promise.resolve({ data: false }),
-    ]);
-
-  const likeCount = (likeResult.data as number) ?? 0;
-  const commentCount = (commentResult.data as number) ?? 0;
+  const [
+    { count: likeCount },
+    { count: commentCount },
+    { count: likedCount },
+  ] = await Promise.all([
+    supabase
+      .from("community_likes")
+      .select("*", { count: "exact", head: true })
+      .eq("post_id", postId),
+    supabase
+      .from("community_comments")
+      .select("*", { count: "exact", head: true })
+      .eq("post_id", postId),
+    userId
+      ? supabase
+          .from("community_likes")
+          .select("*", { count: "exact", head: true })
+          .eq("post_id", postId)
+          .eq("user_id", userId)
+      : Promise.resolve({ count: 0 }),
+  ]);
 
   const author = post.profiles as unknown as { name: string } | null;
 
@@ -100,7 +112,7 @@ export async function getPost(postId: string) {
     author_name: author?.name ?? "ไม่ระบุ",
     like_count: likeCount ?? 0,
     comment_count: commentCount ?? 0,
-    has_liked: likedResult?.data ?? false,
+    has_liked: (likedCount ?? 0) > 0,
   } satisfies CommunityPostDetail;
 }
 
@@ -223,12 +235,30 @@ export async function toggleLike(postId: string) {
 
   const supabase = await createSupabaseServerClient();
 
-  const { data, error } = await supabase.rpc("toggle_like", {
-    p_post_id: postId,
+  const { count: existingLike } = await supabase
+    .from("community_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", postId)
+    .eq("user_id", userId);
+
+  if ((existingLike ?? 0) > 0) {
+    await supabase
+      .from("community_likes")
+      .delete()
+      .eq("post_id", postId)
+      .eq("user_id", userId);
+
+    revalidatePath(`/community/${postId}`);
+    return { liked: false };
+  }
+
+  const { error } = await supabase.from("community_likes").insert({
+    post_id: postId,
+    user_id: userId,
   });
 
   if (error) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
 
   revalidatePath(`/community/${postId}`);
-  return { liked: data as boolean };
+  return { liked: true };
 }

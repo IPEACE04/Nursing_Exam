@@ -205,7 +205,7 @@ export default function DashboardPage() {
       {/* Satisfaction Survey */}
       <Link href="/satisfaction">
         <motion.div
-          className="rounded-xl border border-primary/20 bg-primary/5 p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:bg-primary/10"
+          className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-all hover:shadow-md"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -221,7 +221,7 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
-            <ArrowRight className="size-5 text-primary shrink-0" />
+            <ArrowRight className="size-5 text-muted-foreground shrink-0" />
           </div>
         </motion.div>
       </Link>

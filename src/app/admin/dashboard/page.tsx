@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-8"
+      className="space-y-6 sm:space-y-8"
     >
       <PageHeader
         title="Admin Dashboard"

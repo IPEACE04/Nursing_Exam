@@ -305,9 +305,9 @@ export default function DashboardPage() {
           <Link href="/history" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>
         </div>
         
-        <div className="space-y-2">
+        <div className="space-y-3 sm:space-y-4">
           {attempts.length === 0 ? (
-            <div className="flex h-24 items-center justify-center border-t border-border/40 mt-4">
+            <div className="flex h-24 items-center justify-center">
               <p className="text-sm text-muted-foreground text-center">
                 ยังไม่มีประวัติ — เริ่มทำข้อสอบชุดแรกของคุณ
               </p>

@@ -62,7 +62,7 @@ export default function AdminSatisfactionPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         badge="Admin"
         title="จัดการแบบประเมิน"
@@ -102,7 +102,7 @@ export default function AdminSatisfactionPage() {
           <p className="text-muted-foreground">ยังไม่มีคำถาม</p>
         </GlassCard>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {questions.map((q) => (
             <GlassCard key={q.id} className="p-4 sm:p-5">
               <div className="flex items-center gap-3">

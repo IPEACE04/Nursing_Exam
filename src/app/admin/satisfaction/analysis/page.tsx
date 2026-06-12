@@ -111,7 +111,7 @@ export default function AnalysisPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         badge="Analysis"
         title="ผลวิเคราะห์ความพึงพอใจ"
@@ -124,7 +124,7 @@ export default function AnalysisPage() {
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
         <GlassCard className="p-5 sm:p-6 text-center">
           <BarChart3 className="mx-auto size-8 text-primary mb-2" />
           <p className="text-3xl font-bold text-foreground">{analysis.total_responses}</p>

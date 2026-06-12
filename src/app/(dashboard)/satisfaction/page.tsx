@@ -79,7 +79,7 @@ export default function SatisfactionPage() {
 
   if (alreadySubmitted || submitted) {
     return (
-      <div className="mx-auto max-w-lg text-center py-16">
+      <div className="mx-auto max-w-lg text-center py-10 sm:py-16">
         <CheckCircle className="mx-auto size-16 text-emerald-500 mb-4" />
         <h1 className="text-2xl font-bold text-foreground mb-2">
           ขอบคุณสำหรับการประเมิน
@@ -98,7 +98,7 @@ export default function SatisfactionPage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-2xl space-y-6"
+      className="mx-auto max-w-2xl space-y-6 sm:space-y-8"
     >
       <PageHeader
         badge="Survey"
@@ -111,7 +111,7 @@ export default function SatisfactionPage() {
           <p className="text-muted-foreground">ยังไม่มีคำถามในขณะนี้</p>
         </GlassCard>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {questions.map((q, i) => (
             <GlassCard key={q.id} className="p-5 sm:p-6">
               <p className="text-base font-medium text-foreground mb-4">

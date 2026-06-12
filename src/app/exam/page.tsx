@@ -65,7 +65,7 @@ export default function ExamListPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 px-5 py-6 sm:py-8 sm:px-6">
+    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
       <PageHeader
         badge="Exam Library"
         title="คลังข้อสอบ"

@@ -121,7 +121,7 @@ export default function ProfilePage() {
       />
 
       <GlassCard className="p-5 sm:p-8">
-        <div className="mb-8 flex items-center gap-4 sm:gap-6">
+        <div className="mb-6 flex items-center gap-4 sm:gap-6">
           <div className="relative shrink-0 group">
             <input
               ref={fileInputRef}

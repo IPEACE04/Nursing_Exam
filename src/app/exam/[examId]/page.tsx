@@ -125,11 +125,7 @@ export default function ExamPage({
     localStorage.removeItem(storageKey);
     timer.clearTimer();
 
-    try {
-      await submitExam(formData);
-    } catch {
-      router.push("/exam");
-    }
+    await submitExam(formData);
   }
 
   function handleStart() {

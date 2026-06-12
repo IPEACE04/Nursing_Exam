@@ -40,7 +40,7 @@ export async function uploadAvatar(formData: FormData) {
   const mime = file.type || "image/png";
   const dataUrl = `data:${mime};base64,${base64}`;
 
-  if (dataUrl.length > 500000) return { error: "รูปใหญ่เกินไป กรุณาใช้รูปไม่เกิน 500KB" };
+  if (dataUrl.length > 3000000) return { error: "รูปใหญ่เกินไป กรุณาใช้รูปไม่เกิน 2MB" };
 
   const supabase = createSupabaseServerClient();
 

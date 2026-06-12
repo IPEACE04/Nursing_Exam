@@ -35,30 +35,24 @@ export async function uploadAvatar(formData: FormData) {
   const file = formData.get("file") as File;
   if (!file) return { error: "กรุณาเลือกรูปภาพ" };
 
+  const bytes = await file.arrayBuffer();
+  const base64 = Buffer.from(bytes).toString("base64");
+  const mime = file.type || "image/png";
+  const dataUrl = `data:${mime};base64,${base64}`;
+
+  if (dataUrl.length > 500000) return { error: "รูปใหญ่เกินไป กรุณาใช้รูปไม่เกิน 500KB" };
+
   const supabase = createSupabaseServerClient();
 
-  const filePath = `${userId}/${Date.now()}-${file.name}`;
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, { upsert: true });
-
-  if (uploadError) return { error: `อัพโหลดไม่สำเร็จ: ${uploadError.message}` };
-
-  const { data: urlData } = supabase.storage
-    .from("avatars")
-    .getPublicUrl(filePath);
-
-  const avatarUrl = urlData.publicUrl;
-
-  const { error: updateError } = await supabase
+  const { error } = await supabase
     .from("profiles")
-    .update({ avatar_url: avatarUrl })
+    .update({ avatar_url: dataUrl })
     .eq("id", userId);
 
-  if (updateError) return { error: "บันทึกไม่สำเร็จ" };
+  if (error) return { error: "บันทึกไม่สำเร็จ" };
 
   revalidatePath("/profile");
-  return { success: true, url: avatarUrl };
+  return { success: true, url: dataUrl };
 }
 
 export async function updateProfile(formData: FormData) {

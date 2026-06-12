@@ -109,3 +109,41 @@ export interface CommunityPostDetail extends CommunityPostWithAuthor {
 export interface CommunityCommentWithAuthor extends CommunityComment {
   author_name: string;
 }
+
+// ── Satisfaction Survey ──────────────────────────────────────────
+export interface SatisfactionQuestion {
+  id: string;
+  question_text: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface SatisfactionScore {
+  question_id: string;
+  question_text: string;
+  score: number;
+}
+
+export interface SatisfactionResponse {
+  id: string;
+  user_id: string;
+  feedback: string | null;
+  created_at: string;
+  scores: SatisfactionScore[];
+}
+
+export interface SatisfactionAnalysis {
+  total_responses: number;
+  average_per_question: {
+    question_id: string;
+    question_text: string;
+    avg_score: number;
+    total_scores: number;
+  }[];
+  feedbacks: {
+    user_name: string;
+    feedback: string;
+    created_at: string;
+  }[];
+}

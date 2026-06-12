@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ClipboardList, Shield } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin/dashboard", label: "แดชบอร์ด", icon: LayoutDashboard },
   { href: "/admin/exams", label: "จัดการข้อสอบ", icon: ClipboardList },
+  { href: "/admin/satisfaction", label: "แบบประเมิน", icon: Smile },
 ];
 
 export function AdminSidebar() {

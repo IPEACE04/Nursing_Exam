@@ -9,6 +9,7 @@ import {
   Flame,
   TrendingUp,
   ArrowRight,
+  ClipboardCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase-client";
@@ -200,6 +201,30 @@ export default function DashboardPage() {
           accent="primary"
         />
       </div>
+
+      {/* Satisfaction Survey */}
+      <Link href="/satisfaction">
+        <motion.div
+          className="rounded-xl border border-primary/20 bg-primary/5 p-5 sm:p-6 shadow-sm transition-all hover:shadow-md hover:bg-primary/10"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-primary/10">
+                <ClipboardCheck className="size-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-base sm:text-lg font-bold text-foreground">
+                  แบบประเมินความพึงพอใจ
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  ช่วยประเมินการใช้งาน NurseSim เพื่อให้เราปรับปรุงให้ดีขึ้น
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="size-5 text-primary shrink-0" />
+          </div>
+        </motion.div>
+      </Link>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">

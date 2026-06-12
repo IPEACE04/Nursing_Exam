@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     icon: "/favicon-rounded.png",
     apple: "/favicon-rounded.png",
   },
+  icons: { icon: "/kk.png" },
   openGraph: {
     title: "NurseUp — ฝึกทำข้อสอบสภาการพยาบาล",
     description:

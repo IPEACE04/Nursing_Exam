@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { AdminNavbar } from "@/components/shared/admin-navbar";
 import { AdminSidebar } from "@/components/shared/admin-sidebar";
+import { AdminMobileNav } from "@/components/shared/admin-mobile-nav";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 
 export default function AdminLayout({
@@ -41,10 +42,11 @@ export default function AdminLayout({
       <AdminNavbar />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
           <div className="mx-auto max-w-6xl p-5 sm:p-6 md:p-8">{children}</div>
         </main>
       </div>
+      <AdminMobileNav />
     </div>
   );
 }

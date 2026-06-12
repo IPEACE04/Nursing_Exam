@@ -256,7 +256,7 @@ export default function ExamPage({
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-4 sm:gap-6 pt-4 px-3 sm:px-4 md:px-6">
+      <div className="mx-auto flex max-w-6xl gap-4 sm:gap-6 pt-4 pb-20 lg:pb-6 px-3 sm:px-4 md:px-6">
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -266,20 +266,20 @@ export default function ExamPage({
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="rounded-2xl border border-border/60 bg-card/80 p-5 sm:p-8 shadow-sm backdrop-blur-sm">
+              <div className="rounded-2xl border border-border/60 bg-card/80 p-4 sm:p-8 shadow-sm backdrop-blur-sm">
                 <div className="mb-2 flex items-center justify-between">
-                  <p className="text-sm font-medium text-muted-foreground">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                     ข้อ {currentIndex + 1} จาก {questions.length}
                   </p>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-xs sm:text-sm text-muted-foreground">
                     ตอบแล้ว {answeredCount} ข้อ
                   </span>
                 </div>
-                <h2 className="mt-4 text-lg sm:text-xl leading-relaxed text-foreground">
+                <h2 className="mt-4 text-base sm:text-xl leading-relaxed text-foreground">
                   {currentQuestion?.question_text}
                 </h2>
 
-                <div className="mt-6 space-y-3 sm:space-y-4">
+                <div className="mt-4 sm:mt-6 space-y-2.5 sm:space-y-4">
                   {currentQuestion &&
                     Object.entries(
                       currentQuestion.options as Record<string, string>
@@ -292,14 +292,14 @@ export default function ExamPage({
                           onClick={() =>
                             selectAnswer(currentQuestion.id, key)
                           }
-                          className={`flex w-full items-start gap-4 rounded-xl border p-4 sm:p-5 text-left text-base transition-all ${
+                          className={`flex w-full items-start gap-3 sm:gap-4 rounded-xl border p-3 sm:p-5 text-left text-sm sm:text-base transition-all ${
                             isSelected
                               ? "border-primary bg-primary/5 ring-1 ring-primary/20"
                               : "border-border bg-card/50 hover:border-primary/20 hover:bg-muted/50"
                           }`}
                         >
                           <span
-                            className={`flex size-9 sm:size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
+                            className={`flex size-8 sm:size-10 shrink-0 items-center justify-center rounded-xl text-xs sm:text-sm font-bold ${
                               isSelected
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-muted text-muted-foreground"
@@ -318,31 +318,31 @@ export default function ExamPage({
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-4 sm:mt-5 flex items-center justify-between gap-3">
+          <div className="mt-4 sm:mt-6 flex items-center justify-between gap-2 sm:gap-3">
             <button
               onClick={() => goTo(currentIndex - 1)}
               disabled={currentIndex === 0}
-              className="btn-premium-outline px-5 py-2.5 disabled:opacity-30"
+              className="btn-premium-outline px-3 sm:px-5 py-2 sm:py-2.5 text-sm disabled:opacity-30"
             >
-              <ChevronLeft className="size-5" />
+              <ChevronLeft className="size-4 sm:size-5" />
               ก่อนหน้า
             </button>
 
             {currentIndex < questions.length - 1 ? (
               <button
                 onClick={() => goTo(currentIndex + 1)}
-                className="btn-premium px-5 py-2.5"
+                className="btn-premium px-3 sm:px-5 py-2 sm:py-2.5 text-sm"
               >
                 ถัดไป
-                <ChevronRight className="size-5" />
+                <ChevronRight className="size-4 sm:size-5" />
               </button>
             ) : (
               <button
                 onClick={() => setShowConfirm(true)}
                 disabled={submitting}
-                className="btn-success px-6 py-2.5"
+                className="btn-success px-4 sm:px-6 py-2 sm:py-2.5 text-sm"
               >
-                <Send className="size-5" />
+                <Send className="size-4 sm:size-5" />
                 ส่งกระดาษคำตอบ
               </button>
             )}

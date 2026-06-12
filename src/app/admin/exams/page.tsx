@@ -53,7 +53,7 @@ export default function AdminExamsPage() {
   async function handleTogglePublish(id: string, current: boolean) {
     const fd = new FormData();
     fd.set("id", id);
-    fd.set("is_published", String(!current));
+    fd.set("is_published", String(current));
     await togglePublish(fd);
     setExams((prev) =>
       prev.map((e) => (e.id === id ? { ...e, is_published: !current } : e))

@@ -3,9 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { User, Mail, Building, Save, Lock, KeyRound, Shield, Camera } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
 import { useAuth } from "@/context/auth-context";
 import { changePassword } from "@/actions/auth";
+import { uploadAvatar, updateProfile } from "@/actions/profile";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { FormField } from "@/components/premium/form-field";
@@ -39,12 +39,11 @@ export default function ProfilePage() {
     if (!user) return;
     setSaving(true);
 
-    const supabase = createSupabaseBrowserClient();
-    await supabase
-      .from("profiles")
-      .update({ name, university })
-      .eq("id", user.id);
+    const formData = new FormData();
+    formData.set("name", name);
+    formData.set("university", university);
 
+    await updateProfile(formData);
     await refreshProfile();
     setSaving(false);
     setSaved(true);
@@ -56,30 +55,15 @@ export default function ProfilePage() {
     if (!file || !user) return;
 
     setUploading(true);
-    const supabase = createSupabaseBrowserClient();
+    const formData = new FormData();
+    formData.set("file", file);
 
-    const filePath = `${user.id}/${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
-
-    if (uploadError) {
-      setUploading(false);
-      return;
+    const result = await uploadAvatar(formData);
+    if (result.error) {
+      alert(result.error);
+    } else {
+      await refreshProfile();
     }
-
-    const { data: urlData } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(filePath);
-
-    const avatarUrl = urlData.publicUrl;
-
-    await supabase
-      .from("profiles")
-      .update({ avatar_url: avatarUrl })
-      .eq("id", user.id);
-
-    await refreshProfile();
     setUploading(false);
   }
 

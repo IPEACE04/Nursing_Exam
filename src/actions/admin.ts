@@ -68,20 +68,17 @@ export async function deleteExam(formData: FormData) {
 export async function togglePublish(formData: FormData) {
   const { supabase } = await requireAdmin();
   const id = formData.get("id") as string;
-  const current = formData.get("current") === "true";
+  const is_published = formData.get("is_published") === "true";
 
   const { error } = await supabase
     .from("exams")
-    .update({ is_published: !current })
+    .update({ is_published: !is_published })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
   revalidatePath("/admin/exams");
+  revalidatePath("/exam");
 }
-
-export async function createQuestion(formData: FormData) {
-  const { supabase } = await requireAdmin();
-  const examId = formData.get("examId") as string;
   const questionText = formData.get("questionText") as string;
   const optionA = formData.get("optionA") as string;
   const optionB = formData.get("optionB") as string;

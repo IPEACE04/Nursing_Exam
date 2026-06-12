@@ -25,17 +25,19 @@ function Avatar({
   )
 }
 
-function AvatarImage({ className, ...props }: AvatarPrimitive.Image.Props) {
+function AvatarImage({ className, src, ...props }: AvatarPrimitive.Image.Props & { src?: string }) {
+  if (!src) return null;
   return (
-    <AvatarPrimitive.Image
-      data-slot="avatar-image"
+    <img
+      src={src}
+      alt=""
       className={cn(
         "aspect-square size-full rounded-full object-cover",
         className
       )}
-      {...props}
+      {...props as React.ImgHTMLAttributes<HTMLImageElement>}
     />
-  )
+  );
 }
 
 function AvatarFallback({

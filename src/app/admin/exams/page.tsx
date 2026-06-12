@@ -7,11 +7,10 @@ import {
   Plus,
   Clock,
   FileText,
-  Eye,
-  EyeOff,
   Pencil,
   Trash2,
   GraduationCap,
+  Rocket,
 } from "lucide-react";
 import { togglePublish, deleteExam, createExam, getAdminExams } from "@/actions/admin";
 import { PageHeader } from "@/components/premium/page-header";
@@ -224,19 +223,30 @@ export default function AdminExamsPage() {
                         {exam.time_limit_minutes} นาที
                       </span>
                     </div>
+                    <div className="mt-3">
+                      <button
+                        onClick={() => handleTogglePublish(exam.id, exam.is_published)}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                          exam.is_published
+                            ? "bg-red-500/10 text-red-600 hover:bg-red-500/20 border border-red-500/20"
+                            : "bg-primary text-primary-foreground hover:opacity-90"
+                        }`}
+                      >
+                        {exam.is_published ? (
+                          <>
+                            <Rocket className="size-3.5" />
+                            Cancel Launch
+                          </>
+                        ) : (
+                          <>
+                            <Rocket className="size-3.5" />
+                            Launch Exam
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => handleTogglePublish(exam.id, exam.is_published)}
-                      className="btn-ghost p-2"
-                      title={exam.is_published ? " unpublish" : "Publish"}
-                    >
-                      {exam.is_published ? (
-                        <EyeOff className="size-4" />
-                      ) : (
-                        <Eye className="size-4" />
-                      )}
-                    </button>
                     <Link
                       href={`/admin/exams/${exam.id}`}
                       className="btn-ghost p-2"

@@ -118,13 +118,13 @@ export default function SatisfactionPage() {
                 {i + 1}. {q.question_text}
               </p>
 
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
                 {ratings.map((r) => (
                   <button
                     key={r.value}
                     type="button"
                     onClick={() => setScore(q.id, r.value)}
-                    className={`flex flex-col items-center gap-1 rounded-xl px-4 py-3 min-w-[64px] transition-all ${
+                    className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all ${
                       scores[q.id] === r.value
                         ? "bg-primary text-primary-foreground shadow-sm"
                         : "bg-muted text-muted-foreground hover:bg-muted/80"

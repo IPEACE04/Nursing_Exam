@@ -13,8 +13,7 @@ import {
   Trash2,
   GraduationCap,
 } from "lucide-react";
-import { createSupabaseBrowserClient } from "@/lib/supabase-client";
-import { togglePublish, deleteExam, createExam } from "@/actions/admin";
+import { togglePublish, deleteExam, createExam, getAdminExams } from "@/actions/admin";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
@@ -26,16 +25,6 @@ const container = {
     transition: { staggerChildren: 0.04 },
   },
 };
-
-interface ExamRow {
-  id: string;
-  title: string;
-  description: string | null;
-  time_limit_minutes: number;
-  is_published: boolean;
-  created_at: string;
-  questions: { id: string }[] | null;
-}
 
 interface ExamWithCount {
   id: string;
@@ -54,35 +43,12 @@ export default function AdminExamsPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    let cancelled = false;
-
     async function load() {
-      const supabase = createSupabaseBrowserClient();
-      const { data } = await supabase
-        .from("exams")
-        .select("*, questions ( id )")
-        .order("created_at", { ascending: false });
-
-      if (cancelled) return;
-
-      if (data) {
-        setExams(
-          (data as ExamRow[]).map((e) => ({
-            id: e.id,
-            title: e.title,
-            description: e.description,
-            time_limit_minutes: e.time_limit_minutes,
-            is_published: e.is_published,
-            question_count: e.questions?.length ?? 0,
-            created_at: e.created_at,
-          }))
-        );
-      }
+      const data = await getAdminExams();
+      setExams(data);
       setLoading(false);
     }
-
     load();
-    return () => { cancelled = true; };
   }, []);
 
   async function handleTogglePublish(id: string, current: boolean) {

@@ -145,3 +145,25 @@ export async function deleteQuestion(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath(`/admin/exams/${examId}`);
 }
+
+export async function getAdminExams() {
+  await requireAdmin();
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("exams")
+    .select("*, questions ( id )")
+    .order("created_at", { ascending: false });
+
+  if (!data) return [];
+
+  return data.map((e: Record<string, unknown>) => ({
+    id: e.id as string,
+    title: e.title as string,
+    description: e.description as string | null,
+    time_limit_minutes: e.time_limit_minutes as number,
+    is_published: e.is_published as boolean,
+    question_count: ((e.questions as { id: string }[] | null)?.length ?? 0),
+    created_at: e.created_at as string,
+  }));
+}

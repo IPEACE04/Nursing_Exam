@@ -203,6 +203,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Satisfaction Survey */}
+      <div className="pb-4">
       <Link href="/satisfaction">
         <motion.div
           className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-all hover:shadow-md"
@@ -225,6 +226,7 @@ export default function DashboardPage() {
           </div>
         </motion.div>
       </Link>
+      </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">

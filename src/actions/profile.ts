@@ -42,7 +42,7 @@ export async function uploadAvatar(formData: FormData) {
     .from("avatars")
     .upload(filePath, file, { upsert: true });
 
-  if (uploadError) return { error: "อัพโหลดไม่สำเร็จ" };
+  if (uploadError) return { error: `อัพโหลดไม่สำเร็จ: ${uploadError.message}` };
 
   const { data: urlData } = supabase.storage
     .from("avatars")

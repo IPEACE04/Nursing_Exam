@@ -237,19 +237,19 @@ export default function EditExamPage({
                     >
                       <Pencil className="size-3.5" />
                     </button>
-                    <form action={deleteQuestion}>
-                      <input type="hidden" name="id" value={q.id} />
-                      <input type="hidden" name="examId" value={examId} />
-                      <button
-                        type="submit"
-                        className="btn-ghost p-1.5 text-destructive hover:text-destructive"
-                        onClick={(e) => {
-                          if (!confirm("ลบคำถามนี้?")) e.preventDefault();
-                        }}
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </form>
+                    <button
+                      onClick={async () => {
+                        if (!confirm("ลบคำถามนี้?")) return;
+                        const fd = new FormData();
+                        fd.set("id", q.id);
+                        fd.set("examId", examId);
+                        await deleteQuestion(fd);
+                        setRefreshKey((k) => k + 1);
+                      }}
+                      className="btn-ghost p-1.5 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -270,7 +270,7 @@ function QuestionForm({
   question?: Question;
   onClose: () => void;
 }) {
-  const action = question ? updateQuestion : createQuestion;
+  const actionFn = question ? updateQuestion : createQuestion;
   const qText = question?.question_text ?? "";
   const opt = question?.options ?? { A: "", B: "", C: "", D: "" };
   const correct = question?.correct_option ?? "A";
@@ -278,7 +278,10 @@ function QuestionForm({
 
   return (
     <form
-      action={action}
+      action={async (formData) => {
+        await actionFn(formData);
+        onClose();
+      }}
       className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 space-y-5"
     >
       <div className="flex items-center gap-2 mb-3">

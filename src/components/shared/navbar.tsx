@@ -29,7 +29,9 @@ export function Navbar() {
     <div className="sticky top-0 z-40 mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-8 pt-3">
       <header className="flex h-14 sm:h-16 items-center justify-between rounded-2xl border border-border/50 bg-card px-4 sm:px-5 shadow-sm">
         <Link href="/community" className="flex items-center gap-2.5 shrink-0">
-          <img src="/reallogo.png" alt="NurseSim" className="size-9 object-contain" />
+          <div className="flex size-9 items-center justify-center rounded-xl bg-card overflow-hidden">
+            <img src="/reallogo.png" alt="NurseSim" className="size-7 object-contain" />
+          </div>
           <span className="text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap">
             NurseSim
           </span>

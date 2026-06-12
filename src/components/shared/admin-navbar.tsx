@@ -25,7 +25,9 @@ export function AdminNavbar() {
     <header className="sticky top-0 z-40 border-b border-border/40 bg-card/80 backdrop-blur-xl">
       <div className="flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <img src="/reallogo.png" alt="NurseSim" className="size-10 object-contain" />
+          <div className="flex size-10 items-center justify-center rounded-xl bg-card overflow-hidden">
+            <img src="/reallogo.png" alt="NurseSim" className="size-8 object-contain" />
+          </div>
           <div>
             <span className="text-lg font-semibold tracking-tight text-foreground">
               Admin Panel

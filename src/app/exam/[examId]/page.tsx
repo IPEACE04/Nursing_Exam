@@ -256,7 +256,7 @@ export default function ExamPage({
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-4 sm:gap-6 pt-4">
+      <div className="mx-auto flex max-w-6xl gap-4 sm:gap-6 pt-4 px-3 sm:px-4 md:px-6">
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div

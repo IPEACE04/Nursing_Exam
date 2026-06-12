@@ -79,6 +79,10 @@ export async function togglePublish(formData: FormData) {
   revalidatePath("/admin/exams");
   revalidatePath("/exam");
 }
+
+export async function createQuestion(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const examId = formData.get("examId") as string;
   const questionText = formData.get("questionText") as string;
   const optionA = formData.get("optionA") as string;
   const optionB = formData.get("optionB") as string;

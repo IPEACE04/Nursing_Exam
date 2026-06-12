@@ -300,7 +300,7 @@ export default function ResultPage({
                     )}
 
                     {r.explanation_text && (
-                      <div className="mt-4 rounded-xl bg-muted px-5 py-3.5 text-sm leading-relaxed border border-border/40">
+                      <div className="mt-4 rounded-xl bg-muted px-5 py-3.5 text-sm leading-relaxed border border-border/40 whitespace-pre-wrap break-words">
                         <span className="font-medium">คำอธิบาย: </span>
                         {r.explanation_text}
                       </div>

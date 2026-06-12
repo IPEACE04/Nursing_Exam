@@ -35,6 +35,7 @@ export async function getExamSession(examId: string) {
     .from("exams")
     .select("title, description, time_limit_minutes")
     .eq("id", examId)
+    .eq("is_published", true)
     .single();
 
   if (!exam) return null;

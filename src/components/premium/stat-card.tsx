@@ -33,7 +33,10 @@ export function StatCard({
   const colorClass = accentStyles[accent];
 
   useEffect(() => {
-    if (hasAnimated.current) return;
+    if (hasAnimated.current) {
+      setDisplayValue(value);
+      return;
+    }
     hasAnimated.current = true;
 
     const duration = 1000;

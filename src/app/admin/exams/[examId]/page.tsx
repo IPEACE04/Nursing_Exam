@@ -223,7 +223,7 @@ export default function EditExamPage({
                       ))}
                     </div>
                     {q.explanation_text && (
-                      <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+                      <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed break-words">
                         <span className="font-medium text-foreground">เฉลย:</span> {q.explanation_text}
                       </p>
                     )}

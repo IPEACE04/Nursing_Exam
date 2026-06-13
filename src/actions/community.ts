@@ -53,7 +53,7 @@ export async function getPosts(category?: string) {
   });
 
   const postsWithCounts: CommunityPostWithAuthor[] = posts.map((post) => {
-    const author = post.profiles as unknown as { name: string } | null;
+    const author = post.profiles as unknown as { name: string; avatar_url: string | null } | null;
     return {
       id: post.id,
       user_id: post.user_id,
@@ -110,7 +110,7 @@ export async function getPost(postId: string) {
       : Promise.resolve({ count: 0 }),
   ]);
 
-  const author = post.profiles as unknown as { name: string } | null;
+  const author = post.profiles as unknown as { name: string; avatar_url: string | null } | null;
 
   return {
     id: post.id,
@@ -211,7 +211,7 @@ export async function getComments(postId: string) {
   if (!comments) return [];
 
   return comments.map((c) => {
-    const author = c.profiles as unknown as { name: string } | null;
+    const author = c.profiles as unknown as { name: string; avatar_url: string | null } | null;
     return {
       id: c.id,
       post_id: c.post_id,

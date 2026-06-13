@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { BarChart3, Clock, Target, ExternalLink, TrendingUp, ClipboardList } from "lucide-react";
 import { getHistory } from "@/actions/exam";
@@ -10,12 +11,11 @@ import type { AttemptWithExam } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+
+const HistoryChart = dynamic(
+  () => import("@/components/premium/history-chart").then((m) => ({ default: m.HistoryChart })),
+  { ssr: false, loading: () => <div className="flex h-40 items-center justify-center"><span className="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div> }
+);
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -99,10 +99,6 @@ export default function HistoryPage() {
     label: formatShortDate(a.completed_at),
   }));
 
-  const chartConfig = {
-    คะแนน: { label: "คะแนน", color: "var(--chart-1)" },
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -159,38 +155,7 @@ export default function HistoryPage() {
             <TrendingUp className="size-5 sm:size-6 text-primary" />
             <h2 className="text-lg sm:text-xl font-semibold text-foreground">พัฒนาการคะแนน</h2>
           </div>
-          <ChartContainer config={chartConfig} className="aspect-[2/1] sm:aspect-[3/1] w-full">
-            <LineChart data={chartData}>
-              <CartesianGrid
-                strokeDasharray="4 4"
-                stroke="var(--border)"
-                strokeWidth={0.5}
-                vertical={false}
-              />
-              <XAxis
-                dataKey="label"
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                axisLine={false}
-                tickLine={false}
-              />
-              <YAxis
-                domain={[0, 100]}
-                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                axisLine={false}
-                tickLine={false}
-                width={35}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Line
-                type="monotone"
-                dataKey="คะแนน"
-                stroke="var(--chart-1)"
-                strokeWidth={2.5}
-                dot={{ r: 3, fill: "var(--chart-1)" }}
-                activeDot={{ r: 5, fill: "var(--chart-2)" }}
-              />
-            </LineChart>
-          </ChartContainer>
+          <HistoryChart data={chartData} />
         </GlassCard>
       )}
 

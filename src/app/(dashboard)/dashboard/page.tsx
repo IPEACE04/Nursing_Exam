@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import {
   Activity,
@@ -16,12 +17,11 @@ import { getDashboardData } from "@/actions/exam";
 import type { AttemptWithExam } from "@/types";
 import { StatCard } from "@/components/premium/stat-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
+
+const ProgressChart = dynamic(
+  () => import("@/components/premium/progress-chart").then((m) => ({ default: m.ProgressChart })),
+  { ssr: false, loading: () => <div className="flex h-40 items-center justify-center"><span className="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent" /></div> }
+);
 
 const container = {
   hidden: { opacity: 0 },
@@ -114,10 +114,6 @@ export default function DashboardPage() {
     label:
       a.exam_title.slice(0, 10) + (a.exam_title.length > 10 ? ".." : ""),
   }));
-
-  const chartConfig = {
-    คะแนน: { label: "คะแนน", color: "var(--chart-1)" },
-  };
 
   return (
     <motion.div
@@ -213,37 +209,7 @@ export default function DashboardPage() {
           </div>
           
           {chartData.length > 1 ? (
-            <ChartContainer config={chartConfig} className="aspect-[2/1] sm:aspect-[2.5/1] w-full">
-              <LineChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="var(--border)"
-                  vertical={false}
-                />
-                <XAxis
-                  dataKey="label"
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  domain={[0, 100]}
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                  axisLine={false}
-                  tickLine={false}
-                  width={35}
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  type="monotone"
-                  dataKey="คะแนน"
-                  stroke="var(--chart-1)"
-                  strokeWidth={2.5}
-                  dot={{ r: 3, fill: "var(--chart-1)" }}
-                  activeDot={{ r: 5, fill: "var(--chart-2)" }}
-                />
-              </LineChart>
-            </ChartContainer>
+            <ProgressChart data={chartData} />
           ) : (
              <div className="flex h-32 sm:h-40 items-center justify-center">
                 <p className="text-sm text-muted-foreground text-center">

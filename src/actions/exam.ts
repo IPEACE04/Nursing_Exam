@@ -95,7 +95,8 @@ export async function getDashboardData(userId: string) {
     .from("exam_attempts")
     .select("*, exams ( title )")
     .eq("user_id", userId)
-    .order("completed_at", { ascending: false });
+    .order("completed_at", { ascending: false })
+    .limit(50);
 
   const { data: exams } = await supabase
     .from("exams")
@@ -120,7 +121,8 @@ export async function getHistory(userId: string) {
     .from("exam_attempts")
     .select("*, exams ( title )")
     .eq("user_id", userId)
-    .order("completed_at", { ascending: false });
+    .order("completed_at", { ascending: false })
+    .limit(100);
 
   return (data ?? []) as Record<string, unknown>[];
 }

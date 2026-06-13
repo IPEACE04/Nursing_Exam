@@ -149,11 +149,6 @@ export async function getAnalysis(): Promise<SatisfactionAnalysis> {
     .from("satisfaction_responses")
     .select("*", { count: "exact", head: true });
 
-  const { data: questions } = await supabase
-    .from("satisfaction_questions")
-    .select("*")
-    .order("sort_order", { ascending: true });
-
   const { data: responses } = await supabase
     .from("satisfaction_responses")
     .select(
@@ -164,24 +159,14 @@ export async function getAnalysis(): Promise<SatisfactionAnalysis> {
     )
     .order("created_at", { ascending: false });
 
-  const averagePerQuestion = await Promise.all(
-    (questions ?? []).map(async (q) => {
-      const { data: scores } = await supabase
-        .from("satisfaction_scores")
-        .select("score")
-        .eq("question_id", q.id);
+  const { data: avgRows } = await supabase.rpc("get_satisfaction_analysis");
 
-      const totalScores = (scores ?? []).reduce((sum, s) => sum + s.score, 0);
-      const count = (scores ?? []).length;
-
-      return {
-        question_id: q.id,
-        question_text: q.question_text,
-        avg_score: count > 0 ? Math.round((totalScores / count) * 10) / 10 : 0,
-        total_scores: count,
-      };
-    })
-  );
+  const averagePerQuestion = ((avgRows ?? []) as Record<string, unknown>[]).map((r) => ({
+    question_id: r.question_id as string,
+    question_text: r.question_text as string,
+    avg_score: Number(r.avg_score ?? 0),
+    total_scores: Number(r.total_scores ?? 0),
+  }));
 
   const feedbacks = (responses ?? [])
     .filter((r) => r.feedback)

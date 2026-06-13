@@ -180,48 +180,15 @@ export async function getAdminStats() {
       supabase.from("exams").select("*", { count: "exact", head: true }),
     ]);
 
-  const { data: attempts } = await supabase
-    .from("exam_attempts")
-    .select("score, total_questions");
+  const { data: avgResult } = await supabase.rpc("get_admin_avg_score");
+  const avgScore = Math.round(Number((avgResult as unknown as number) ?? 0));
 
-  let avgScore = 0;
-  if (attempts && attempts.length > 0) {
-    const totalPct = attempts.reduce(
-      (sum, a) =>
-        sum +
-        (a.total_questions > 0
-          ? (a.score / a.total_questions) * 100
-          : 0),
-      0
-    );
-    avgScore = Math.round(totalPct / attempts.length);
-  }
-
-  const { data: wrongAnswers } = await supabase
-    .from("user_answers")
-    .select("is_correct, questions!inner ( question_text )");
-
-  let itemAnalysis: { question: string; errorRate: number; total: number }[] = [];
-  if (wrongAnswers) {
-    const grouped: Record<string, { question_text: string; wrong: number; total: number }> = {};
-    wrongAnswers.forEach((a) => {
-      const q = a.questions as unknown as { question_text: string };
-      const text = q?.question_text ?? "Unknown";
-      if (!grouped[text]) grouped[text] = { question_text: text, wrong: 0, total: 0 };
-      grouped[text].total++;
-      if (!a.is_correct) grouped[text].wrong++;
-    });
-    itemAnalysis = Object.values(grouped)
-      .map((g) => ({
-        question: g.question_text.length > 40
-          ? g.question_text.slice(0, 40) + "..."
-          : g.question_text,
-        errorRate: Math.round((g.wrong / g.total) * 100),
-        total: g.total,
-      }))
-      .sort((a, b) => b.errorRate - a.errorRate)
-      .slice(0, 10);
-  }
+  const { data: itemRows } = await supabase.rpc("get_worst_questions", { limit_count: 10 });
+  const itemAnalysis = ((itemRows ?? []) as Record<string, unknown>[]).map((r) => ({
+    question: String(r.question ?? ""),
+    errorRate: Number(r.error_rate ?? 0),
+    total: Number(r.total ?? 0),
+  }));
 
   return {
     totalUsers: totalUsers ?? 0,

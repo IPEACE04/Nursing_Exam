@@ -105,12 +105,16 @@ export async function getDashboardData(userId: string) {
     .order("created_at", { ascending: false })
     .limit(3);
 
-  const { data: rank } = await supabase.rpc("get_user_rank", { target_user_id: userId });
+  let rank = 0;
+  try {
+    const { data: rankData } = await supabase.rpc("get_user_rank", { target_user_id: userId });
+    rank = (rankData as number) ?? 0;
+  } catch {}
 
   return {
     attempts: (attempts ?? []) as Record<string, unknown>[],
     exams: (exams ?? []) as Record<string, unknown>[],
-    rank: rank ?? 0,
+    rank,
   };
 }
 

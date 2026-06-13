@@ -61,31 +61,34 @@ export default function DashboardPage() {
     const uid = user.id;
 
     async function fetchData() {
-      const data = await getDashboardData(uid);
-
-      const attemptsData = data.attempts as unknown as ExamAttemptRow[];
-      if (attemptsData.length > 0) {
-        setAttempts(
-          attemptsData.map((a) => ({
-            id: a.id,
-            user_id: a.user_id,
-            exam_id: a.exam_id,
-            score: a.score,
-            total_questions: a.total_questions,
-            time_spent_seconds: a.time_spent_seconds,
-            completed_at: a.completed_at,
-            exam_title: a.exams?.title ?? "",
-            percentage:
-              a.total_questions > 0
-                ? Math.round((a.score / a.total_questions) * 100)
-                : 0,
-          }))
-        );
+      try {
+        const data = await getDashboardData(uid);
+        const attemptsData = data.attempts as unknown as ExamAttemptRow[];
+        if (attemptsData.length > 0) {
+          setAttempts(
+            attemptsData.map((a) => ({
+              id: a.id,
+              user_id: a.user_id,
+              exam_id: a.exam_id,
+              score: a.score,
+              total_questions: a.total_questions,
+              time_spent_seconds: a.time_spent_seconds,
+              completed_at: a.completed_at,
+              exam_title: a.exams?.title ?? "",
+              percentage:
+                a.total_questions > 0
+                  ? Math.round((a.score / a.total_questions) * 100)
+                  : 0,
+            }))
+          );
+        }
+        setUserRank(data.rank as number);
+      } catch {
+        setAttempts([]);
+        setUserRank(0);
+      } finally {
+        setLoadingData(false);
       }
-
-      setUserRank(data.rank as number);
-
-      setLoadingData(false);
     }
 
     fetchData();

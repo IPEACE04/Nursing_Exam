@@ -68,7 +68,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* ── Navbar ──────────────────────────────────────────────── */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background">
         <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">

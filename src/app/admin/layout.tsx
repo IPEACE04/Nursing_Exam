@@ -27,7 +27,7 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -38,7 +38,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="flex h-screen flex-col">
       <AdminNavbar />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />

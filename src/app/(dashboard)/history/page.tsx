@@ -218,7 +218,7 @@ export default function HistoryPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
                 whileHover={{ x: 3 }}
-                className="group flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-4 sm:px-6 sm:py-5 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
+                className="group flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-4 sm:px-6 sm:py-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className={`flex size-11 sm:size-12 items-center justify-center rounded-xl border text-xs sm:text-sm font-bold transition-all duration-300 group-hover:scale-105 shrink-0 ${

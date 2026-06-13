@@ -197,7 +197,7 @@ export default function EditExamPage({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="group rounded-2xl border border-border bg-card p-4 sm:p-5 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
+                className="group rounded-2xl border border-border bg-card p-4 sm:p-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">

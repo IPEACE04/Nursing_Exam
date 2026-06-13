@@ -157,7 +157,7 @@ export default function Home() {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + i * 0.06 }}
-                    className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80"
+                    className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
                   >
                     <Icon className="mb-3 size-6 text-primary" />
                     <h3 className="text-base sm:text-lg font-semibold text-foreground">

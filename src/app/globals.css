@@ -153,6 +153,21 @@
     box-shadow: var(--shadow-clinical);
   }
 
+  /* Notebook grid background — subtle graph paper feel */
+  .bg-notebook {
+    background-color: var(--background);
+    background-image:
+      linear-gradient(oklch(0.52 0.09 235 / 5%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.52 0.09 235 / 5%) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .dark .bg-notebook {
+    background-image:
+      linear-gradient(oklch(0.60 0.10 235 / 8%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.60 0.10 235 / 8%) 1px, transparent 1px);
+  }
+
   /* ── Animations ─────────────────────────────────────────────── */
   .animate-in {
     animation: fadeInUp 0.4s ease-out both;

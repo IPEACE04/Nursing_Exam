@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th" className={`${ibmPlex.variable} ${cormorant.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-full flex flex-col bg-notebook text-foreground">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

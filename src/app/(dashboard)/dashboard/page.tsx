@@ -182,7 +182,7 @@ export default function DashboardPage() {
       <div className="pb-4">
         <Link href="/satisfaction">
           <motion.div
-            className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
+            className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -205,7 +205,7 @@ export default function DashboardPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Progress Card */}
-        <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80">
+        <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-foreground">พัฒนาการ</h2>
             <span className="text-xs text-muted-foreground">20 ครั้งล่าสุด</span>
@@ -223,7 +223,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Ranking Card */}
-        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col transition-shadow duration-200 hover:shadow-sm hover:border-border/80">
+        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
             <h2 className="text-base sm:text-lg font-semibold text-foreground">อันดับของคุณ</h2>
             <Link href="/ranking" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>
@@ -245,7 +245,7 @@ export default function DashboardPage() {
       </div>
 
       {/* History */}
-      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
         <div className="flex items-center justify-between mb-4 sm:mb-5">
           <h2 className="text-base sm:text-lg font-semibold text-foreground">ประวัติล่าสุด</h2>
           <Link href="/history" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>

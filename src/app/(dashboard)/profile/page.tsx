@@ -54,13 +54,20 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_AVATAR_SIZE) {
+      setAvatarError("รูปใหญ่เกินไป กรุณาใช้รูปไม่เกิน 2MB");
+      return;
+    }
+
+    setAvatarError(null);
     setUploading(true);
     const formData = new FormData();
     formData.set("file", file);
 
     const result = await uploadAvatar(formData);
     if (result.error) {
-      alert(result.error);
+      setAvatarError(result.error);
     } else {
       await refreshProfile();
     }

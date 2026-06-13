@@ -1,14 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.error("[Next.js error boundary]", error.message, error.digest, error.stack);
+  }, [error]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <motion.div

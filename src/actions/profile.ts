@@ -9,23 +9,29 @@ export async function getCurrentProfile(): Promise<{
   user: { id: string; email: string } | null;
   profile: Profile | null;
 }> {
-  const userId = await getSessionUserId();
-  if (!userId) return { user: null, profile: null };
+  try {
+    const userId = await getSessionUserId();
+    if (!userId) return { user: null, profile: null };
 
-  const supabase = createSupabaseServerClient();
+    const supabase = createSupabaseServerClient();
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .single();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
 
-  if (!profile) return { user: null, profile: null };
+    if (!profile) return { user: null, profile: null };
 
-  return {
-    user: { id: profile.id, email: profile.email },
-    profile: profile as Profile,
-  };
+    return {
+      user: { id: profile.id, email: profile.email },
+      profile: profile as Profile,
+    };
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[getCurrentProfile]", err);
+    return { user: null, profile: null };
+  }
 }
 
 export async function uploadAvatar(formData: FormData) {

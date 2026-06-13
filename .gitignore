@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design reference files
+/mm.png
+/profileee.png
+/logo*.PNG
+/logo*.png
+/*.PNG
+/plan.md

@@ -17,7 +17,7 @@ export async function getPosts(category?: string) {
     .select(
       `
       *,
-      profiles:user_id ( name )
+      profiles:user_id ( name, avatar_url )
     `
     )
     .order("created_at", { ascending: false });
@@ -62,6 +62,7 @@ export async function getPosts(category?: string) {
       category: post.category,
       created_at: post.created_at,
       author_name: author?.name ?? "ไม่ระบุ",
+      author_avatar_url: (author?.avatar_url as string) ?? null,
       like_count: likeCounts[post.id] ?? 0,
       comment_count: commentCounts[post.id] ?? 0,
     };
@@ -79,7 +80,7 @@ export async function getPost(postId: string) {
     .select(
       `
       *,
-      profiles:user_id ( name )
+      profiles:user_id ( name, avatar_url )
     `
     )
     .eq("id", postId)
@@ -119,6 +120,7 @@ export async function getPost(postId: string) {
     category: post.category,
     created_at: post.created_at,
     author_name: author?.name ?? "ไม่ระบุ",
+    author_avatar_url: (author?.avatar_url as string) ?? null,
     like_count: likeCount ?? 0,
     comment_count: commentCount ?? 0,
     has_liked: (likedCount ?? 0) > 0,
@@ -200,7 +202,7 @@ export async function getComments(postId: string) {
     .select(
       `
       *,
-      profiles:user_id ( name )
+      profiles:user_id ( name, avatar_url )
     `
     )
     .eq("post_id", postId)
@@ -217,6 +219,7 @@ export async function getComments(postId: string) {
       content: c.content,
       created_at: c.created_at,
       author_name: author?.name ?? "ไม่ระบุ",
+      author_avatar_url: (author?.avatar_url as string) ?? null,
     } satisfies CommunityCommentWithAuthor;
   });
 }

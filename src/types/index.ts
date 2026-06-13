@@ -98,6 +98,7 @@ export interface CommunityComment {
 
 export interface CommunityPostWithAuthor extends CommunityPost {
   author_name: string;
+  author_avatar_url: string | null;
   like_count: number;
   comment_count: number;
 }
@@ -108,6 +109,7 @@ export interface CommunityPostDetail extends CommunityPostWithAuthor {
 
 export interface CommunityCommentWithAuthor extends CommunityComment {
   author_name: string;
+  author_avatar_url: string | null;
 }
 
 // ── Satisfaction Survey ──────────────────────────────────────────

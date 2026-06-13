@@ -4,9 +4,10 @@ import { useEffect, useState, useCallback, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trash2, User } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { getPost, getComments, deletePost } from "@/actions/community";
 import { useAuth } from "@/context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type {
   CommunityPostDetail,
   CommunityCommentWithAuthor,
@@ -152,9 +153,12 @@ export default function PostDetailPage({
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <div className="flex size-8 items-center justify-center rounded-full border border-border/60 bg-muted text-xs font-medium text-muted-foreground">
-            <User className="size-3.5" />
-          </div>
+          <Avatar className="size-8 shrink-0">
+            <AvatarImage src={post.author_avatar_url ?? undefined} />
+            <AvatarFallback className="text-xs font-medium">
+              {post.author_name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
           <span className="font-medium text-foreground truncate">
             {post.author_name}
           </span>

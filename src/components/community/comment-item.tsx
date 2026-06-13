@@ -1,8 +1,9 @@
 "use client";
 
-import { Trash2, User } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { deleteComment } from "@/actions/community";
 import { useAuth } from "@/context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { CommunityCommentWithAuthor } from "@/types";
 
 function formatDate(dateStr: string) {
@@ -37,9 +38,12 @@ export function CommentItem({
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex size-8 items-center justify-center rounded-full border border-border/60 bg-muted text-xs font-medium text-muted-foreground">
-              <User className="size-3.5" />
-            </div>
+            <Avatar className="size-8 shrink-0">
+              <AvatarImage src={comment.author_avatar_url ?? undefined} />
+              <AvatarFallback className="text-xs font-medium">
+                {comment.author_name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
             <span className="text-sm font-medium text-foreground truncate">
               {comment.author_name}
             </span>

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle, User } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import type { CommunityPostWithAuthor } from "@/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -33,9 +34,12 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
 
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="flex size-8 items-center justify-center rounded-full border border-border/60 bg-muted text-xs font-medium text-muted-foreground">
-              <User className="size-3.5" />
-            </div>
+            <Avatar className="size-8 shrink-0">
+              <AvatarImage src={post.author_avatar_url ?? undefined} />
+              <AvatarFallback className="text-xs font-medium">
+                {post.author_name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
             <span className="text-sm font-medium text-foreground truncate">
               {post.author_name}
             </span>

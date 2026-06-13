@@ -60,6 +60,19 @@ export async function deleteExam(formData: FormData) {
   const { supabase } = await requireAdmin();
   const id = formData.get("id") as string;
 
+  const { data: attempts } = await supabase
+    .from("exam_attempts")
+    .select("id")
+    .eq("exam_id", id);
+
+  if (attempts && attempts.length > 0) {
+    const attemptIds = attempts.map((a) => a.id);
+    await supabase.from("user_answers").delete().in("attempt_id", attemptIds);
+    await supabase.from("exam_attempts").delete().eq("exam_id", id);
+  }
+
+  await supabase.from("questions").delete().eq("exam_id", id);
+
   const { error } = await supabase.from("exams").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/exams");

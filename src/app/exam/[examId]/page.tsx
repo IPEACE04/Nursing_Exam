@@ -220,7 +220,7 @@ export default function ExamPage({
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-border bg-background">
-        <div className="mx-auto flex h-14 sm:h-18 max-w-6xl items-center justify-between px-3 sm:px-6">
+        <div className="mx-auto flex h-14 sm:h-18 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <GraduationCap className="size-5 sm:size-6 shrink-0 text-primary" />
             <span className="line-clamp-1 text-sm sm:text-lg font-semibold tracking-tight text-foreground">
@@ -252,7 +252,7 @@ export default function ExamPage({
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-4 sm:gap-6 pt-4 pb-20 lg:pb-6 px-3 sm:px-4 md:px-6">
+      <div className="mx-auto flex max-w-6xl gap-5 sm:gap-6 pt-5 sm:pt-6 pb-20 lg:pb-6 px-4 sm:px-6 lg:px-8">
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -262,7 +262,7 @@ export default function ExamPage({
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="rounded-2xl border border-border bg-card p-4 sm:p-8">
+              <div className="rounded-2xl border border-border bg-card p-5 sm:p-8">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                     ข้อ {currentIndex + 1} จาก {questions.length}
@@ -288,7 +288,7 @@ export default function ExamPage({
                           onClick={() =>
                             selectAnswer(currentQuestion.id, key)
                           }
-                          className={`flex w-full items-start gap-3 sm:gap-4 rounded-xl border p-3 sm:p-5 text-left text-sm sm:text-base transition-all ${
+                          className={`flex w-full items-start gap-3 sm:gap-4 rounded-xl border p-4 sm:p-5 text-left text-sm sm:text-base transition-all ${
                             isSelected
                               ? "border-primary bg-primary/5 ring-1 ring-primary/20"
                               : "border-border bg-card hover:border-primary/30 hover:bg-muted/30"
@@ -314,7 +314,7 @@ export default function ExamPage({
             </motion.div>
           </AnimatePresence>
 
-          <div className="mt-4 sm:mt-6 flex items-center justify-between gap-2 sm:gap-3">
+          <div className="mt-5 sm:mt-6 flex items-center justify-between gap-3 sm:gap-4">
             <button
               onClick={() => goTo(currentIndex - 1)}
               disabled={currentIndex === 0}

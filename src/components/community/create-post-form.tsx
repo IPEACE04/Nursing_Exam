@@ -39,7 +39,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="block text-sm font-medium text-foreground mb-1.5">
           หัวข้อ
@@ -49,7 +49,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="หัวข้อโพสต์..."
-          className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+          className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           required
         />
       </div>
@@ -85,7 +85,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           onChange={(e) => setContent(e.target.value)}
           placeholder="เขียนเนื้อหาโพสต์..."
           rows={6}
-          className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-y focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+          className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           required
         />
       </div>
@@ -96,7 +96,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
         <button
           type="submit"
           disabled={isPending || !title.trim() || !content.trim()}
-          className="btn-premium disabled:opacity-50"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
           {isPending ? "กำลังโพสต์..." : "โพสต์"}

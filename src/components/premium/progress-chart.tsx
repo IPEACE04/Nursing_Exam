@@ -19,8 +19,9 @@ export function ProgressChart({ data }: Props) {
     >
       <LineChart data={data}>
         <CartesianGrid
-          strokeDasharray="3 3"
+          strokeDasharray="4 4"
           stroke="var(--border)"
+          strokeWidth={0.5}
           vertical={false}
         />
         <XAxis

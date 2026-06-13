@@ -116,22 +116,25 @@ export default function AnalysisPage() {
         title="ผลวิเคราะห์ความพึงพอใจ"
         description={`ผู้ตอบทั้งหมด ${analysis.total_responses} คน`}
         action={
-          <button onClick={handleExportPDF} className="btn-premium">
+          <button
+            onClick={handleExportPDF}
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+          >
             <FileText className="size-4" />
             Export Report
           </button>
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <GlassCard className="p-5 sm:p-6 text-center">
           <BarChart3 className="mx-auto size-8 text-primary mb-2" />
-          <p className="text-3xl font-bold text-foreground">{analysis.total_responses}</p>
+          <p className="text-3xl font-bold tracking-tight text-foreground">{analysis.total_responses}</p>
           <p className="text-sm text-muted-foreground">ผู้ตอบทั้งหมด</p>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6 text-center">
           <Star className="mx-auto size-8 text-amber-500 mb-2" />
-          <p className="text-3xl font-bold text-foreground">
+          <p className="text-3xl font-bold tracking-tight text-foreground">
             {analysis.total_responses > 0
               ? (
                   analysis.average_per_question.reduce(
@@ -145,13 +148,13 @@ export default function AnalysisPage() {
         </GlassCard>
         <GlassCard className="p-5 sm:p-6 text-center">
           <MessageSquare className="mx-auto size-8 text-emerald-500 mb-2" />
-          <p className="text-3xl font-bold text-foreground">{analysis.feedbacks.length}</p>
+          <p className="text-3xl font-bold tracking-tight text-foreground">{analysis.feedbacks.length}</p>
           <p className="text-sm text-muted-foreground">ข้อเสนอแนะ</p>
         </GlassCard>
       </div>
 
       <GlassCard className="p-5 sm:p-6">
-        <h2 className="text-lg font-bold text-foreground mb-4">
+        <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-4">
           คะแนนเฉลี่ยรายข้อ
         </h2>
         <ChartContainer config={chartConfig} className="aspect-[2/1] sm:aspect-[2.5/1] w-full max-h-96">
@@ -161,8 +164,9 @@ export default function AnalysisPage() {
             margin={{ left: 40, right: 20 }}
           >
             <CartesianGrid
-              strokeDasharray="3 3"
+              strokeDasharray="4 4"
               stroke="var(--border)"
+              strokeWidth={0.5}
               horizontal={false}
             />
             <XAxis
@@ -193,24 +197,24 @@ export default function AnalysisPage() {
 
       {analysis.feedbacks.length > 0 && (
         <GlassCard className="p-5 sm:p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">
+          <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-4">
             ข้อเสนอแนะ ({analysis.feedbacks.length})
           </h2>
           <div className="space-y-3">
             {analysis.feedbacks.map((f, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-border/40 bg-muted/30 p-4"
+                className="rounded-xl border border-border bg-card p-4"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm font-medium text-foreground truncate">
                     {f.user_name}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground/60">
                     {formatDate(f.created_at)}
                   </span>
                 </div>
-                <p className="text-sm text-foreground/80">{f.feedback}</p>
+                <p className="text-sm text-foreground leading-relaxed">{f.feedback}</p>
               </div>
             ))}
           </div>

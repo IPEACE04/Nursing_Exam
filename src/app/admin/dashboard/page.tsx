@@ -73,64 +73,48 @@ export default function AdminDashboardPage() {
         description="ภาพรวมระบบและสถิติการใช้งานทั้งหมด"
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-primary/8 border border-primary/15">
-              <Users className="size-5 sm:size-6 text-primary" />
-            </div>
+            <Users className="size-6 text-primary shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 ผู้ใช้ทั้งหมด
               </p>
-              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                {stats.totalUsers}
-              </p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.totalUsers}</p>
             </div>
           </div>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-emerald-500/8 border border-emerald-500/15">
-              <ClipboardList className="size-5 sm:size-6 text-emerald-500" />
-            </div>
+            <ClipboardList className="size-6 text-emerald-500 shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 ข้อสอบที่ทำ
               </p>
-              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                {stats.totalAttempts}
-              </p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.totalAttempts}</p>
             </div>
           </div>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-amber-500/8 border border-amber-500/15">
-              <BarChart3 className="size-5 sm:size-6 text-amber-500" />
-            </div>
+            <BarChart3 className="size-6 text-amber-500 shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 คะแนนเฉลี่ย
               </p>
-              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                {stats.avgScore}%
-              </p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.avgScore}%</p>
             </div>
           </div>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-purple-500/8 border border-purple-500/15">
-              <BookOpen className="size-5 sm:size-6 text-purple-500" />
-            </div>
+            <BookOpen className="size-6 text-purple-500 shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 ชุดข้อสอบ
               </p>
-              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                {stats.totalExams}
-              </p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.totalExams}</p>
             </div>
           </div>
         </GlassCard>
@@ -139,10 +123,8 @@ export default function AdminDashboardPage() {
       <motion.div variants={itemAnim}>
         <GlassCard className="p-5 sm:p-6">
           <div className="mb-4 sm:mb-5 flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-destructive/10 border border-destructive/20">
-              <AlertTriangle className="size-5 text-destructive" />
-            </div>
-            <h2 className="text-lg font-bold text-foreground">
+            <AlertTriangle className="size-5 sm:size-6 text-destructive shrink-0" />
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">
               ข้อสอบที่ทำผิดมากที่สุด
             </h2>
           </div>
@@ -162,8 +144,9 @@ export default function AdminDashboardPage() {
                 margin={{ left: 20, right: 20 }}
               >
                 <CartesianGrid
-                  strokeDasharray="3 3"
+                  strokeDasharray="4 4"
                   stroke="var(--border)"
+                  strokeWidth={0.5}
                   horizontal={false}
                 />
                 <XAxis

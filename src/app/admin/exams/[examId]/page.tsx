@@ -71,7 +71,7 @@ export default function EditExamPage({
       <div>
         <button
           onClick={() => router.push("/admin/exams")}
-          className="mb-4 btn-ghost"
+          className="mb-4 inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
           กลับไปรายการข้อสอบ
@@ -85,18 +85,16 @@ export default function EditExamPage({
 
       <GlassCard className="p-5 sm:p-6">
         <div className="mb-5 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/8">
-            <HelpCircle className="size-5 text-primary" />
-          </div>
+          <HelpCircle className="size-5 text-primary shrink-0" />
           <div>
             <h2 className="font-semibold text-foreground">รายละเอียด</h2>
             <p className="text-xs text-muted-foreground">ตั้งค่าชื่อ เวลา และคำอธิบาย</p>
           </div>
         </div>
-        <form action={updateExam} className="space-y-4">
+        <form action={updateExam} className="space-y-5">
           <input type="hidden" name="id" value={examId} />
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-foreground/80">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               ชื่อชุดข้อสอบ
             </label>
             <input
@@ -104,22 +102,22 @@ export default function EditExamPage({
               type="text"
               defaultValue={exam.title}
               required
-              className="w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-foreground/80">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               คำอธิบาย
             </label>
             <textarea
               name="description"
               rows={2}
               defaultValue={exam.description ?? ""}
-              className="w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-foreground/80">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               เวลาที่กำหนด (นาที)
             </label>
             <input
@@ -128,10 +126,13 @@ export default function EditExamPage({
               defaultValue={exam.time_limit_minutes}
               min={1}
               required
-              className="w-full max-w-32 rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="h-12 w-full max-w-32 rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
-          <button type="submit" className="btn-premium">
+          <button
+            type="submit"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+          >
             <Check className="size-4" />
             บันทึก
           </button>
@@ -151,7 +152,7 @@ export default function EditExamPage({
               setShowAddQuestion(true);
               setEditQuestionId(null);
             }}
-            className="btn-premium"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <Plus className="size-4" />
             เพิ่มคำถาม
@@ -196,11 +197,11 @@ export default function EditExamPage({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="group rounded-xl border border-border/60 bg-card p-4 sm:p-5 transition-all hover:border-border/80 hover:shadow-sm"
+                className="group rounded-2xl border border-border bg-card p-4 sm:p-5 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-medium text-foreground leading-relaxed">
                       <span className="text-muted-foreground">ข้อ {i + 1}: </span>
                       {q.question_text}
                     </p>
@@ -208,10 +209,10 @@ export default function EditExamPage({
                       {Object.entries(q.options).map(([key, val]) => (
                         <span
                           key={key}
-                          className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs ${
+                          className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs ${
                             key === q.correct_option
-                              ? "bg-chart-3/10 font-medium text-chart-3"
-                              : "bg-muted text-muted-foreground"
+                              ? "border-emerald-500/20 bg-emerald-500/5 font-medium text-emerald-600"
+                              : "border-border bg-muted text-muted-foreground"
                           }`}
                         >
                           {key}. {val as string}
@@ -222,8 +223,8 @@ export default function EditExamPage({
                       ))}
                     </div>
                     {q.explanation_text && (
-                      <p className="mt-1.5 text-xs text-accent-foreground/70">
-                        <span className="font-medium">เฉลย:</span> {q.explanation_text}
+                      <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
+                        <span className="font-medium text-foreground">เฉลย:</span> {q.explanation_text}
                       </p>
                     )}
                   </div>
@@ -233,7 +234,7 @@ export default function EditExamPage({
                         setEditQuestionId(q.id);
                         setShowAddQuestion(false);
                       }}
-                      className="btn-ghost p-1.5"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <Pencil className="size-3.5" />
                     </button>
@@ -246,7 +247,7 @@ export default function EditExamPage({
                         await deleteQuestion(fd);
                         setRefreshKey((k) => k + 1);
                       }}
-                      className="btn-ghost p-1.5 text-destructive hover:text-destructive"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
@@ -282,12 +283,10 @@ function QuestionForm({
         await actionFn(formData);
         onClose();
       }}
-      className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 space-y-5"
+      className="rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-5"
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className="flex size-7 items-center justify-center rounded-lg bg-accent/15">
-          <Plus className="size-3.5 text-accent-foreground" />
-        </div>
+        <Plus className="size-4 text-primary" />
         <span className="text-sm font-medium text-foreground">
           {question ? "แก้ไขคำถาม" : "เพิ่มคำถามใหม่"}
         </span>
@@ -305,7 +304,7 @@ function QuestionForm({
           rows={2}
           defaultValue={qText}
           required
-          className="w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-accent/40 focus:outline-none focus:ring-2 focus:ring-accent/10"
+          className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
         />
       </div>
 
@@ -320,7 +319,7 @@ function QuestionForm({
               type="text"
               defaultValue={(opt as Record<string, string>)[key] ?? ""}
               required
-              className="w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
         ))}
@@ -334,7 +333,7 @@ function QuestionForm({
           <select
             name="correctOption"
             defaultValue={correct}
-            className="rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="h-12 rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           >
             <option value="A">A</option>
             <option value="B">B</option>
@@ -350,7 +349,7 @@ function QuestionForm({
             name="explanation"
             rows={2}
             defaultValue={explanation}
-            className="w-full rounded-xl border border-border bg-background/80 px-4 py-2.5 text-sm text-foreground transition-all focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
         </div>
       </div>
@@ -358,7 +357,7 @@ function QuestionForm({
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
-          className="btn-premium"
+          className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
           <Check className="size-4" />
           {question ? "บันทึก" : "เพิ่ม"}
@@ -366,7 +365,7 @@ function QuestionForm({
         <button
           type="button"
           onClick={onClose}
-          className="btn-ghost"
+          className="inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
         >
           <X className="size-4" />
           ยกเลิก

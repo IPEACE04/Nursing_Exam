@@ -31,10 +31,10 @@ export default function RegisterPage() {
       className="w-full"
     >
       <div className="mb-8 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
           สร้างบัญชีใหม่
         </h1>
-        <p className="mt-2 text-base text-muted-foreground">
+        <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">
           ลงทะเบียนเพื่อเริ่มฝึกข้อสอบ
         </p>
       </div>
@@ -74,7 +74,7 @@ export default function RegisterPage() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="rounded-xl bg-destructive/10 px-4 py-3 text-base text-destructive"
+            className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-3 text-base text-destructive"
           >
             {state.error}
           </motion.p>
@@ -84,7 +84,7 @@ export default function RegisterPage() {
           type="submit"
           disabled={pending}
           whileTap={{ scale: 0.99 }}
-          className="btn-premium w-full py-3.5 mt-2"
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           {pending ? (
             <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />

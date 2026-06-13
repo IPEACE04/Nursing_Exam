@@ -120,7 +120,7 @@ export default function ProfilePage() {
               disabled={uploading}
               className="relative cursor-pointer disabled:cursor-wait"
             >
-              <Avatar className="size-16 sm:size-20 ring-2 ring-primary/20 shadow-clinic transition-opacity group-hover:opacity-80">
+              <Avatar className="size-16 sm:size-20 ring-1 ring-border transition-opacity group-hover:opacity-80">
                 <AvatarImage src={profile?.avatar_url ?? undefined} />
                 <AvatarFallback className="bg-primary text-xl sm:text-2xl font-bold text-primary-foreground">
                   {initials}
@@ -137,13 +137,13 @@ export default function ProfilePage() {
               )}
             </button>
             <div className="absolute -bottom-1 -right-1 rounded-full bg-card border-2 border-card p-0.5">
-              <div className="rounded-full bg-primary/10 p-1">
-                <User className="size-3 sm:size-4 text-primary" />
+              <div className="rounded-full border border-border/60 bg-muted p-1">
+                <User className="size-3 sm:size-4 text-muted-foreground" />
               </div>
             </div>
           </div>
           <div className="min-w-0">
-            <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
+            <p className="text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate">
               {profile?.name || "ผู้ใช้"}
             </p>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -187,7 +187,11 @@ export default function ProfilePage() {
             placeholder="ชื่อมหาวิทยาลัย"
           />
 
-          <button type="submit" disabled={saving} className="btn-premium">
+          <button
+            type="submit"
+            disabled={saving}
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
+          >
             <Save className="size-5" />
             {saving ? "กำลังบันทึก..." : saved ? "บันทึกแล้ว ✓" : "บันทึกข้อมูล"}
           </button>
@@ -196,12 +200,10 @@ export default function ProfilePage() {
 
       <GlassCard className="p-5 sm:p-8">
         <div className="mb-6 flex items-center gap-3 sm:gap-4">
-          <div className="flex size-11 sm:size-13 items-center justify-center rounded-xl bg-primary/8 border border-primary/15 shrink-0">
-            <Lock className="size-5 sm:size-6 text-primary" />
-          </div>
+          <Lock className="size-6 text-primary shrink-0" />
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-foreground">เปลี่ยนรหัสผ่าน</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">เปลี่ยนรหัสผ่าน</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               ตั้งรหัสผ่านใหม่สำหรับบัญชีของคุณ
             </p>
           </div>
@@ -230,12 +232,15 @@ export default function ProfilePage() {
           />
 
           {passwordError && (
-            <p className="rounded-xl bg-destructive/10 px-4 py-3 text-base text-destructive border border-destructive/20">
+            <p className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-3 text-base text-destructive">
               {passwordError}
             </p>
           )}
 
-          <button type="submit" className="btn-premium-outline">
+          <button
+            type="submit"
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
+          >
             <KeyRound className="size-5" />
             {passwordSaved ? "เปลี่ยนรหัสผ่านแล้ว ✓" : "เปลี่ยนรหัสผ่าน"}
           </button>

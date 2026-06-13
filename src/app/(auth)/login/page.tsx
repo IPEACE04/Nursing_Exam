@@ -30,7 +30,7 @@ function LoginForm() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 rounded-xl border border-chart-3/30 bg-chart-3/10 px-5 py-3.5 text-base text-chart-3"
+          className="mb-6 rounded-xl border border-border bg-muted px-5 py-3.5 text-base text-foreground"
         >
           ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ
         </motion.div>
@@ -61,7 +61,7 @@ function LoginForm() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="rounded-xl bg-destructive/10 px-4 py-3 text-base text-destructive"
+            className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-3 text-base text-destructive"
           >
             {state.error}
           </motion.p>
@@ -71,7 +71,7 @@ function LoginForm() {
           type="submit"
           disabled={pending}
           whileTap={{ scale: 0.99 }}
-          className="btn-premium w-full py-3.5 mt-2"
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           {pending ? (
             <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
@@ -103,10 +103,10 @@ export default function LoginPage() {
       className="w-full"
     >
       <div className="mb-8 text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
           ยินดีต้อนรับ
         </h1>
-        <p className="mt-2 text-base text-muted-foreground">
+        <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">
           เข้าสู่ระบบเพื่อเริ่มทำข้อสอบ
         </p>
       </div>

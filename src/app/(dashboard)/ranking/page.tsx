@@ -13,9 +13,9 @@ import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import { cn } from "@/lib/utils";
 
 const podiumColors = [
-  { bg: "from-amber-400/20 to-yellow-500/10", border: "border-amber-400/30", text: "text-amber-500", icon: "text-amber-500", label: " gold" },
-  { bg: "from-slate-300/20 to-gray-400/10", border: "border-slate-300/30", text: "text-slate-500", icon: "text-slate-400", label: "" },
-  { bg: "from-amber-700/20 to-orange-800/10", border: "border-amber-700/30", text: "text-amber-700", icon: "text-amber-600", label: "" },
+  { text: "text-amber-500", border: "border-amber-500/30" },
+  { text: "text-slate-500", border: "border-slate-400/30" },
+  { text: "text-amber-700", border: "border-amber-700/30" },
 ];
 
 const rankIcons = [
@@ -69,7 +69,7 @@ export default function RankingPage() {
 
       {/* Podium */}
       {entries.length >= 3 && (
-        <div className="grid grid-cols-3 gap-3 sm:gap-5 items-end">
+        <div className="grid grid-cols-3 gap-3 sm:gap-6 items-end">
           {[1, 0, 2].map((idx) => {
             const entry = entries[idx];
             const pc = podiumColors[idx];
@@ -82,32 +82,31 @@ export default function RankingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.15, duration: 0.5 }}
                 className={cn(
-                  "relative flex flex-col items-center rounded-2xl border bg-card/60 backdrop-blur-xl p-4 sm:p-8 shadow-clinic transition-all duration-300 hover:shadow-clinic-lg",
+                  "relative flex flex-col items-center rounded-2xl border bg-card p-4 sm:p-8 transition-shadow duration-200 hover:shadow-sm",
                   pc.border,
                   idx === 0 ? "pb-8 sm:pb-12" : idx === 2 ? "pb-7 sm:pb-10" : "pb-7.5 sm:pb-11"
                 )}
               >
-                <div className={cn("absolute inset-0 rounded-2xl bg-gradient-to-b opacity-40", pc.bg)} />
                 <div className="relative flex flex-col items-center gap-2 sm:gap-3">
-                  <div className={cn("text-2xl sm:text-3xl", pc.icon)}>
+                  <div className={cn("text-2xl sm:text-3xl", pc.text)}>
                     {rankIcons[idx]}
                   </div>
-                  <Avatar className="size-12 sm:size-16 ring-2 ring-primary/20 shadow-clinic">
-                    <AvatarFallback className="bg-primary/5 text-base sm:text-xl font-semibold text-primary">
+                  <Avatar className="size-12 sm:size-16 ring-1 ring-border">
+                    <AvatarFallback className="bg-muted text-base sm:text-xl font-semibold text-primary">
                       {entry?.name?.charAt(0) ?? "?"}
                     </AvatarFallback>
                   </Avatar>
                   <p className="text-sm sm:text-base font-semibold text-foreground text-center leading-tight line-clamp-1">
                     {entry?.name}
                   </p>
-                  <p className={cn("text-xl sm:text-3xl font-bold", pc.text)}>
+                  <p className={cn("text-xl sm:text-3xl font-bold tracking-tight font-heading", pc.text)}>
                     {entry?.avg_score}%
                   </p>
                   <p className="text-xs sm:text-sm text-muted-foreground">
                     {entry?.total_exams} ครั้ง
                   </p>
                   {isCurrentUser && (
-                    <span className="px-2 sm:px-3 py-1 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-medium">
+                    <span className="px-2 sm:px-3 py-1 rounded-full border border-border/60 bg-transparent text-primary text-xs sm:text-sm font-medium">
                       คุณ
                     </span>
                   )}
@@ -120,7 +119,7 @@ export default function RankingPage() {
 
       {/* Leaderboard list */}
       <GlassCard className="overflow-hidden p-0">
-        <div className="divide-y divide-border/20">
+        <div className="divide-y divide-border/40">
           {entries.map((entry, i) => {
             const isCurrentUser = entry.user_id === user?.id;
             const rank = i + 1;
@@ -142,7 +141,7 @@ export default function RankingPage() {
                 className={cn(
                   "flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 transition-colors",
                   isCurrentUser
-                    ? "bg-primary/5"
+                    ? "bg-muted/50"
                     : "hover:bg-muted/30"
                 )}
               >
@@ -154,7 +153,7 @@ export default function RankingPage() {
                     {rank <= 3 ? rankIcons[rank - 1] : `#${rank}`}
                   </div>
                   <Avatar className="size-9 sm:size-11 shrink-0">
-                    <AvatarFallback className="bg-primary/10 text-xs sm:text-sm font-semibold text-primary">
+                    <AvatarFallback className="bg-muted text-xs sm:text-sm font-semibold text-primary">
                       {entry.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
@@ -164,7 +163,7 @@ export default function RankingPage() {
                         {entry.name}
                       </p>
                       {isCurrentUser && (
-                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-[10px] sm:text-xs font-medium text-primary shrink-0">
+                        <span className="px-2 py-0.5 rounded-full border border-border/60 bg-transparent text-xs font-medium text-primary shrink-0">
                           คุณ
                         </span>
                       )}
@@ -175,7 +174,7 @@ export default function RankingPage() {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-lg sm:text-xl font-bold text-foreground">
+                  <p className="text-lg sm:text-xl font-bold tracking-tight text-foreground font-heading">
                     {entry.avg_score}%
                   </p>
                   <p className="text-xs sm:text-sm text-muted-foreground">

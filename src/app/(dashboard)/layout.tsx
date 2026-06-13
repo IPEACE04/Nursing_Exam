@@ -24,7 +24,7 @@ export default function DashboardLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-clinical-grid">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <LoadingSpinner />
       </div>
     );
@@ -35,10 +35,10 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-clinical-grid">
+    <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
       <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
-        <div className="mx-auto w-full max-w-5xl p-4 sm:p-6 md:p-8 lg:p-10">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
           {children}
         </div>
       </main>

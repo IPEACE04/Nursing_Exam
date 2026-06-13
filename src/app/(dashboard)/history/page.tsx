@@ -115,45 +115,39 @@ export default function HistoryPage() {
         description="ติดตามพัฒนาการและผลการสอบที่ผ่านมาทั้งหมด"
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-3">
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4 sm:gap-5">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-primary/8 border border-primary/15 shrink-0">
-              <ClipboardList className="size-5 sm:size-6 text-primary" />
-            </div>
+            <ClipboardList className="size-6 text-primary shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 ข้อสอบทั้งหมด
               </p>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground">{totalExams}</p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{totalExams}</p>
             </div>
           </div>
         </GlassCard>
 
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4 sm:gap-5">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-emerald-500/8 border border-emerald-500/15 shrink-0">
-              <Target className="size-5 sm:size-6 text-emerald-500" />
-            </div>
+            <Target className="size-6 text-emerald-500 shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 คะแนนเฉลี่ย
               </p>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground">{avgScore}%</p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{avgScore}%</p>
             </div>
           </div>
         </GlassCard>
 
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4 sm:gap-5">
-            <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-amber-500/8 border border-amber-500/15 shrink-0">
-              <BarChart3 className="size-5 sm:size-6 text-amber-500" />
-            </div>
+            <BarChart3 className="size-6 text-amber-500 shrink-0" />
             <div>
-              <p className="text-xs sm:text-sm font-medium tracking-wider text-muted-foreground uppercase">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 คะแนนสูงสุด
               </p>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground">{bestScore}%</p>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{bestScore}%</p>
             </div>
           </div>
         </GlassCard>
@@ -163,13 +157,14 @@ export default function HistoryPage() {
         <GlassCard className="p-5 sm:p-6">
           <div className="mb-4 sm:mb-5 flex items-center gap-2.5">
             <TrendingUp className="size-5 sm:size-6 text-primary" />
-            <h2 className="text-lg sm:text-xl font-bold text-foreground">พัฒนาการคะแนน</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">พัฒนาการคะแนน</h2>
           </div>
           <ChartContainer config={chartConfig} className="aspect-[2/1] sm:aspect-[3/1] w-full">
             <LineChart data={chartData}>
               <CartesianGrid
-                strokeDasharray="3 3"
+                strokeDasharray="4 4"
                 stroke="var(--border)"
+                strokeWidth={0.5}
                 vertical={false}
               />
               <XAxis
@@ -204,7 +199,10 @@ export default function HistoryPage() {
           <GlassCard className="py-16 text-center">
             <ClipboardList className="mx-auto mb-4 size-14 text-muted-foreground/30" />
             <p className="text-base text-muted-foreground">ยังไม่มีประวัติการสอบ</p>
-            <Link href="/exam" className="btn-premium mt-5 inline-flex">
+            <Link
+              href="/exam"
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-5"
+            >
               เริ่มทำข้อสอบเลย
             </Link>
           </GlassCard>
@@ -220,15 +218,15 @@ export default function HistoryPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
                 whileHover={{ x: 3 }}
-                className="group flex items-center justify-between rounded-2xl border border-border/30 bg-card/50 px-5 py-4 sm:px-6 sm:py-5 backdrop-blur-xl shadow-clinic transition-all duration-200 hover:shadow-clinic-lg"
+                className="group flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-4 sm:px-6 sm:py-5 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div className={`flex size-11 sm:size-13 items-center justify-center rounded-xl border text-xs sm:text-sm font-bold transition-all duration-300 group-hover:scale-105 shrink-0 ${
+                  <div className={`flex size-11 sm:size-12 items-center justify-center rounded-xl border text-xs sm:text-sm font-bold transition-all duration-300 group-hover:scale-105 shrink-0 ${
                     attempt.percentage >= 80
-                      ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                      ? "border-emerald-500/20 text-emerald-600"
                       : attempt.percentage >= 50
-                        ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                        : "bg-destructive/10 text-destructive border-destructive/20"
+                        ? "border-amber-500/20 text-amber-600"
+                        : "border-destructive/20 text-destructive"
                   }`}>
                     {attempt.percentage}%
                   </div>

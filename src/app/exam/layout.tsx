@@ -4,7 +4,7 @@ export default function ExamLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-clinical-grid premium-gradient-bg">
+    <div className="min-h-screen bg-background">
       {children}
     </div>
   );

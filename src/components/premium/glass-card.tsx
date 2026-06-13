@@ -3,7 +3,7 @@
 import { motion, type HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
 
-interface GlassCardProps extends HTMLMotionProps<"div"> {
+interface CardProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
   hover?: boolean;
   delay?: number;
@@ -16,14 +16,14 @@ export function GlassCard({
   delay = 0,
   className = "",
   ...props
-}: GlassCardProps) {
+}: CardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay, ease: "easeOut" }}
-      className={`rounded-xl border border-border/50 bg-card shadow-sm transition-all ${
-        hover ? "hover:shadow-md" : ""
+      className={`rounded-2xl border border-border bg-card transition-shadow duration-200 ${
+        hover ? "hover:shadow-sm hover:border-border/70" : ""
       } ${className}`}
       {...props}
     >

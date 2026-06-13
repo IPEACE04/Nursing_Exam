@@ -19,8 +19,8 @@ export function AdminNavbar() {
     : "?";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/40 bg-card/80 backdrop-blur-xl">
-      <div className="flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
+      <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
           <img src="/kk.png" alt="NurseUp" className="size-10 rounded-xl object-cover" />
           <div>
@@ -47,7 +47,7 @@ export function AdminNavbar() {
               </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 rounded-xl border-border/40 shadow-clinic-lg p-1.5">
+          <DropdownMenuContent align="end" className="w-56 rounded-xl border border-border bg-card p-1.5 shadow-sm">
             <DropdownMenuSeparator className="bg-border/40 my-1" />
             <DropdownMenuItem
               className="cursor-pointer rounded-lg py-2.5 text-sm text-destructive focus:text-destructive"

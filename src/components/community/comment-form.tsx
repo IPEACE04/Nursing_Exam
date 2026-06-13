@@ -36,7 +36,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         onChange={(e) => setContent(e.target.value)}
         placeholder="เขียนความคิดเห็น..."
         rows={3}
-        className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-y focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+        className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
       />
       {error && (
         <p className="text-sm text-destructive">{error}</p>
@@ -45,7 +45,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         <button
           type="submit"
           disabled={isPending || !content.trim()}
-          className="btn-premium px-4 py-2 text-sm disabled:opacity-50"
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
           {isPending ? "กำลังส่ง..." : "ส่ง"}

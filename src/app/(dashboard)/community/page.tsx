@@ -49,16 +49,16 @@ export default function CommunityPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             Community
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-base text-muted-foreground leading-relaxed">
             แบ่งปันความรู้และเทคนิคการทำข้อสอบ
           </p>
         </div>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="btn-premium shrink-0"
+          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
           <Plus className="size-5" />
           <span className="hidden sm:inline">สร้างโพสต์</span>
@@ -70,15 +70,15 @@ export default function CommunityPage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/30 backdrop-blur-sm p-4 pt-16 sm:pt-4"
+          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/20 backdrop-blur-sm p-4 pt-16 sm:pt-4"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-2xl border border-border/50 bg-card p-4 sm:p-6 shadow-xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-lg max-h-[85vh] sm:max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-foreground">
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
                 สร้างโพสต์ใหม่
               </h2>
               <button
@@ -114,13 +114,13 @@ export default function CommunityPage() {
       {loading ? (
         <LoadingSpinner />
       ) : posts.length === 0 ? (
-        <div className="rounded-xl border border-border/50 bg-card py-8 sm:py-16 text-center">
+        <div className="rounded-2xl border border-border bg-card py-12 sm:py-16 text-center">
           <p className="text-base text-muted-foreground">
             ยังไม่มีโพสต์ในขณะนี้
           </p>
           <button
             onClick={() => setShowCreateForm(true)}
-            className="btn-premium mt-4"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-4"
           >
             <Plus className="size-4" />
             สร้างโพสต์แรก

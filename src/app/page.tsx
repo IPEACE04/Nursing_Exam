@@ -68,9 +68,9 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-clinical-grid">
+    <div className="min-h-screen bg-background">
       {/* ── Navbar ──────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-card/95 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background">
         <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             <img src="/kk.png" alt="NurseUp" className="size-9 sm:size-10 rounded-xl object-cover" />
@@ -85,7 +85,10 @@ export default function Home() {
             >
               เข้าสู่ระบบ
             </Link>
-            <Link href="/register" className="btn-premium px-5 py-2.5 text-sm">
+            <Link
+              href="/register"
+              className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+            >
               เริ่มฟรี
               <ArrowRight className="size-4" />
             </Link>
@@ -96,16 +99,15 @@ export default function Home() {
       <main>
         {/* ── Hero ────────────────────────────────────────────── */}
         <section className="pt-28 pb-14 sm:pt-36 sm:pb-20 md:pt-40 md:pb-24">
-          <div className="mx-auto max-w-3xl px-5 sm:px-6 text-center">
+          <div className="mx-auto max-w-4xl px-5 sm:px-6 text-center">
 
             <motion.h1
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.05 }}
-              className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[3.75rem] leading-[1.15]"
+              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-tight"
             >
-              ฝึกสอบอย่าง{" "}
-              <span className="text-primary font-extrabold">มืออาชีพ</span>
+              ฝึกสอบอย่างมืออาชีพ
               <br />
               ก่อนลงสนามจริง
             </motion.h1>
@@ -114,10 +116,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="mx-auto mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-muted-foreground"
+              className="mx-auto mt-6 max-w-2xl text-lg sm:text-xl leading-relaxed text-muted-foreground"
             >
               แพลตฟอร์มข้อสอบสำหรับนักศึกษาพยาบาล — วิเคราะห์ผล ติดตามพัฒนาการ
-              <br className="hidden sm:block" />
               และวัดความพร้อมก่อนสอบใบประกอบ ในประสบการณ์ที่ได้จากข้อสอบจริง
             </motion.p>
 
@@ -129,14 +130,14 @@ export default function Home() {
             >
               <Link
                 href="/register"
-                className="btn-premium px-8 py-3.5 text-base w-full sm:w-auto justify-center"
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-8 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
               >
                 สมัครใช้งานฟรี
                 <ArrowRight className="size-5" />
               </Link>
               <Link
                 href="/login"
-                className="btn-premium-outline px-8 py-3.5 text-base w-full sm:w-auto justify-center"
+                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-transparent px-8 text-base font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
               >
                 มีบัญชีอยู่แล้ว
               </Link>
@@ -147,7 +148,7 @@ export default function Home() {
         {/* ── Features ────────────────────────────────────────── */}
         <section className="pb-20 sm:pb-24 md:pb-28">
           <div className="mx-auto max-w-4xl px-5 sm:px-6">
-            <div className="grid grid-cols-2 gap-4 sm:gap-5 sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-4">
               {features.map((f, i) => {
                 const Icon = f.icon;
                 return (
@@ -156,9 +157,9 @@ export default function Home() {
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 + i * 0.06 }}
-                    className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-shadow duration-200 hover:shadow-md"
+                    className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80"
                   >
-                    <Icon className="mb-3 size-6 text-muted-foreground" />
+                    <Icon className="mb-3 size-6 text-primary" />
                     <h3 className="text-base sm:text-lg font-semibold text-foreground">
                       {f.title}
                     </h3>
@@ -174,7 +175,7 @@ export default function Home() {
       </main>
 
       {/* ── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-border/40 py-8">
+      <footer className="border-t border-border py-8">
         <p className="text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} NurseUp · Rangsit University
         </p>

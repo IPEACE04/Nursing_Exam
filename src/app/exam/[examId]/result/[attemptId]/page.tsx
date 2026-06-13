@@ -125,7 +125,7 @@ export default function ResultPage({
   const incorrectCount = total - score;
 
   return (
-    <div className="mx-auto max-w-3xl px-5 py-8 sm:px-6 md:px-8">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
       <motion.div
         variants={container}
         initial="hidden"
@@ -135,7 +135,7 @@ export default function ResultPage({
         <div>
           <button
             onClick={() => router.push("/community")}
-            className="mb-5 btn-ghost"
+            className="mb-5 inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <ArrowLeft className="size-5" />
             กลับไปแดชบอร์ด
@@ -153,12 +153,12 @@ export default function ResultPage({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
-              className={`mx-auto mb-6 flex size-24 sm:size-28 items-center justify-center rounded-full ${
-                passed ? "bg-chart-3/10" : "bg-destructive/10"
+              className={`mx-auto mb-6 flex size-24 sm:size-28 items-center justify-center rounded-full border ${
+                passed ? "border-emerald-500/20 bg-emerald-500/5" : "border-destructive/20 bg-destructive/5"
               }`}
             >
               {passed ? (
-                <CheckCircle2 className="size-12 sm:size-14 text-chart-3" />
+                <CheckCircle2 className="size-12 sm:size-14 text-emerald-600" />
               ) : (
                 <XCircle className="size-12 sm:size-14 text-destructive" />
               )}
@@ -168,7 +168,7 @@ export default function ResultPage({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground"
+              className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground font-heading"
             >
               {percentage}%
             </motion.p>
@@ -176,24 +176,22 @@ export default function ResultPage({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-3 text-base sm:text-lg text-muted-foreground"
+              className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed"
             >
               {passed ? "ยินดีด้วย! คุณสอบผ่าน" : "ยังไม่ผ่านเกณฑ์ ลองใหม่อีกครั้งนะ"}
             </motion.p>
 
             <div className="mt-8 sm:mt-10 grid grid-cols-3 gap-3 sm:gap-5">
               {[
-                { icon: Target, label: "ข้อที่ถูก", value: `${score}/${total}`, bg: "bg-chart-3/10", color: "text-chart-3" },
-                { icon: XCircle, label: "ข้อที่ผิด", value: `${incorrectCount}`, bg: "bg-destructive/10", color: "text-destructive" },
-                { icon: Clock, label: "เวลาที่ใช้", value: formatTime(timeSpent), bg: "bg-primary/8", color: "text-primary" },
+                { icon: Target, label: "ข้อที่ถูก", value: `${score}/${total}`, color: "text-emerald-600" },
+                { icon: XCircle, label: "ข้อที่ผิด", value: `${incorrectCount}`, color: "text-destructive" },
+                { icon: Clock, label: "เวลาที่ใช้", value: formatTime(timeSpent), color: "text-primary" },
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-border/60 bg-card/50 p-4 sm:p-5"
+                  className="rounded-xl border border-border bg-card p-4 sm:p-5"
                 >
-                  <div className={`mx-auto mb-2.5 flex size-11 sm:size-12 items-center justify-center rounded-xl ${stat.bg}`}>
-                    <stat.icon className={`size-5 sm:size-6 ${stat.color}`} />
-                  </div>
+                  <stat.icon className={`mx-auto mb-2.5 size-5 sm:size-6 ${stat.color}`} />
                   <p className="text-lg sm:text-xl font-semibold text-foreground">{stat.value}</p>
                   <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
                 </div>
@@ -222,7 +220,7 @@ export default function ResultPage({
                     className={`rounded-xl border p-5 sm:p-6 ${
                       isWrong
                         ? "border-destructive/20 bg-destructive/[0.03]"
-                        : "border-chart-3/20 bg-chart-3/[0.03]"
+                        : "border-emerald-500/20 bg-emerald-500/[0.03]"
                     }`}
                   >
                     <div className="mb-3 flex items-center gap-2.5">
@@ -230,12 +228,12 @@ export default function ResultPage({
                         ข้อ {i + 1}
                       </span>
                       {r.is_correct ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-chart-3/10 px-3 py-1 text-xs font-medium text-chart-3">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-transparent px-3 py-1 text-xs font-medium text-emerald-600">
                           <CheckCircle2 className="size-3.5" />
                           ถูก
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-3 py-1 text-xs font-medium text-destructive">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-destructive/20 bg-transparent px-3 py-1 text-xs font-medium text-destructive">
                           <XCircle className="size-3.5" />
                           ผิด
                         </span>
@@ -255,27 +253,27 @@ export default function ResultPage({
                             key={key}
                             className={`flex items-start gap-3 rounded-xl border px-4 py-2.5 ${
                               isCorrect
-                                ? "border-chart-3/30 bg-chart-3/8"
+                                ? "border-emerald-500/30 bg-emerald-500/5"
                                 : isSelected && !isCorrect
-                                  ? "border-destructive/30 bg-destructive/8"
+                                  ? "border-destructive/30 bg-destructive/5"
                                   : "border-transparent bg-muted/50"
                             }`}
                           >
                             <span
                               className={`flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
                                 isCorrect
-                                  ? "bg-chart-3 text-white"
+                                  ? "bg-emerald-600 text-white"
                                   : isSelected
                                     ? "bg-destructive text-destructive-foreground"
-                                    : "bg-muted-foreground/20 text-muted-foreground"
+                                    : "border border-border bg-card text-muted-foreground"
                               }`}
                             >
                               {key}
                             </span>
                             <span
-                              className={`pt-1 ${
+                              className={`pt-1 leading-relaxed ${
                                 isCorrect
-                                  ? "font-medium text-chart-3"
+                                  ? "font-medium text-emerald-600"
                                   : isSelected
                                     ? "text-destructive"
                                     : "text-muted-foreground"
@@ -300,7 +298,7 @@ export default function ResultPage({
                     )}
 
                     {r.explanation_text && (
-                      <div className="mt-4 rounded-xl bg-muted px-5 py-3.5 text-sm leading-relaxed border border-border/40 whitespace-pre-wrap break-words">
+                      <div className="mt-4 rounded-xl border border-border bg-muted px-5 py-3.5 text-sm leading-relaxed whitespace-pre-wrap break-words">
                         <span className="font-medium">คำอธิบาย: </span>
                         {r.explanation_text}
                       </div>
@@ -315,14 +313,14 @@ export default function ResultPage({
         <motion.div variants={itemAnim} className="flex justify-center gap-4 pb-8">
           <button
             onClick={() => router.push("/community")}
-            className="btn-premium-outline"
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
           >
             <BarChart3 className="size-5" />
             ไปแดชบอร์ด
           </button>
           <button
             onClick={() => router.push("/exam")}
-            className="btn-premium"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <GraduationCap className="size-5" />
             ทำข้อสอบอื่น

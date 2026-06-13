@@ -34,24 +34,31 @@ export function FormField({
 }: FormFieldProps) {
   return (
     <div className="relative group">
-      <Icon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
-      <input
-        id={id}
-        name={name}
-        type={type}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder || label}
-        required={required}
-        disabled={disabled}
-        autoComplete={autoComplete}
-        minLength={minLength}
-        className={cn(
-          "w-full rounded-xl border border-border/60 bg-background py-3.5 pl-12 pr-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150",
-          "focus:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/20",
-          disabled && "cursor-not-allowed bg-muted/50 text-muted-foreground"
-        )}
-      />
+      {label && (
+        <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-foreground">
+          {label}
+        </label>
+      )}
+      <div className="relative">
+        <Icon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
+        <input
+          id={id}
+          name={name}
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder || label}
+          required={required}
+          disabled={disabled}
+          autoComplete={autoComplete}
+          minLength={minLength}
+          className={cn(
+            "h-12 w-full rounded-xl border border-border bg-background px-5 py-2 pl-12 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150",
+            "focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10",
+            disabled && "cursor-not-allowed bg-muted/50 text-muted-foreground"
+          )}
+        />
+      </div>
     </div>
   );
 }

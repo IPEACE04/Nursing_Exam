@@ -26,8 +26,8 @@ export function Navbar() {
     : "?";
 
   return (
-    <div className="sticky top-0 z-40 mx-auto w-full max-w-5xl px-3 sm:px-4 lg:px-8 pt-3">
-      <header className="flex h-14 sm:h-16 items-center justify-between rounded-2xl border border-border/50 bg-card px-4 sm:px-5 shadow-sm">
+    <header className="sticky top-0 z-40 border-b border-border bg-background">
+      <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/community" className="flex items-center gap-2.5 shrink-0">
           <img src="/kk.png" alt="NurseUp" className="size-9 rounded-xl object-cover" />
           <span className="text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap">
@@ -47,10 +47,10 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap",
+                  "relative flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap",
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-4 after:right-4 after:h-0.5 after:rounded-full after:bg-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <Icon className="size-4 shrink-0" />
@@ -65,14 +65,14 @@ export function Navbar() {
             <DropdownMenuTrigger className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
               <Avatar className="size-9 ring-1 ring-border">
                 <AvatarImage src={profile?.avatar_url ?? undefined} />
-                <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                <AvatarFallback className="bg-muted text-xs font-semibold text-primary">
                   {initials}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-56 rounded-xl border-border/40 p-1.5 shadow-clinic-lg"
+              className="w-56 rounded-xl border border-border bg-card p-1.5 shadow-sm"
             >
               <div className="mb-1 px-3 py-2">
                 <p className="text-sm font-semibold text-foreground truncate">
@@ -110,7 +110,7 @@ export function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </header>
-    </div>
+      </div>
+    </header>
   );
 }

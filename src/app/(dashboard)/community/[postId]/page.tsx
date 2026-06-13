@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2, User } from "lucide-react";
 import { getPost, getComments, deletePost } from "@/actions/community";
 import { useAuth } from "@/context/auth-context";
 import type {
@@ -100,7 +100,10 @@ export default function PostDetailPage({
     return (
       <div className="text-center py-16">
         <p className="text-muted-foreground">ไม่พบโพสต์นี้</p>
-        <Link href="/community" className="btn-premium mt-4 inline-flex">
+        <Link
+          href="/community"
+          className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-4"
+        >
           กลับไป Community
         </Link>
       </div>
@@ -125,13 +128,13 @@ export default function PostDetailPage({
       </Link>
 
       {/* Post */}
-      <article className="rounded-xl border border-border/50 bg-card p-4 sm:p-6 lg:p-8 shadow-sm">
+      <article className="rounded-2xl border border-border bg-card p-5 sm:p-6 lg:p-8">
         <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="flex-1">
-            <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-3">
+          <div className="flex-1 min-w-0">
+            <span className="inline-block rounded-full border border-border/60 bg-transparent px-3 py-1 text-xs font-medium text-muted-foreground mb-3">
               {post.category}
             </span>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               {post.title}
             </h1>
           </div>
@@ -149,21 +152,21 @@ export default function PostDetailPage({
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-            {post.author_name.charAt(0)}
+          <div className="flex size-8 items-center justify-center rounded-full border border-border/60 bg-muted text-xs font-medium text-muted-foreground">
+            <User className="size-3.5" />
           </div>
-          <span className="font-medium text-foreground">
+          <span className="font-medium text-foreground truncate">
             {post.author_name}
           </span>
-          <span>·</span>
-          <span>{formatDate(post.created_at)}</span>
+          <span className="text-muted-foreground/60">·</span>
+          <span className="text-xs sm:text-sm truncate">{formatDate(post.created_at)}</span>
         </div>
 
-        <div className="prose prose-sm max-w-none text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">
+        <div className="prose prose-sm max-w-none text-foreground leading-relaxed whitespace-pre-wrap break-words">
           {post.content}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-border/40">
+        <div className="mt-6 pt-4 border-t border-border">
           <LikeButton
             postId={postId}
             initialLiked={post.has_liked}
@@ -173,8 +176,8 @@ export default function PostDetailPage({
       </article>
 
       {/* Comments */}
-      <div className="rounded-xl border border-border/50 bg-card p-4 sm:p-6 lg:p-8 shadow-sm">
-        <h2 className="text-lg font-bold text-foreground mb-6">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 lg:p-8">
+        <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-6">
           ความคิดเห็น ({comments.length})
         </h2>
 
@@ -194,7 +197,7 @@ export default function PostDetailPage({
           )}
         </div>
 
-        <div className="pt-4 border-t border-border/40">
+        <div className="pt-4 border-t border-border">
           <CommentForm postId={postId} onCommentAdded={fetchData} />
         </div>
       </div>

@@ -78,11 +78,11 @@ export default function ExamListPage() {
                 className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-foreground line-clamp-1">
+                  <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground line-clamp-1">
                     {exam.title}
                   </h3>
                   {exam.description && (
-                    <p className="mt-1.5 line-clamp-2 text-sm sm:text-base text-muted-foreground">
+                    <p className="mt-1.5 line-clamp-2 text-sm sm:text-base text-muted-foreground leading-relaxed">
                       {exam.description}
                     </p>
                   )}
@@ -99,7 +99,7 @@ export default function ExamListPage() {
                 </div>
                 <Link
                   href={`/exam/${exam.id}`}
-                  className="btn-premium shrink-0"
+                  className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
                 >
                   <Play className="size-5" />
                   เริ่มสอบ

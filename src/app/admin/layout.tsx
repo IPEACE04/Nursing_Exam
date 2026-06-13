@@ -27,7 +27,7 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-clinical-grid premium-gradient-bg-intense">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <LoadingSpinner />
       </div>
     );
@@ -38,12 +38,12 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen flex-col bg-clinical-grid premium-gradient-bg">
+    <div className="flex h-screen flex-col bg-background">
       <AdminNavbar />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />
         <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
-          <div className="mx-auto max-w-6xl p-5 sm:p-6 md:p-8">{children}</div>
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">{children}</div>
         </main>
       </div>
       <AdminMobileNav />

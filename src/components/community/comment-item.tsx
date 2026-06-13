@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Trash2, User } from "lucide-react";
 import { deleteComment } from "@/actions/community";
 import { useAuth } from "@/context/auth-context";
 import type { CommunityCommentWithAuthor } from "@/types";
@@ -33,21 +33,21 @@ export function CommentItem({
   }
 
   return (
-    <div className="rounded-xl border border-border/40 bg-card p-4 sm:p-5">
+    <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-              {comment.author_name.charAt(0)}
+            <div className="flex size-8 items-center justify-center rounded-full border border-border/60 bg-muted text-xs font-medium text-muted-foreground">
+              <User className="size-3.5" />
             </div>
-            <span className="text-sm font-medium text-foreground">
+            <span className="text-sm font-medium text-foreground truncate">
               {comment.author_name}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground/60">
               {formatDate(comment.created_at)}
             </span>
           </div>
-          <p className="text-sm text-foreground/80 leading-relaxed break-words">
+          <p className="text-sm text-foreground leading-relaxed break-words">
             {comment.content}
           </p>
         </div>

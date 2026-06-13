@@ -15,7 +15,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-border/40 bg-card lg:flex">   
+    <aside className="hidden w-64 flex-col border-r border-border bg-card lg:flex">
       <div className="flex flex-1 flex-col gap-1 p-3">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -28,7 +28,7 @@ export function AdminSidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-colors duration-150",
                 isActive
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-muted text-primary font-semibold"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

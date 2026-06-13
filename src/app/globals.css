@@ -75,7 +75,7 @@
   --chart-3: oklch(0.52 0.10 160);
   --chart-4: oklch(0.60 0.10 85);
   --chart-5: oklch(0.48 0.10 280);
-  --radius: 0.75rem;
+  --radius: 0.625rem;
   --sidebar: oklch(0.99 0.002 230);
   --sidebar-foreground: oklch(0.20 0.030 250);
   --sidebar-primary: oklch(0.52 0.09 235);
@@ -84,8 +84,7 @@
   --sidebar-accent-foreground: oklch(0.20 0.030 250);
   --sidebar-border: oklch(0.91 0.004 240);
   --sidebar-ring: oklch(0.52 0.09 235);
-  --shadow-clinical: 0 1px 3px oklch(0 0 0 / 0.04), 0 1px 2px oklch(0 0 0 / 0.02);
-  --shadow-clinical-lg: 0 4px 16px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.03);
+  --shadow-clinical: 0 1px 2px oklch(0 0 0 / 0.04);
 }
 
 /* ── Clean Minimal — Dark ──────────────────────────────────────── */
@@ -122,8 +121,7 @@
   --sidebar-accent-foreground: oklch(0.97 0.004 230);
   --sidebar-border: oklch(0.26 0.010 245);
   --sidebar-ring: oklch(0.60 0.10 235);
-  --shadow-clinical: 0 1px 3px oklch(0 0 0 / 0.2), 0 1px 2px oklch(0 0 0 / 0.15);
-  --shadow-clinical-lg: 0 4px 16px oklch(0 0 0 / 0.25), 0 2px 4px oklch(0 0 0 / 0.15);
+  --shadow-clinical: 0 1px 2px oklch(0 0 0 / 0.12);
 }
 
 /* ── Base ───────────────────────────────────────────────────────── */
@@ -137,132 +135,22 @@
   html {
     @apply font-sans scroll-smooth;
   }
+  h1, h2, h3, h4 {
+    @apply text-balance;
+  }
+  p {
+    @apply text-pretty;
+  }
 }
 
 /* ── Utilities ──────────────────────────────────────────────────── */
 @layer utilities {
-
-  /* Background — clean solid */
-  .premium-gradient-bg {
-    background: var(--background);
-  }
-
-  .premium-gradient-bg-intense {
-    background: var(--background);
-  }
-
-  .premium-mesh {
-    background: transparent;
-  }
-
-  /* Clinical grid — very subtle coordinate lines */
-  .bg-clinical-grid {
-    background-image:
-      linear-gradient(oklch(0.52 0.09 235 / 3%) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(0.52 0.09 235 / 3%) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  .dark .bg-clinical-grid {
-    background-image:
-      linear-gradient(oklch(1 0 0 / 2%) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(1 0 0 / 2%) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  /* Glass card — clean solid cards */
-  .premium-glass {
-    @apply border border-border/50 bg-card shadow-sm;
-  }
-
-  .premium-glass-strong {
-    @apply border border-border/40 bg-card;
-    box-shadow: var(--shadow-clinical);
-  }
-
   .premium-card-hover {
     @apply transition-shadow duration-200;
   }
 
   .premium-card-hover:hover {
-    box-shadow: var(--shadow-clinical-lg);
-  }
-
-  /* Text accent — solid color */
-  .text-gradient-primary {
-    color: var(--primary);
-  }
-
-  .text-gradient-gold {
-    color: oklch(0.55 0.10 85);
-  }
-
-  .text-gradient-accent {
-    color: var(--accent);
-  }
-
-  /* Glow — subtle */
-  .glow-sm {
-    box-shadow: 0 0 12px oklch(0.52 0.09 235 / 6%);
-  }
-
-  .glow-md {
-    box-shadow: 0 0 24px oklch(0.52 0.09 235 / 8%);
-  }
-
-  .glow-gold {
-    box-shadow: 0 0 12px oklch(0.55 0.10 85 / 8%);
-  }
-
-  /* Shadows */
-  .shadow-clinic {
     box-shadow: var(--shadow-clinical);
-  }
-
-  .shadow-clinic-lg {
-    box-shadow: var(--shadow-clinical-lg);
-  }
-
-  /* ── Buttons ────────────────────────────────────────────────── */
-  .btn-premium {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-150 sm:px-6 sm:py-3 sm:text-base;
-    @apply hover:bg-primary/90 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
-  }
-
-  .btn-premium-outline {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-all duration-150 sm:px-6 sm:py-3 sm:text-base;
-    @apply hover:bg-muted active:scale-[0.98] disabled:opacity-50;
-  }
-
-  .btn-success {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-150 sm:px-6 sm:py-3 sm:text-base;
-    background: oklch(0.52 0.10 160);
-    @apply hover:opacity-90 active:scale-[0.98] disabled:opacity-50;
-  }
-
-  .btn-destructive {
-    @apply inline-flex items-center justify-center gap-2.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-destructive-foreground shadow-sm transition-all duration-150 sm:px-6 sm:py-3 sm:text-base;
-    background: oklch(0.58 0.18 25);
-    @apply hover:opacity-90 active:scale-[0.98] disabled:opacity-50;
-  }
-
-  .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-150 sm:px-5 sm:py-2.5 sm:text-base;
-    @apply hover:bg-muted hover:text-foreground active:scale-[0.98];
-  }
-
-  /* ── Form ───────────────────────────────────────────────────── */
-  .clinical-divider {
-    @apply border-t border-border/50;
-  }
-
-  .clinical-input {
-    @apply rounded-xl border border-border bg-card px-5 py-3.5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150;
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40;
-  }
-
-  .clinical-label {
-    @apply text-base font-medium text-foreground/80;
   }
 
   /* ── Animations ─────────────────────────────────────────────── */

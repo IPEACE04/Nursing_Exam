@@ -87,7 +87,7 @@ export default function AdminExamsPage() {
         action={
           <button
             onClick={() => setShowCreate(!showCreate)}
-            className="btn-premium"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <Plus className="size-4" />
             สร้างข้อสอบ
@@ -116,44 +116,47 @@ export default function AdminExamsPage() {
                 }}
                 className="space-y-5"
               >
-                <h3 className="text-lg font-bold text-foreground">สร้างชุดข้อสอบใหม่</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">สร้างชุดข้อสอบใหม่</h3>
                 <div>
-                  <label className="clinical-label mb-1.5 block">ชื่อข้อสอบ</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">ชื่อข้อสอบ</label>
                   <input
                     name="title"
                     required
                     placeholder="เช่น ข้อสอบการพยาบาลผู้ใหญ่ 1"
-                    className="clinical-input w-full"
+                    className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div>
-                  <label className="clinical-label mb-1.5 block">คำอธิบาย</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">คำอธิบาย</label>
                   <textarea
                     name="description"
                     rows={3}
                     placeholder="คำอธิบายเกี่ยวกับชุดข้อสอบนี้"
-                    className="clinical-input w-full resize-none"
+                    className="w-full resize-none rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div>
-                  <label className="clinical-label mb-1.5 block">เวลา (นาที)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">เวลา (นาที)</label>
                   <input
                     name="time_limit_minutes"
                     type="number"
                     defaultValue={60}
                     min={1}
-                    className="clinical-input w-32"
+                    className="h-12 w-32 rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div className="flex gap-3">
-                  <button type="submit" className="btn-premium">
+                  <button
+                    type="submit"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                  >
                     <Plus className="size-4" />
                     สร้าง
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreate(false)}
-                    className="btn-ghost"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
                   >
                     ยกเลิก
                   </button>
@@ -170,7 +173,7 @@ export default function AdminExamsPage() {
           placeholder="ค้นหาชื่อข้อสอบ..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="clinical-input w-full pl-10"
+          className="h-12 w-full rounded-xl border border-border bg-background px-5 pl-10 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
         />
       </div>
 
@@ -195,21 +198,21 @@ export default function AdminExamsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-foreground truncate">
+                      <h3 className="text-base font-semibold tracking-tight text-foreground truncate">
                         {exam.title}
                       </h3>
                       <span
-                        className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                        className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium border ${
                           exam.is_published
-                            ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                            ? "border-emerald-500/30 text-emerald-600"
+                            : "border-amber-500/30 text-amber-600"
                         }`}
                       >
                         {exam.is_published ? "เผยแพร่" : "ร่าง"}
                       </span>
                     </div>
                     {exam.description && (
-                      <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
+                      <p className="mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-1">
                         {exam.description}
                       </p>
                     )}
@@ -226,10 +229,10 @@ export default function AdminExamsPage() {
                     <div className="mt-3">
                       <button
                         onClick={() => handleTogglePublish(exam.id, exam.is_published)}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                        className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all border ${
                           exam.is_published
-                            ? "bg-red-500/10 text-red-600 hover:bg-red-500/20 border border-red-500/20"
-                            : "bg-primary text-primary-foreground hover:opacity-90"
+                            ? "border-red-500/20 text-red-600 hover:bg-red-500/5"
+                            : "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
                         }`}
                       >
                         {exam.is_published ? (
@@ -249,13 +252,13 @@ export default function AdminExamsPage() {
                   <div className="flex items-center gap-1 shrink-0">
                     <Link
                       href={`/admin/exams/${exam.id}`}
-                      className="btn-ghost p-2"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <Pencil className="size-4" />
                     </Link>
                     <button
                       onClick={() => handleDelete(exam.id)}
-                      className="btn-ghost p-2 text-destructive hover:text-destructive"
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
                       <Trash2 className="size-4" />
                     </button>

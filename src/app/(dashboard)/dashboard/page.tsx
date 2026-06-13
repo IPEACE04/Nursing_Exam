@@ -128,17 +128,20 @@ export default function DashboardPage() {
           <p className="text-sm text-muted-foreground mb-1">
             สวัสดี!! พร้อมจะเริ่มสอบแล้วรึยัง <span role="img" aria-label="wave">👋</span>
           </p>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
             แดชบอร์ดของคุณ
           </h1>
         </div>
-        <Link href="/exam" className="btn-premium px-5 py-2.5 text-sm rounded-xl shadow-sm shrink-0">
-          เริ่มทำข้อสอบ <ArrowRight className="size-4 ml-1" />
+        <Link
+          href="/exam"
+          className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+        >
+          เริ่มทำข้อสอบ <ArrowRight className="size-4" />
         </Link>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
         <StatCard
           icon={<Activity className="size-6" />}
           label="ทำไปแล้ว"
@@ -153,7 +156,7 @@ export default function DashboardPage() {
           value={avgScore}
           suffix="%"
           delay={0.05}
-          accent="primary"
+          accent="emerald"
         />
         <StatCard
           icon={<Flame className="size-6" />}
@@ -161,7 +164,7 @@ export default function DashboardPage() {
           value={maxScore}
           suffix="%"
           delay={0.1}
-          accent="primary"
+          accent="amber"
         />
         <StatCard
           icon={<TrendingUp className="size-6" />}
@@ -175,36 +178,34 @@ export default function DashboardPage() {
 
       {/* Satisfaction Survey */}
       <div className="pb-4">
-      <Link href="/satisfaction">
-        <motion.div
-          className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-all hover:shadow-md"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex size-12 sm:size-14 items-center justify-center rounded-xl bg-primary/10">
+        <Link href="/satisfaction">
+          <motion.div
+            className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
                 <ClipboardCheck className="size-6 text-primary" />
+                <div>
+                  <p className="text-base sm:text-lg font-semibold text-foreground">
+                    แบบประเมินความพึงพอใจ
+                  </p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    ช่วยประเมินการใช้งาน NurseUp เพื่อให้เราปรับปรุงให้ดีขึ้น
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-base sm:text-lg font-bold text-foreground">
-                  แบบประเมินความพึงพอใจ
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  ช่วยประเมินการใช้งาน NurseUp เพื่อให้เราปรับปรุงให้ดีขึ้น
-                </p>
-              </div>
+              <ArrowRight className="size-5 text-muted-foreground shrink-0" />
             </div>
-            <ArrowRight className="size-5 text-muted-foreground shrink-0" />
-          </div>
-        </motion.div>
-      </Link>
+          </motion.div>
+        </Link>
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
         {/* Progress Card */}
-        <div className="lg:col-span-2 rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm">
+        <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-bold text-foreground">พัฒนาการ</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">พัฒนาการ</h2>
             <span className="text-xs text-muted-foreground">20 ครั้งล่าสุด</span>
           </div>
           
@@ -220,16 +221,16 @@ export default function DashboardPage() {
         </div>
 
         {/* Ranking Card */}
-        <div className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm flex flex-col">
+        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col transition-shadow duration-200 hover:shadow-sm hover:border-border/80">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-bold text-foreground">อันดับของคุณ</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">อันดับของคุณ</h2>
             <Link href="/ranking" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>
           </div>
           
           <div className="flex-1 flex flex-col items-center justify-center">
             {userRank > 0 ? (
                <div className="text-center">
-                 <span className="text-5xl sm:text-6xl font-bold text-foreground">{userRank}</span>
+                 <span className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground font-heading">{userRank}</span>
                  <p className="text-sm text-muted-foreground mt-2">จากผู้ใช้งานทั้งหมด</p>
                </div>
             ) : (
@@ -242,9 +243,9 @@ export default function DashboardPage() {
       </div>
 
       {/* History */}
-      <div className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80">
         <div className="flex items-center justify-between mb-4 sm:mb-5">
-          <h2 className="text-base sm:text-lg font-bold text-foreground">ประวัติล่าสุด</h2>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">ประวัติล่าสุด</h2>
           <Link href="/history" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>
         </div>
         
@@ -260,16 +261,16 @@ export default function DashboardPage() {
               <Link
                 key={attempt.id}
                 href={`/exam/${attempt.exam_id}/result/${attempt.id}`}
-                className="group flex items-center justify-between rounded-xl border border-transparent hover:border-border/60 hover:bg-muted/30 px-4 py-3 transition-all duration-200"
+                className="group flex items-center justify-between rounded-xl border border-transparent hover:border-border hover:bg-muted/30 px-4 py-3 transition-all duration-200"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div
-                    className={`flex size-10 sm:size-11 items-center justify-center rounded-xl text-xs sm:text-sm font-bold shrink-0 ${
+                    className={`flex size-10 sm:size-11 items-center justify-center rounded-xl text-xs sm:text-sm font-bold shrink-0 border ${
                       attempt.percentage >= 80
-                        ? "bg-emerald-500/10 text-emerald-600"
+                        ? "border-emerald-500/20 text-emerald-600"
                         : attempt.percentage >= 50
-                          ? "bg-amber-500/10 text-amber-600"
-                          : "bg-destructive/10 text-destructive"
+                          ? "border-amber-500/20 text-amber-600"
+                          : "border-destructive/20 text-destructive"
                     }`}
                   >
                     {attempt.percentage}%

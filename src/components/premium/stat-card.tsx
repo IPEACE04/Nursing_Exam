@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   icon: ReactNode;
@@ -15,10 +14,10 @@ interface StatCardProps {
 }
 
 const accentStyles = {
-  primary: { bg: "bg-primary/8", color: "text-primary", border: "border-primary/15" },
-  emerald: { bg: "bg-emerald-500/8", color: "text-emerald-500", border: "border-emerald-500/15" },
-  amber: { bg: "bg-amber-500/8", color: "text-amber-500", border: "border-amber-500/15" },
-  purple: { bg: "bg-purple-500/8", color: "text-purple-500", border: "border-purple-500/15" },
+  primary: "text-primary",
+  emerald: "text-emerald-500",
+  amber: "text-amber-500",
+  purple: "text-purple-500",
 };
 
 export function StatCard({
@@ -31,7 +30,7 @@ export function StatCard({
 }: StatCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const hasAnimated = useRef(false);
-  const s = accentStyles[accent];
+  const colorClass = accentStyles[accent];
 
   useEffect(() => {
     if (hasAnimated.current) return;
@@ -59,14 +58,14 @@ export function StatCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.35, ease: "easeOut" }}
-      className="rounded-xl border border-border/50 bg-card p-5 sm:p-6 shadow-sm transition-all hover:shadow-md"
+      className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm hover:border-border/80"
     >
       <div className="flex flex-col gap-2">
-        <div className={cn("size-6", s.color)}>
+        <div className={`size-6 ${colorClass}`}>
           {icon}
         </div>
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        <p className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-serif">
+        <p className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground font-heading">
           {displayValue}
           {suffix && <span className="text-base font-medium ml-1 font-sans text-muted-foreground">{suffix}</span>}
         </p>

@@ -72,7 +72,10 @@ export default function AdminSatisfactionPage() {
         title="จัดการแบบประเมิน"
         description="เพิ่ม แก้ไข เปิด/ปิด หรือลบคำถามในแบบประเมินความพึงพอใจ"
         action={
-          <Link href="/admin/satisfaction/analysis" className="btn-premium">
+          <Link
+            href="/admin/satisfaction/analysis"
+            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+          >
             <BarChart3 className="size-4" />
             ดูผลวิเคราะห์
           </Link>
@@ -91,9 +94,12 @@ export default function AdminSatisfactionPage() {
             onChange={(e) => setNewQuestion(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             placeholder="พิมพ์คำถาม..."
-            className="flex-1 rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="h-12 flex-1 rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
-          <button onClick={handleAdd} className="btn-premium">
+          <button
+            onClick={handleAdd}
+            className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+          >
             <Plus className="size-4" />
             เพิ่ม
           </button>
@@ -120,13 +126,19 @@ export default function AdminSatisfactionPage() {
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleUpdate(q.id)}
-                      className="flex-1 rounded-lg border border-border bg-card px-3 py-1.5 text-sm"
+                      className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                       autoFocus
                     />
-                    <button onClick={() => handleUpdate(q.id)} className="btn-premium text-xs px-3 py-1.5">
+                    <button
+                      onClick={() => handleUpdate(q.id)}
+                      className="inline-flex h-10 items-center rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                    >
                       บันทึก
                     </button>
-                    <button onClick={() => setEditingId(null)} className="btn-ghost text-xs px-3 py-1.5">
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="inline-flex h-10 items-center rounded-xl px-3 text-xs font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
+                    >
                       ยกเลิก
                     </button>
                   </div>
@@ -138,10 +150,10 @@ export default function AdminSatisfactionPage() {
 
                     <button
                       onClick={() => handleToggleActive(q)}
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium ${
+                      className={`text-xs px-3 py-1.5 rounded-full font-medium border ${
                         q.is_active
-                          ? "bg-emerald-500/10 text-emerald-600"
-                          : "bg-muted text-muted-foreground"
+                          ? "border-emerald-500/20 text-emerald-600"
+                          : "border-border bg-muted text-muted-foreground"
                       }`}
                     >
                       {q.is_active ? "เปิด" : "ปิด"}
@@ -152,14 +164,14 @@ export default function AdminSatisfactionPage() {
                         setEditingId(q.id);
                         setEditText(q.question_text);
                       }}
-                      className="text-xs btn-ghost px-3 py-1.5"
+                      className="text-xs rounded-xl px-3 py-1.5 font-medium text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
                     >
                       แก้ไข
                     </button>
 
                     <button
                       onClick={() => handleDelete(q.id)}
-                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                     >
                       <Trash2 className="size-4" />
                     </button>

@@ -81,13 +81,16 @@ export default function SatisfactionPage() {
     return (
       <div className="mx-auto max-w-lg text-center py-10 sm:py-16">
         <CheckCircle className="mx-auto size-16 text-emerald-500 mb-4" />
-        <h1 className="text-2xl font-bold text-foreground mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-2">
           ขอบคุณสำหรับการประเมิน
         </h1>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-base text-muted-foreground leading-relaxed mb-6">
           คุณได้ทำแบบประเมินความพึงพอใจเรียบร้อยแล้ว
         </p>
-        <button onClick={() => router.push("/dashboard")} className="btn-premium">
+        <button
+          onClick={() => router.push("/dashboard")}
+          className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+        >
           กลับแดชบอร์ด
         </button>
       </div>
@@ -124,10 +127,10 @@ export default function SatisfactionPage() {
                     key={r.value}
                     type="button"
                     onClick={() => setScore(q.id, r.value)}
-                    className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all ${
+                    className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all border ${
                       scores[q.id] === r.value
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                   >
                     <div className="flex items-center gap-0.5">
@@ -158,17 +161,21 @@ export default function SatisfactionPage() {
               onChange={(e) => setFeedback(e.target.value)}
               placeholder="เขียนข้อเสนอแนะของคุณ..."
               rows={4}
-              className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 resize-y focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </GlassCard>
 
           {error && (
-            <p className="rounded-xl bg-destructive/10 px-4 py-3 text-sm text-destructive border border-destructive/20">
+            <p className="rounded-xl border border-destructive/20 bg-destructive/8 px-4 py-3 text-sm text-destructive">
               {error}
             </p>
           )}
 
-          <button type="submit" disabled={isPending} className="btn-premium w-full">
+          <button
+            type="submit"
+            disabled={isPending}
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
+          >
             {isPending ? (
               <>
                 <span className="size-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />

@@ -9,9 +9,9 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-border/40 bg-card lg:flex">
-      <div className="border-b border-border/40 px-5 py-5">
-        <p className="text-sm font-medium tracking-wider text-muted-foreground uppercase">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
+      <div className="border-b border-border px-5 py-5">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           เมนูหลัก
         </p>
       </div>
@@ -29,7 +29,7 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-colors duration-150",
                 isActive
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-muted text-primary font-semibold"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >

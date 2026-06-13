@@ -22,6 +22,7 @@ export default function ProfilePage() {
   const [passwordError, setPasswordError] = useState("");
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hasInitialized = useRef(false);
@@ -149,6 +150,7 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+          {avatarError && <p className="text-sm text-destructive mt-1">{avatarError}</p>}
           <div className="min-w-0">
             <p className="text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate">
               {profile?.name || "ผู้ใช้"}

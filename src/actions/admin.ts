@@ -167,6 +167,7 @@ export async function getAdminExams() {
   const { data } = await supabase
     .from("exams")
     .select("*, questions ( id )")
+    .neq("type", "pre_post_test")
     .order("created_at", { ascending: false });
 
   if (!data) return [];
@@ -234,4 +235,145 @@ export async function getExamWithQuestions(examId: string) {
     exam: exam as { title: string; description: string | null; time_limit_minutes: number },
     questions: (questions ?? []) as Record<string, unknown>[],
   };
+}
+
+export async function createPrePostExam(formData: FormData) {
+  const { supabase, userId } = await requireAdmin();
+  const title = formData.get("title") as string;
+  const description = formData.get("description") as string;
+  const timeLimit = parseInt(formData.get("timeLimit") as string, 10) || 60;
+
+  const { data: existing } = await supabase
+    .from("exams")
+    .select("id")
+    .eq("type", "pre_post_test")
+    .maybeSingle();
+
+  if (existing) {
+    const { error } = await supabase
+      .from("exams")
+      .update({ title, description, time_limit_minutes: timeLimit })
+      .eq("id", existing.id);
+
+    if (error) throw new Error(error.message);
+    revalidatePath("/admin/pre-post-test");
+    redirect("/admin/pre-post-test");
+  }
+
+  const { error } = await supabase.from("exams").insert({
+    title,
+    description,
+    time_limit_minutes: timeLimit,
+    is_published: false,
+    type: "pre_post_test",
+    created_by: userId,
+  });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/pre-post-test");
+  redirect("/admin/pre-post-test");
+}
+
+export async function getPrePostExam() {
+  await requireAdmin();
+  const supabase = createSupabaseServerClient();
+
+  const { data: exam } = await supabase
+    .from("exams")
+    .select("*")
+    .eq("type", "pre_post_test")
+    .maybeSingle();
+
+  if (!exam) return null;
+
+  const { data: questions } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("exam_id", exam.id)
+    .order("sort_order", { ascending: true });
+
+  return {
+    exam: exam as { id: string; title: string; description: string | null; time_limit_minutes: number; is_published: boolean },
+    questions: (questions ?? []) as unknown as Record<string, unknown>[],
+  };
+}
+
+export async function createPrePostQuestion(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const examId = formData.get("examId") as string;
+  const questionText = formData.get("questionText") as string;
+  const optionA = formData.get("optionA") as string;
+  const optionB = formData.get("optionB") as string;
+  const optionC = formData.get("optionC") as string;
+  const optionD = formData.get("optionD") as string;
+  const correctOption = formData.get("correctOption") as string;
+  const explanation = formData.get("explanation") as string;
+
+  const { count } = await supabase
+    .from("questions")
+    .select("*", { count: "exact", head: true })
+    .eq("exam_id", examId);
+
+  const sortOrder = (count ?? 0) + 1;
+
+  const { error } = await supabase.from("questions").insert({
+    exam_id: examId,
+    question_text: questionText,
+    options: { A: optionA, B: optionB, C: optionC, D: optionD },
+    correct_option: correctOption,
+    explanation_text: explanation || null,
+    sort_order: sortOrder,
+  });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/pre-post-test");
+}
+
+export async function updatePrePostQuestion(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = formData.get("id") as string;
+  const questionText = formData.get("questionText") as string;
+  const optionA = formData.get("optionA") as string;
+  const optionB = formData.get("optionB") as string;
+  const optionC = formData.get("optionC") as string;
+  const optionD = formData.get("optionD") as string;
+  const correctOption = formData.get("correctOption") as string;
+  const explanation = formData.get("explanation") as string;
+
+  const { error } = await supabase
+    .from("questions")
+    .update({
+      question_text: questionText,
+      options: { A: optionA, B: optionB, C: optionC, D: optionD },
+      correct_option: correctOption,
+      explanation_text: explanation || null,
+    })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/pre-post-test");
+}
+
+export async function deletePrePostQuestion(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = formData.get("id") as string;
+
+  const { error } = await supabase.from("questions").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/pre-post-test");
+}
+
+export async function togglePrePostPublish(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = formData.get("id") as string;
+  const is_published = formData.get("is_published") === "true";
+
+  const { error } = await supabase
+    .from("exams")
+    .update({ is_published: !is_published })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/pre-post-test");
+  revalidatePath("/exam");
 }

@@ -2,64 +2,60 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Plus, Trash2, BarChart3 } from "lucide-react";
-import { getAdminQuestions, addQuestion, deleteQuestion, updateQuestion } from "@/actions/satisfaction";
-import type { SatisfactionQuestion } from "@/types";
+import { Plus, Trash2, BarChart3, Layers, Pencil, X, Check, ArrowRight } from "lucide-react";
+import {
+  getCategories,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+} from "@/actions/satisfaction";
+import type { SatisfactionCategory } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 
 export default function AdminSatisfactionPage() {
-  const [questions, setQuestions] = useState<SatisfactionQuestion[]>([]);
+  const [categories, setCategories] = useState<SatisfactionCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newQuestion, setNewQuestion] = useState("");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editText, setEditText] = useState("");
+  const [newCatName, setNewCatName] = useState("");
+  const [editingCatId, setEditingCatId] = useState<string | null>(null);
+  const [editCatName, setEditCatName] = useState("");
 
   async function fetchData() {
-    const data = await getAdminQuestions();
-    setQuestions(data);
+    const data = await getCategories();
+    setCategories(data);
     setLoading(false);
   }
 
   useEffect(() => {
     let cancelled = false;
-     
-    getAdminQuestions()
-      .then((data) => { if (!cancelled) setQuestions(data); })
+    getCategories()
+      .then((data) => { if (!cancelled) setCategories(data); })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
-  async function handleAdd() {
-    if (!newQuestion.trim()) return;
+  async function handleAddCategory() {
+    if (!newCatName.trim()) return;
     const formData = new FormData();
-    formData.set("question_text", newQuestion);
-    await addQuestion(formData);
-    setNewQuestion("");
+    formData.set("name", newCatName);
+    await addCategory(formData);
+    setNewCatName("");
     fetchData();
   }
 
-  async function handleUpdate(id: string) {
-    if (!editText.trim()) return;
+  async function handleUpdateCategory(id: string) {
+    if (!editCatName.trim()) return;
     const formData = new FormData();
-    formData.set("question_text", editText);
-    await updateQuestion(id, formData);
-    setEditingId(null);
+    formData.set("name", editCatName);
+    await updateCategory(id, formData);
+    setEditingCatId(null);
     fetchData();
   }
 
-  async function handleToggleActive(q: SatisfactionQuestion) {
-    const formData = new FormData();
-    formData.set("question_text", q.question_text);
-    formData.set("is_active", String(!q.is_active));
-    await updateQuestion(q.id, formData);
-    fetchData();
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm("ต้องการลบคำถามนี้?")) return;
-    await deleteQuestion(id);
+  async function handleDeleteCategory(id: string) {
+    if (!confirm("ลบหมวดหมู่นี้? คำถามในหมวดนี้จะถูกย้ายออก")) return;
+    await deleteCategory(id);
     fetchData();
   }
 
@@ -70,7 +66,7 @@ export default function AdminSatisfactionPage() {
       <PageHeader
         badge="Admin"
         title="จัดการแบบประเมิน"
-        description="เพิ่ม แก้ไข เปิด/ปิด หรือลบคำถามในแบบประเมินความพึงพอใจ"
+        description="สร้างและจัดการหมวดหมู่ของแบบประเมินความพึงพอใจ"
         action={
           <Link
             href="/admin/satisfaction/analysis"
@@ -82,101 +78,89 @@ export default function AdminSatisfactionPage() {
         }
       />
 
-      {/* Add Question */}
+      {/* Add Category */}
       <GlassCard className="p-5 sm:p-6">
-        <label className="block text-sm font-medium text-foreground mb-2">
-          เพิ่มคำถามใหม่
-        </label>
         <div className="flex gap-2">
           <input
             type="text"
-            value={newQuestion}
-            onChange={(e) => setNewQuestion(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            placeholder="พิมพ์คำถาม..."
+            value={newCatName}
+            onChange={(e) => setNewCatName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
+            placeholder="ชื่อหมวดหมู่ใหม่..."
             className="h-12 flex-1 rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
           <button
-            onClick={handleAdd}
+            onClick={handleAddCategory}
             className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <Plus className="size-4" />
-            เพิ่ม
+            เพิ่มหมวดหมู่
           </button>
         </div>
       </GlassCard>
 
-      {/* Questions List */}
-      {questions.length === 0 ? (
+      {/* Category List */}
+      {categories.length === 0 ? (
         <GlassCard className="p-8 text-center">
-          <p className="text-muted-foreground">ยังไม่มีคำถาม</p>
+          <Layers className="mx-auto mb-3 size-10 text-muted-foreground/30" />
+          <p className="text-sm text-muted-foreground">ยังไม่มีหมวดหมู่ — สร้างหมวดหมู่แรกเลย</p>
         </GlassCard>
       ) : (
         <div className="space-y-3">
-          {questions.map((q) => (
-            <GlassCard key={q.id} className="p-4 sm:p-5">
+          {categories.map((cat) => (
+            <GlassCard key={cat.id} className="p-4 sm:p-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground shrink-0 w-6">
-                  {q.sort_order}.
-                </span>
+                <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-muted shrink-0">
+                  <Layers className="size-4 text-primary" />
+                </div>
 
-                {editingId === q.id ? (
-                  <div className="flex-1 flex gap-2">
+                {editingCatId === cat.id ? (
+                  <div className="flex-1 flex items-center gap-2">
                     <input
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleUpdate(q.id)}
-                      className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                      value={editCatName}
+                      onChange={(e) => setEditCatName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleUpdateCategory(cat.id)}
+                      className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none"
                       autoFocus
                     />
-                    <button
-                      onClick={() => handleUpdate(q.id)}
-                      className="inline-flex h-10 items-center rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
-                    >
-                      บันทึก
+                    <button onClick={() => handleUpdateCategory(cat.id)} className="rounded-lg p-2 text-primary hover:bg-primary/5">
+                      <Check className="size-4" />
                     </button>
-                    <button
-                      onClick={() => setEditingId(null)}
-                      className="inline-flex h-10 items-center rounded-xl px-3 text-xs font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
-                    >
-                      ยกเลิก
+                    <button onClick={() => setEditingCatId(null)} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
+                      <X className="size-4" />
                     </button>
                   </div>
                 ) : (
                   <>
-                    <span className={`flex-1 text-sm ${!q.is_active && "line-through text-muted-foreground"}`}>
-                      {q.question_text}
-                    </span>
-
-                    <button
-                      onClick={() => handleToggleActive(q)}
-                      className={`text-xs px-3 py-1.5 rounded-full font-medium border ${
-                        q.is_active
-                          ? "border-emerald-500/20 text-emerald-600"
-                          : "border-border bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {q.is_active ? "เปิด" : "ปิด"}
-                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-semibold text-foreground">{cat.name}</p>
+                    </div>
 
                     <button
                       onClick={() => {
-                        setEditingId(q.id);
-                        setEditText(q.question_text);
+                        setEditingCatId(cat.id);
+                        setEditCatName(cat.name);
                       }}
-                      className="text-xs rounded-xl px-3 py-1.5 font-medium text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     >
-                      แก้ไข
+                      <Pencil className="size-4" />
                     </button>
-
                     <button
-                      onClick={() => handleDelete(q.id)}
-                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      onClick={() => handleDeleteCategory(cat.id)}
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                     >
                       <Trash2 className="size-4" />
                     </button>
                   </>
                 )}
+
+                <Link
+                  href={`/admin/satisfaction/${cat.id}`}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px shrink-0"
+                >
+                  จัดการคำถาม
+                  <ArrowRight className="size-4" />
+                </Link>
               </div>
             </GlassCard>
           ))}

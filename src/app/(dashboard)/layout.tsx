@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { Navbar } from "@/components/shared/navbar";
 import { MobileNav } from "@/components/shared/mobile-nav";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { getPrePostTestGate } from "@/actions/exam";
 
 export default function DashboardLayout({
   children,
@@ -13,16 +14,39 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { profile, isLoading } = useAuth();
+  const pathname = usePathname();
+  const { profile, user, isLoading } = useAuth();
+  const [checkingGate, setCheckingGate] = useState(true);
 
   useEffect(() => {
     if (isLoading) return;
+
     if (profile?.role === "admin") {
       router.push("/admin");
+      return;
     }
-  }, [profile, isLoading, router]);
 
-  if (isLoading) {
+    if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCheckingGate(false);
+      return;
+    }
+
+    if (pathname.startsWith("/progress") || pathname.startsWith("/exam/")) {
+      setCheckingGate(false);
+      return;
+    }
+
+    getPrePostTestGate(user.id).then((gate) => {
+      if (!gate.preTestCompleted && gate.prePostExamId) {
+        router.push(`/exam/${gate.prePostExamId}`);
+      } else {
+        setCheckingGate(false);
+      }
+    });
+  }, [profile, isLoading, user, router, pathname]);
+
+  if (isLoading || checkingGate) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <LoadingSpinner />

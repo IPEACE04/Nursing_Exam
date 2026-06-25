@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
 import type {
   SatisfactionQuestion,
+  SatisfactionCategory,
   SatisfactionAnalysis,
 } from "@/types";
 
@@ -13,11 +14,19 @@ export async function getQuestions() {
 
   const { data } = await supabase
     .from("satisfaction_questions")
-    .select("*")
+    .select("*, satisfaction_categories!inner(name)")
     .eq("is_active", true)
     .order("sort_order", { ascending: true });
 
-  return (data ?? []) as SatisfactionQuestion[];
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    id: r.id as string,
+    question_text: r.question_text as string,
+    category_id: r.category_id as string | null,
+    category_name: (r.satisfaction_categories as { name: string } | null)?.name ?? null,
+    sort_order: r.sort_order as number,
+    is_active: r.is_active as boolean,
+    created_at: r.created_at as string,
+  })) as SatisfactionQuestion[];
 }
 
 export async function hasSubmitted() {
@@ -52,7 +61,6 @@ export async function submitSurvey(formData: FormData) {
 
   const supabase = createSupabaseServerClient();
 
-  // Check already submitted
   const { count: existing } = await supabase
     .from("satisfaction_responses")
     .select("*", { count: "exact", head: true })
@@ -86,30 +94,111 @@ export async function submitSurvey(formData: FormData) {
   return { success: true };
 }
 
-// ── Admin Actions ─────────────────────────────────────────────────
+// ── Category CRUD ──────────────────────────────────────────────────
+
+export async function getCategories() {
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("satisfaction_categories")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  return (data ?? []) as SatisfactionCategory[];
+}
+
+export async function addCategory(formData: FormData) {
+  const name = (formData.get("name") as string)?.trim();
+  if (!name) return { error: "กรุณากรอกชื่อหมวดหมู่" };
+
+  const supabase = createSupabaseServerClient();
+
+  const { count } = await supabase
+    .from("satisfaction_categories")
+    .select("*", { count: "exact", head: true });
+
+  const { error } = await supabase.from("satisfaction_categories").insert({
+    name,
+    sort_order: (count ?? 0) + 1,
+  });
+
+  if (error) return { error: "เกิดข้อผิดพลาด" };
+  revalidatePath("/admin/satisfaction");
+  return { success: true };
+}
+
+export async function updateCategory(id: string, formData: FormData) {
+  const name = (formData.get("name") as string)?.trim();
+  if (!name) return { error: "กรุณากรอกชื่อหมวดหมู่" };
+
+  const supabase = createSupabaseServerClient();
+
+  await supabase
+    .from("satisfaction_categories")
+    .update({ name })
+    .eq("id", id);
+
+  revalidatePath("/admin/satisfaction");
+  return { success: true };
+}
+
+export async function deleteCategory(id: string) {
+  const supabase = createSupabaseServerClient();
+
+  await supabase
+    .from("satisfaction_questions")
+    .update({ category_id: null })
+    .eq("category_id", id);
+
+  await supabase.from("satisfaction_categories").delete().eq("id", id);
+
+  revalidatePath("/admin/satisfaction");
+  return { success: true };
+}
+
+// ── Admin Question CRUD ────────────────────────────────────────────
+
 export async function getAdminQuestions() {
   const supabase = createSupabaseServerClient();
 
   const { data } = await supabase
     .from("satisfaction_questions")
-    .select("*")
+    .select("*, satisfaction_categories(name)")
     .order("sort_order", { ascending: true });
 
-  return (data ?? []) as SatisfactionQuestion[];
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    id: r.id as string,
+    question_text: r.question_text as string,
+    category_id: r.category_id as string | null,
+    category_name: (r.satisfaction_categories as { name: string } | null)?.name ?? null,
+    sort_order: r.sort_order as number,
+    is_active: r.is_active as boolean,
+    created_at: r.created_at as string,
+  })) as SatisfactionQuestion[];
 }
 
 export async function addQuestion(formData: FormData) {
   const questionText = formData.get("question_text") as string;
+  const categoryId = (formData.get("category_id") as string) || null;
   if (!questionText) return { error: "กรุณากรอกคำถาม" };
 
   const supabase = createSupabaseServerClient();
 
-  const { count } = await supabase
+  let countQuery = supabase
     .from("satisfaction_questions")
     .select("*", { count: "exact", head: true });
 
+  if (categoryId) {
+    countQuery = countQuery.eq("category_id", categoryId);
+  } else {
+    countQuery = countQuery.is("category_id", null);
+  }
+
+  const { count } = await countQuery;
+
   const { error } = await supabase.from("satisfaction_questions").insert({
     question_text: questionText,
+    category_id: categoryId || null,
     sort_order: (count ?? 0) + 1,
   });
 
@@ -120,6 +209,7 @@ export async function addQuestion(formData: FormData) {
 
 export async function updateQuestion(id: string, formData: FormData) {
   const questionText = formData.get("question_text") as string;
+  const categoryId = (formData.get("category_id") as string) || null;
   const isActive = formData.get("is_active") === "true";
 
   if (!questionText) return { error: "กรุณากรอกคำถาม" };
@@ -128,7 +218,7 @@ export async function updateQuestion(id: string, formData: FormData) {
 
   await supabase
     .from("satisfaction_questions")
-    .update({ question_text: questionText, is_active: isActive })
+    .update({ question_text: questionText, category_id: categoryId, is_active: isActive })
     .eq("id", id);
 
   revalidatePath("/admin/satisfaction");
@@ -164,8 +254,40 @@ export async function getAnalysis(): Promise<SatisfactionAnalysis> {
   const averagePerQuestion = ((avgRows ?? []) as Record<string, unknown>[]).map((r) => ({
     question_id: r.question_id as string,
     question_text: r.question_text as string,
+    category_id: (r.category_id as string) ?? "",
+    category_name: (r.category_name as string) ?? "ทั่วไป",
     avg_score: Number(r.avg_score ?? 0),
     total_scores: Number(r.total_scores ?? 0),
+  }));
+
+  const categoryMap = new Map<
+    string,
+    { id: string; avg_scores: number[]; total_scores: number; questions: { question_id: string; question_text: string; avg_score: number }[] }
+  >();
+
+  averagePerQuestion.forEach((q) => {
+    const key = q.category_name;
+    if (!categoryMap.has(key)) {
+      categoryMap.set(key, { id: q.category_id, avg_scores: [], total_scores: 0, questions: [] });
+    }
+    const entry = categoryMap.get(key)!;
+    entry.avg_scores.push(q.avg_score);
+    entry.total_scores += q.total_scores;
+    entry.questions.push({
+      question_id: q.question_id,
+      question_text: q.question_text,
+      avg_score: q.avg_score,
+    });
+  });
+
+  const categories = Array.from(categoryMap.entries()).map(([category_name, data]) => ({
+    category_id: data.id,
+    category_name,
+    avg_score: data.avg_scores.length > 0
+      ? Math.round((data.avg_scores.reduce((a, b) => a + b, 0) / data.avg_scores.length) * 10) / 10
+      : 0,
+    total_scores: data.total_scores,
+    questions: data.questions,
   }));
 
   const feedbacks = (responses ?? [])
@@ -182,6 +304,7 @@ export async function getAnalysis(): Promise<SatisfactionAnalysis> {
   return {
     total_responses: totalResponses ?? 0,
     average_per_question: averagePerQuestion,
+    categories,
     feedbacks,
   };
 }

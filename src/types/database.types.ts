@@ -51,6 +51,7 @@ export interface Database {
           description: string | null;
           time_limit_minutes: number;
           is_published: boolean;
+          type: string;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -61,6 +62,7 @@ export interface Database {
           description?: string | null;
           time_limit_minutes?: number;
           is_published?: boolean;
+          type?: string;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -71,6 +73,7 @@ export interface Database {
           description?: string | null;
           time_limit_minutes?: number;
           is_published?: boolean;
+          type?: string;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -239,6 +242,7 @@ export interface Database {
         Row: {
           id: string;
           question_text: string;
+          category_id: string | null;
           sort_order: number | null;
           is_active: boolean | null;
           created_at: string | null;
@@ -246,6 +250,7 @@ export interface Database {
         Insert: {
           id?: string;
           question_text: string;
+          category_id?: string | null;
           sort_order?: number | null;
           is_active?: boolean | null;
           created_at?: string | null;
@@ -253,8 +258,29 @@ export interface Database {
         Update: {
           id?: string;
           question_text?: string;
+          category_id?: string | null;
           sort_order?: number | null;
           is_active?: boolean | null;
+          created_at?: string | null;
+        };
+      };
+      satisfaction_categories: {
+        Row: {
+          id: string;
+          name: string;
+          sort_order: number | null;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          sort_order?: number | null;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          sort_order?: number | null;
           created_at?: string | null;
         };
       };

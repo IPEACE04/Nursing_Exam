@@ -9,6 +9,7 @@ import Link from "next/link";
 import { register } from "@/actions/auth";
 import { useAuth } from "@/context/auth-context";
 import { FormField } from "@/components/premium/form-field";
+import { getPrePostTestExam } from "@/actions/exam";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,7 +19,17 @@ export default function RegisterPage() {
   useEffect(() => {
     if (state?.success) {
       refreshProfile().then((profile) => {
-        router.push(profile?.role === "admin" ? "/admin" : "/community");
+        if (profile?.role === "admin") {
+          router.push("/admin");
+        } else {
+          getPrePostTestExam().then((exam) => {
+            if (exam?.id) {
+              router.push(`/exam/${exam.id}`);
+            } else {
+              router.push("/community");
+            }
+          });
+        }
       });
     }
   }, [state, refreshProfile, router]);

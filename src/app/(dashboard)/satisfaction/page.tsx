@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Star, Send, CheckCircle } from "lucide-react";
+import { Star, Send, CheckCircle, Layers } from "lucide-react";
 import { getQuestions, hasSubmitted, submitSurvey } from "@/actions/satisfaction";
 import type { SatisfactionQuestion } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
@@ -115,42 +115,61 @@ export default function SatisfactionPage() {
         </GlassCard>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
-          {questions.map((q, i) => (
-            <GlassCard key={q.id} className="p-5 sm:p-6">
-              <p className="text-base font-medium text-foreground mb-4">
-                {i + 1}. {q.question_text}
-              </p>
+          {(() => {
+            const grouped = new Map<string, SatisfactionQuestion[]>();
+            questions.forEach((q) => {
+              const cat = q.category_name || "ทั่วไป";
+              if (!grouped.has(cat)) grouped.set(cat, []);
+              grouped.get(cat)!.push(q);
+            });
 
-              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-                {ratings.map((r) => (
-                  <button
-                    key={r.value}
-                    type="button"
-                    onClick={() => setScore(q.id, r.value)}
-                    className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all border ${
-                      scores[q.id] === r.value
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    <div className="flex items-center gap-0.5">
-                      {Array.from({ length: r.value }).map((_, j) => (
-                        <Star
-                          key={j}
-                          className={`size-3.5 ${
+            return Array.from(grouped.entries()).map(([category, qs]) => (
+              <div key={category} className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Layers className="size-4 text-muted-foreground" />
+                  <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                    {category}
+                  </h3>
+                </div>
+                {qs.map((q, i) => (
+                  <GlassCard key={q.id} className="p-5 sm:p-6">
+                    <p className="text-base font-medium text-foreground mb-4">
+                      {i + 1}. {q.question_text}
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                      {ratings.map((r) => (
+                        <button
+                          key={r.value}
+                          type="button"
+                          onClick={() => setScore(q.id, r.value)}
+                          className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all border ${
                             scores[q.id] === r.value
-                              ? "fill-primary-foreground"
-                              : "fill-muted-foreground/30"
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border bg-muted text-muted-foreground hover:bg-muted/80"
                           }`}
-                        />
+                        >
+                          <div className="flex items-center gap-0.5">
+                            {Array.from({ length: r.value }).map((_, j) => (
+                              <Star
+                                key={j}
+                                className={`size-3.5 ${
+                                  scores[q.id] === r.value
+                                    ? "fill-primary-foreground"
+                                    : "fill-muted-foreground/30"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs font-medium">{r.label}</span>
+                        </button>
                       ))}
                     </div>
-                    <span className="text-xs font-medium">{r.label}</span>
-                  </button>
+                  </GlassCard>
                 ))}
               </div>
-            </GlassCard>
-          ))}
+            ));
+          })()}
 
           <GlassCard className="p-5 sm:p-6">
             <label className="block text-sm font-medium text-foreground mb-2">

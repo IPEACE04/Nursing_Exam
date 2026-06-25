@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -11,6 +11,7 @@ import {
   Radio,
   CheckLine,
 } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 const features = [
   {
@@ -37,35 +38,27 @@ const features = [
 
 export default function Home() {
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
+  const { user, profile, isLoading } = useAuth();
 
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const { createSupabaseBrowserClient } = await import(
-          "@/lib/supabase-client"
-        );
-        const supabase = createSupabaseBrowserClient();
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session) {
-          router.push("/community");
-          return;
-        }
-      } catch {}
-      setChecking(false);
+    if (!isLoading && user) {
+      if (profile?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/community");
+      }
     }
-    checkAuth();
-  }, [router]);
+  }, [isLoading, user, profile, router]);
 
-  if (checking) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
   }
+
+  if (user) return null;
 
   return (
     <div className="min-h-screen">

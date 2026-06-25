@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Clock, FileText, Play, BookOpen } from "lucide-react";
+import { Clock, FileText, Play, BookOpen, ClipboardCheck } from "lucide-react";
 import { getPublishedExams } from "@/actions/exam";
 import type { ExamWithQuestionCount } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
@@ -45,6 +45,9 @@ export default function ExamListPage() {
     );
   }
 
+  const prePostExam = exams.find((e) => (e as unknown as Record<string, unknown>).type === "pre_post_test");
+  const normalExams = exams.filter((e) => (e as unknown as Record<string, unknown>).type !== "pre_post_test");
+
   return (
     <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 pt-4">
       <PageHeader
@@ -67,46 +70,108 @@ export default function ExamListPage() {
             </p>
           </GlassCard>
         ) : (
-          exams.map((exam) => (
-            <motion.div
-              key={exam.id}
-              variants={itemAnim}
-              className="group"
-            >
-              <GlassCard
-                hover
-                className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground line-clamp-1">
-                    {exam.title}
-                  </h3>
-                  {exam.description && (
-                    <p className="mt-1.5 line-clamp-2 text-sm sm:text-base text-muted-foreground leading-relaxed">
-                      {exam.description}
-                    </p>
-                  )}
-                  <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <FileText className="size-4" />
-                      {exam.question_count} ข้อ
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="size-4" />
-                      {exam.time_limit_minutes} นาที
-                    </span>
-                  </div>
+          <>
+            {prePostExam && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <ClipboardCheck className="size-4 text-primary" />
+                  <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                    PreTest / PostTest
+                  </h2>
                 </div>
-                <Link
-                  href={`/exam/${exam.id}`}
-                  className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
-                >
-                  <Play className="size-5" />
-                  เริ่มสอบ
-                </Link>
-              </GlassCard>
-            </motion.div>
-          ))
+                <motion.div variants={itemAnim} className="group">
+                  <GlassCard
+                    hover
+                    className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between border-primary/20"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground line-clamp-1">
+                          {prePostExam.title}
+                        </h3>
+                        <span className="shrink-0 rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-medium text-primary">
+                          Pre/Post
+                        </span>
+                      </div>
+                      {prePostExam.description && (
+                        <p className="mt-1.5 line-clamp-2 text-sm sm:text-base text-muted-foreground leading-relaxed">
+                          {prePostExam.description}
+                        </p>
+                      )}
+                      <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1.5">
+                          <FileText className="size-4" />
+                          {prePostExam.question_count} ข้อ
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="size-4" />
+                          {prePostExam.time_limit_minutes} นาที
+                        </span>
+                      </div>
+                    </div>
+                    <Link
+                      href={`/exam/${prePostExam.id}`}
+                      className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                    >
+                      <Play className="size-5" />
+                      {prePostExam.id ? "เริ่มสอบ" : "เริ่มสอบ"}
+                    </Link>
+                  </GlassCard>
+                </motion.div>
+              </div>
+            )}
+
+            {normalExams.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 pt-2">
+                  <BookOpen className="size-4 text-muted-foreground" />
+                  <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                    ข้อสอบปกติ ({normalExams.length})
+                  </h2>
+                </div>
+                {normalExams.map((exam) => (
+                  <motion.div
+                    key={exam.id}
+                    variants={itemAnim}
+                    className="group"
+                  >
+                    <GlassCard
+                      hover
+                      className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground line-clamp-1">
+                          {exam.title}
+                        </h3>
+                        {exam.description && (
+                          <p className="mt-1.5 line-clamp-2 text-sm sm:text-base text-muted-foreground leading-relaxed">
+                            {exam.description}
+                          </p>
+                        )}
+                        <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1.5">
+                            <FileText className="size-4" />
+                            {exam.question_count} ข้อ
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <Clock className="size-4" />
+                            {exam.time_limit_minutes} นาที
+                          </span>
+                        </div>
+                      </div>
+                      <Link
+                        href={`/exam/${exam.id}`}
+                        className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                      >
+                        <Play className="size-5" />
+                        เริ่มสอบ
+                      </Link>
+                    </GlassCard>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </motion.div>
     </div>

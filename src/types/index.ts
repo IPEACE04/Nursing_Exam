@@ -10,12 +10,15 @@ export interface Profile {
   updated_at: string;
 }
 
+export type ExamType = "normal" | "pre_post_test";
+
 export interface Exam {
   id: string;
   title: string;
   description: string | null;
   time_limit_minutes: number;
   is_published: boolean;
+  type: ExamType;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -113,9 +116,18 @@ export interface CommunityCommentWithAuthor extends CommunityComment {
 }
 
 // ── Satisfaction Survey ──────────────────────────────────────────
+export interface SatisfactionCategory {
+  id: string;
+  name: string;
+  sort_order: number;
+  created_at: string;
+}
+
 export interface SatisfactionQuestion {
   id: string;
   question_text: string;
+  category_id: string | null;
+  category_name?: string | null;
   sort_order: number;
   is_active: boolean;
   created_at: string;
@@ -124,6 +136,7 @@ export interface SatisfactionQuestion {
 export interface SatisfactionScore {
   question_id: string;
   question_text: string;
+  category_name: string | null;
   score: number;
 }
 
@@ -140,12 +153,54 @@ export interface SatisfactionAnalysis {
   average_per_question: {
     question_id: string;
     question_text: string;
+    category_id: string;
+    category_name: string;
     avg_score: number;
     total_scores: number;
+  }[];
+  categories: {
+    category_id: string;
+    category_name: string;
+    avg_score: number;
+    total_scores: number;
+    questions: {
+      question_id: string;
+      question_text: string;
+      avg_score: number;
+    }[];
   }[];
   feedbacks: {
     user_name: string;
     feedback: string;
     created_at: string;
   }[];
+}
+
+export interface ProgressComparison {
+  preTest: {
+    score: number;
+    total: number;
+    percentage: number;
+    completed_at: string;
+  } | null;
+  postTest: {
+    score: number;
+    total: number;
+    percentage: number;
+    completed_at: string;
+  } | null;
+  improvement: number;
+  hasCompletedAllNormalExams: boolean;
+  hasCompletedPreTest: boolean;
+  hasCompletedPostTest: boolean;
+  remainingExams: { id: string; title: string }[];
+  unlockableExams: boolean;
+}
+
+export interface PrePostTestGate {
+  preTestCompleted: boolean;
+  postTestUnlocked: boolean;
+  postTestCompleted: boolean;
+  prePostExamId: string | null;
+  remainingExams: { id: string; title: string }[];
 }

@@ -14,11 +14,14 @@ import {
   List,
   X,
   Play,
+  Lock,
+  CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useTimer } from "@/hooks/use-timer";
-import { submitExam, getExamSession } from "@/actions/exam";
-import type { Question } from "@/types";
+import { submitExam, getExamSession, getPrePostTestGate } from "@/actions/exam";
+import type { Question, PrePostTestGate } from "@/types";
 
 const STORAGE_ANSWERS_PREFIX = "exam_answers_";
 
@@ -31,7 +34,7 @@ export default function ExamPage({
   const router = useRouter();
   const { user } = useAuth();
 
-  const [exam, setExam] = useState<{ title: string; description: string | null; time_limit_minutes: number } | null>(null);
+  const [exam, setExam] = useState<{ title: string; description: string | null; time_limit_minutes: number; type: string } | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -41,6 +44,8 @@ export default function ExamPage({
   const [started, setStarted] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
   const hasAutoSubmitted = useRef(false);
+  const [gate, setGate] = useState<PrePostTestGate | null>(null);
+  const [gateLoading, setGateLoading] = useState(true);
 
   const storageKey = `${STORAGE_ANSWERS_PREFIX}${examId}`;
 
@@ -68,6 +73,11 @@ export default function ExamPage({
         } catch {}
       }
 
+      if (data.exam.type === "pre_post_test") {
+        const gateData = await getPrePostTestGate(user!.id);
+        setGate(gateData);
+      }
+      setGateLoading(false);
       setLoading(false);
     }
 
@@ -132,7 +142,7 @@ export default function ExamPage({
     setStarted(true);
   }
 
-  if (loading || !exam) {
+  if (loading || gateLoading || !exam) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <span className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -140,11 +150,117 @@ export default function ExamPage({
     );
   }
 
+  const isPrePostTest = exam.type === "pre_post_test";
+  const isPreTest = isPrePostTest && !gate?.preTestCompleted;
+  const isPostTestLocked = isPrePostTest && gate?.preTestCompleted && !gate?.postTestUnlocked && !gate?.postTestCompleted;
+  const isPostTestReady = isPrePostTest && gate?.postTestUnlocked && !gate?.postTestCompleted;
+  const isPostTestDone = isPrePostTest && gate?.postTestCompleted;
+
   const currentQuestion = questions[currentIndex];
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === questions.length;
 
   if (!started) {
+    if (isPostTestLocked) {
+      return (
+        <div className="mx-auto flex min-h-[80vh] max-w-lg items-center justify-center px-3 sm:px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="w-full space-y-5 sm:space-y-6"
+          >
+            <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 text-center shadow-lg">
+              <div className="mx-auto mb-4 sm:mb-5 flex size-16 sm:size-20 items-center justify-center rounded-full border border-amber-500/20 bg-amber-500/5">
+                <Lock className="size-8 sm:size-10 text-amber-500" />
+              </div>
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
+                PostTest ยังไม่ปลดล็อค
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                ทำข้อสอบปกติให้ครบทุกชุดก่อนเพื่อปลดล็อค PostTest
+              </p>
+
+              {gate && gate.remainingExams.length > 0 && (
+                <div className="mt-5 sm:mt-6 space-y-2 text-left">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    ข้อสอบที่ยังไม่ได้ทำ ({gate.remainingExams.length})
+                  </p>
+                  <div className="space-y-1.5">
+                    {gate.remainingExams.map((e) => (
+                      <div
+                        key={e.id}
+                        className="flex items-center justify-between rounded-xl border border-border bg-card p-3"
+                      >
+                        <span className="text-sm text-foreground line-clamp-1">{e.title}</span>
+                        <button
+                          onClick={() => router.push(`/exam/${e.id}`)}
+                          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all hover:bg-primary/90"
+                        >
+                          ไปทำ <ArrowRight className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <p className="mt-4 text-xs text-muted-foreground">
+                คุณทำ PreTest แล้ว — เหลือข้อสอบปกติอีก {gate?.remainingExams.length ?? 0} ชุด
+              </p>
+              <button
+                onClick={() => router.push("/progress")}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px mt-4"
+              >
+                ดูความคืบหน้า
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      );
+    }
+
+    if (isPostTestDone) {
+      return (
+        <div className="mx-auto flex min-h-[80vh] max-w-lg items-center justify-center px-3 sm:px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="w-full space-y-5 sm:space-y-6"
+          >
+            <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 text-center shadow-lg">
+              <div className="mx-auto mb-4 sm:mb-5 flex size-16 sm:size-20 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/5">
+                <CheckCircle2 className="size-8 sm:size-10 text-emerald-600" />
+              </div>
+              <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
+                PostTest สำเร็จแล้ว
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                ยินดีด้วย! คุณทำครบทุกขั้นตอนแล้ว สามารถทำข้อสอบซ้ำได้ไม่จำกัด
+              </p>
+              <div className="mt-5 flex flex-col gap-3">
+                <button
+                  onClick={() => router.push("/progress")}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                >
+                  <ArrowRight className="size-4" />
+                  ดูผลเปรียบเทียบ PreTest vs PostTest
+                </button>
+                <button
+                  onClick={handleStart}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
+                >
+                  <Play className="size-4" />
+                  ทำข้อสอบนี้อีกครั้ง
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      );
+    }
+
     return (
       <div className="mx-auto flex min-h-[80vh] max-w-lg items-center justify-center px-3 sm:px-4">
         <motion.div
@@ -182,6 +298,21 @@ export default function ExamPage({
                 <p className="text-xs text-muted-foreground">นาที</p>
               </div>
             </div>
+
+            {isPrePostTest && (
+              <div className="mt-4 p-3 rounded-xl border border-border bg-muted/50">
+                <p className="text-sm font-medium text-foreground mb-1">
+                  {isPreTest ? "PreTest" : isPostTestReady ? "PostTest" : ""}
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {isPreTest
+                    ? "นี่คือการทดสอบก่อนเริ่มฝึก — ทำให้เต็มที่นะ"
+                    : isPostTestReady
+                      ? "คุณทำข้อสอบปกติครบแล้ว — มาวัดผลกัน"
+                      : ""}
+                </p>
+              </div>
+            )}
 
             <div className="mt-4 sm:mt-6 space-y-2.5 sm:space-y-3 text-left text-xs sm:text-sm text-muted-foreground leading-relaxed">
               <div className="flex items-start gap-2.5 sm:gap-3">
@@ -226,6 +357,16 @@ export default function ExamPage({
             <span className="line-clamp-1 text-sm sm:text-lg font-semibold tracking-tight text-foreground">
               {exam.title}
             </span>
+            {isPreTest && (
+              <span className="shrink-0 rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-primary">
+                PreTest
+              </span>
+            )}
+            {isPostTestReady && (
+              <span className="shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-emerald-600">
+                PostTest
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button

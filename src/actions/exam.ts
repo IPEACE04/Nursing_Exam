@@ -33,7 +33,7 @@ export async function getExamSession(examId: string) {
 
   const { data: exam } = await supabase
     .from("exams")
-    .select("title, description, time_limit_minutes")
+    .select("title, description, time_limit_minutes, type")
     .eq("id", examId)
     .eq("is_published", true)
     .single();
@@ -47,7 +47,7 @@ export async function getExamSession(examId: string) {
     .order("sort_order", { ascending: true });
 
   return {
-    exam: exam as { title: string; description: string | null; time_limit_minutes: number },
+    exam: exam as { title: string; description: string | null; time_limit_minutes: number; type: string },
     questions: (questions ?? []) as Record<string, unknown>[],
   };
 }
@@ -91,17 +91,26 @@ export async function getUserRank(userId: string) {
 export async function getDashboardData(userId: string) {
   const supabase = createSupabaseServerClient();
 
-  const { data: attempts } = await supabase
+  const prePostExam = await getPrePostTestExam();
+
+  let attemptQuery = supabase
     .from("exam_attempts")
     .select("*, exams ( title )")
     .eq("user_id", userId)
     .order("completed_at", { ascending: false })
     .limit(50);
 
+  if (prePostExam?.id) {
+    attemptQuery = attemptQuery.neq("exam_id", prePostExam.id);
+  }
+
+  const { data: attempts } = await attemptQuery;
+
   const { data: exams } = await supabase
     .from("exams")
     .select("*, questions ( id )")
     .eq("is_published", true)
+    .neq("type", "pre_post_test")
     .order("created_at", { ascending: false })
     .limit(3);
 
@@ -121,14 +130,132 @@ export async function getDashboardData(userId: string) {
 export async function getHistory(userId: string) {
   const supabase = createSupabaseServerClient();
 
-  const { data } = await supabase
+  const prePostExam = await getPrePostTestExam();
+
+  let query = supabase
     .from("exam_attempts")
-    .select("*, exams ( title )")
+    .select("*, exams ( title, type )")
     .eq("user_id", userId)
     .order("completed_at", { ascending: false })
     .limit(100);
 
+  if (prePostExam?.id) {
+    query = query.neq("exam_id", prePostExam.id);
+  }
+
+  const { data } = await query;
+
   return (data ?? []) as Record<string, unknown>[];
+}
+
+export async function getPrePostTestExam() {
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("exams")
+    .select("id, title, description, time_limit_minutes")
+    .eq("type", "pre_post_test")
+    .eq("is_published", true)
+    .maybeSingle();
+
+  return data as { id: string; title: string; description: string | null; time_limit_minutes: number } | null;
+}
+
+export async function getPrePostTestGate(userId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const prePostExam = await getPrePostTestExam();
+
+  const { data: attemptsOnPrePost } = await supabase
+    .from("exam_attempts")
+    .select("id, completed_at")
+    .eq("user_id", userId)
+    .eq("exam_id", prePostExam?.id ?? "")
+    .order("completed_at", { ascending: true });
+
+  const preTestCompleted = prePostExam?.id ? (attemptsOnPrePost ?? []).length > 0 : false;
+  const postTestCompleted = prePostExam?.id ? (attemptsOnPrePost ?? []).length >= 2 : false;
+
+  const { data: normalExams } = await supabase
+    .from("exams")
+    .select("id, title")
+    .eq("is_published", true)
+    .eq("type", "normal");
+
+  const { data: normalAttempts } = await supabase
+    .from("exam_attempts")
+    .select("exam_id")
+    .eq("user_id", userId)
+    .in("exam_id", (normalExams ?? []).map((e) => e.id));
+
+  const attemptedNormalIds = new Set((normalAttempts ?? []).map((a) => a.exam_id));
+
+  const remainingExams = (normalExams ?? [])
+    .filter((e) => !attemptedNormalIds.has(e.id))
+    .map((e) => ({ id: e.id, title: e.title }));
+
+  const hasCompletedAllNormal = remainingExams.length === 0;
+  const postTestUnlocked = preTestCompleted && hasCompletedAllNormal && !postTestCompleted;
+
+  return {
+    preTestCompleted,
+    postTestUnlocked,
+    postTestCompleted,
+    prePostExamId: prePostExam?.id ?? null,
+    remainingExams,
+  };
+}
+
+export async function getProgressComparison(userId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const prePostExam = await getPrePostTestExam();
+  const gate = await getPrePostTestGate(userId);
+
+  let preTest = null;
+  let postTest = null;
+
+  if (prePostExam?.id) {
+    const { data: attempts } = await supabase
+      .from("exam_attempts")
+      .select("score, total_questions, completed_at")
+      .eq("user_id", userId)
+      .eq("exam_id", prePostExam.id)
+      .order("completed_at", { ascending: true });
+
+    if ((attempts ?? []).length > 0) {
+      const first = attempts![0];
+      preTest = {
+        score: first.score,
+        total: first.total_questions,
+        percentage: first.total_questions > 0 ? Math.round((first.score / first.total_questions) * 100) : 0,
+        completed_at: first.completed_at,
+      };
+    }
+
+    if ((attempts ?? []).length >= 2) {
+      const last = attempts![attempts!.length - 1];
+      postTest = {
+        score: last.score,
+        total: last.total_questions,
+        percentage: last.total_questions > 0 ? Math.round((last.score / last.total_questions) * 100) : 0,
+        completed_at: last.completed_at,
+      };
+    }
+  }
+
+  const improvement = preTest && postTest ? postTest.percentage - preTest.percentage : 0;
+
+  return {
+    preTest,
+    postTest,
+    improvement,
+    hasCompletedAllNormalExams: gate.remainingExams.length === 0,
+    hasCompletedPreTest: gate.preTestCompleted,
+    hasCompletedPostTest: gate.postTestCompleted,
+    remainingExams: gate.remainingExams,
+    unlockableExams: gate.postTestCompleted,
+  };
 }
 
 export async function submitExam(formData: FormData) {
@@ -206,5 +333,36 @@ export async function submitExam(formData: FormData) {
 
   if (uaError) throw new Error("Failed to save answers");
 
+  const { data: examMeta } = await supabase
+    .from("exams")
+    .select("type")
+    .eq("id", examId)
+    .single();
+
+  if (examMeta?.type === "pre_post_test") {
+    redirect(`/progress`);
+  }
+
   redirect(`/history`);
+}
+
+export async function getPrePostTestHistory(userId: string) {
+  const supabase = createSupabaseServerClient();
+
+  const prePostExam = await getPrePostTestExam();
+  if (!prePostExam?.id) return [];
+
+  const { data } = await supabase
+    .from("exam_attempts")
+    .select("score, total_questions, completed_at")
+    .eq("user_id", userId)
+    .eq("exam_id", prePostExam.id)
+    .order("completed_at", { ascending: true });
+
+  return ((data ?? []) as { score: number; total_questions: number; completed_at: string }[]).map((a) => ({
+    score: a.score,
+    total: a.total_questions,
+    percentage: a.total_questions > 0 ? Math.round((a.score / a.total_questions) * 100) : 0,
+    completed_at: a.completed_at,
+  }));
 }

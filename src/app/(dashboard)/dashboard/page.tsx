@@ -8,12 +8,12 @@ import {
   Activity,
   Target,
   Flame,
-  TrendingUp,
+  BookOpen,
   ArrowRight,
   ClipboardCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { getDashboardData } from "@/actions/exam";
+import { getDashboardData, getPrePostTestGate } from "@/actions/exam";
 import type { AttemptWithExam } from "@/types";
 import { StatCard } from "@/components/premium/stat-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
@@ -54,6 +54,7 @@ export default function DashboardPage() {
   const { user, isLoading } = useAuth();
   const [attempts, setAttempts] = useState<AttemptWithExam[]>([]);
   const [userRank, setUserRank] = useState(0);
+  const [remainingCount, setRemainingCount] = useState(0);
   const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
@@ -62,7 +63,10 @@ export default function DashboardPage() {
 
     async function fetchData() {
       try {
-        const data = await getDashboardData(uid);
+        const [data, gate] = await Promise.all([
+          getDashboardData(uid),
+          getPrePostTestGate(uid),
+        ]);
         const attemptsData = data.attempts as unknown as ExamAttemptRow[];
         if (attemptsData.length > 0) {
           const mapped = attemptsData.map((a) => ({
@@ -82,6 +86,7 @@ export default function DashboardPage() {
           setAttempts(mapped);
         }
         setUserRank(data.rank as number);
+        setRemainingCount(gate.remainingExams.length);
       } catch {
         setAttempts([]);
         setUserRank(0);
@@ -108,7 +113,6 @@ export default function DashboardPage() {
     attempts.length > 0
       ? Math.max(...attempts.map((a) => a.percentage))
       : 0;
-  const readiness = totalExams > 0 ? avgScore : 0;
 
   const chartData = [...attempts].reverse().map((a, i) => ({
     index: i + 1,
@@ -169,10 +173,10 @@ export default function DashboardPage() {
           accent="amber"
         />
         <StatCard
-          icon={<TrendingUp className="size-6" />}
-          label="ความพร้อมสอบ"
-          value={readiness}
-          suffix="%"
+          icon={<BookOpen className="size-6" />}
+          label="ข้อสอบที่เหลือ"
+          value={remainingCount}
+          suffix="ชุด"
           delay={0.15}
           accent="primary"
         />

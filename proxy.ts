@@ -1,12 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "fallback-secret-change-in-production"
-);
+if (!process.env.AUTH_SECRET) {
+  throw new Error("Missing AUTH_SECRET environment variable");
+}
+
+const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
 
 const adminRoutes = ["/admin"];
-const studentRoutes = ["/dashboard", "/exam", "/history", "/ranking", "/profile"];
+const studentRoutes = ["/dashboard", "/exam", "/history", "/ranking", "/profile", "/community", "/progress", "/satisfaction"];
 const authRoutes = ["/login", "/register"];
 
 async function getSessionFromCookie(
@@ -48,7 +50,7 @@ export default async function proxy(req: NextRequest) {
     if (!role) {
       if (isAuthRoute || isRoot) {
         const url = req.nextUrl.clone();
-        url.pathname = "/dashboard";
+        url.pathname = "/community";
         return NextResponse.redirect(url);
       }
       return res;
@@ -57,21 +59,21 @@ export default async function proxy(req: NextRequest) {
     // Authenticated on auth pages → redirect based on role
     if (isAuthRoute) {
       const url = req.nextUrl.clone();
-      url.pathname = role === "admin" ? "/admin/dashboard" : "/dashboard";
+      url.pathname = role === "admin" ? "/admin/dashboard" : "/community";
       return NextResponse.redirect(url);
     }
 
     // Root path → redirect based on role
     if (isRoot) {
       const url = req.nextUrl.clone();
-      url.pathname = role === "admin" ? "/admin/dashboard" : "/dashboard";
+      url.pathname = role === "admin" ? "/admin/dashboard" : "/community";
       return NextResponse.redirect(url);
     }
 
-    // Non-admin on admin routes → redirect to dashboard
+    // Non-admin on admin routes → redirect to community
     if (isAdminRoute && role !== "admin") {
       const url = req.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/community";
       return NextResponse.redirect(url);
     }
 

@@ -2,9 +2,11 @@ import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "fallback-secret-change-in-production"
-);
+if (!process.env.AUTH_SECRET) {
+  throw new Error("Missing AUTH_SECRET environment variable");
+}
+
+const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
 const COOKIE_NAME = "session";
 
 export async function hashPassword(password: string): Promise<string> {

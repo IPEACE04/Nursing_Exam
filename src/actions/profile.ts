@@ -43,9 +43,21 @@ export async function uploadAvatar(formData: FormData) {
 
   if (file.size > 2 * 1024 * 1024) return { error: "รูปใหญ่เกินไป กรุณาใช้รูปไม่เกิน 2MB" };
 
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  if (!allowedTypes.includes(file.type)) {
+    return { error: "กรุณาอัปโหลดไฟล์รูปภาพเท่านั้น (JPG, PNG, WebP, GIF)" };
+  }
+
+  const mimeToExt: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  };
+
   const supabase = createSupabaseServerClient();
 
-  const ext = file.name.split(".").pop() || "png";
+  const ext = mimeToExt[file.type] || "png";
   const filePath = `${userId}/${Date.now()}.${ext}`;
   const { error: uploadError } = await supabase.storage
     .from("avatars")

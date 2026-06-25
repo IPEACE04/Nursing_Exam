@@ -49,8 +49,8 @@ export default function ProgressPage() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      getProgressComparison(user.id),
-      getPrePostTestHistory(user.id),
+      getProgressComparison(),
+      getPrePostTestHistory(),
     ]).then(([d, h]) => {
       setData(d);
       setHistory(h);

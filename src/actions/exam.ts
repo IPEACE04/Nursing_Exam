@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
@@ -42,7 +43,7 @@ export async function getExamSession(examId: string) {
 
   const { data: questions } = await supabase
     .from("questions")
-    .select("*")
+    .select("id, exam_id, question_text, options, sort_order, created_at, updated_at")
     .eq("exam_id", examId)
     .order("sort_order", { ascending: true });
 
@@ -53,15 +54,21 @@ export async function getExamSession(examId: string) {
 }
 
 export async function getExamResult(attemptId: string) {
+  const userId = await getSessionUserId();
+  if (!userId) return null;
+
   const supabase = createSupabaseServerClient();
 
-  const { data: attempt } = await supabase
+  const { data: attemptRow } = await supabase
     .from("exam_attempts")
     .select("*, exams ( title )")
     .eq("id", attemptId)
     .single();
 
-  if (!attempt) return null;
+  if (!attemptRow) return null;
+
+  const attempt = attemptRow as Record<string, unknown>;
+  if (attempt.user_id !== userId) return null;
 
   const { data: answers } = await supabase
     .from("user_answers")
@@ -82,13 +89,35 @@ export async function getLeaderboard() {
   return (data ?? []) as Record<string, unknown>[];
 }
 
-export async function getUserRank(userId: string) {
+export async function getUserRank() {
+  const userId = await getSessionUserId();
+  if (!userId) return 0;
+
   const supabase = createSupabaseServerClient();
   const { data } = await supabase.rpc("get_user_rank", { target_user_id: userId });
   return (data as number) ?? 0;
 }
 
-export async function getDashboardData(userId: string) {
+export async function getTestLeaderboard() {
+  const supabase = createSupabaseServerClient();
+
+  const { data } = await supabase.rpc("get_test_leaderboard", { limit_count: 50 });
+  return (data ?? []) as Record<string, unknown>[];
+}
+
+export async function getTestUserRank() {
+  const userId = await getSessionUserId();
+  if (!userId) return 0;
+
+  const supabase = createSupabaseServerClient();
+  const { data } = await supabase.rpc("get_test_user_rank", { target_user_id: userId });
+  return (data as number) ?? 0;
+}
+
+export async function getDashboardData() {
+  const userId = await getSessionUserId();
+  if (!userId) return { attempts: [], exams: [], rank: 0 };
+
   const supabase = createSupabaseServerClient();
 
   const prePostExam = await getPrePostTestExam();
@@ -127,7 +156,10 @@ export async function getDashboardData(userId: string) {
   };
 }
 
-export async function getHistory(userId: string) {
+export async function getHistory() {
+  const userId = await getSessionUserId();
+  if (!userId) return [];
+
   const supabase = createSupabaseServerClient();
 
   const prePostExam = await getPrePostTestExam();
@@ -161,7 +193,15 @@ export async function getPrePostTestExam() {
   return data as { id: string; title: string; description: string | null; time_limit_minutes: number } | null;
 }
 
-export async function getPrePostTestGate(userId: string) {
+export async function getPrePostTestGate() {
+  const userId = await getSessionUserId();
+  if (!userId) return {
+    preTestCompleted: false,
+    postTestUnlocked: false,
+    postTestCompleted: false,
+    prePostExamId: null,
+    remainingExams: [],
+  };
   const supabase = createSupabaseServerClient();
 
   const prePostExam = await getPrePostTestExam();
@@ -206,11 +246,22 @@ export async function getPrePostTestGate(userId: string) {
   };
 }
 
-export async function getProgressComparison(userId: string) {
+export async function getProgressComparison() {
+  const userId = await getSessionUserId();
+  if (!userId) return {
+    preTest: null,
+    postTest: null,
+    improvement: 0,
+    hasCompletedAllNormalExams: false,
+    hasCompletedPreTest: false,
+    hasCompletedPostTest: false,
+    remainingExams: [],
+    unlockableExams: false,
+  };
   const supabase = createSupabaseServerClient();
 
   const prePostExam = await getPrePostTestExam();
-  const gate = await getPrePostTestGate(userId);
+  const gate = await getPrePostTestGate();
 
   let preTest = null;
   let postTest = null;
@@ -288,7 +339,22 @@ export async function submitExam(formData: FormData) {
   } catch {
     throw new Error("Invalid answers data");
   }
-  const timeSpentSeconds = parseInt(timeSpentRaw, 10) || 0;
+  const rawTimeSpent = parseInt(timeSpentRaw, 10) || 0;
+
+  const { data: examMeta } = await supabase
+    .from("exams")
+    .select("is_published, time_limit_minutes, type")
+    .eq("id", examId)
+    .single();
+
+  if (!examMeta || !examMeta.is_published) {
+    throw new Error("Exam is not available");
+  }
+
+  const timeSpentSeconds = Math.min(
+    Math.max(0, rawTimeSpent),
+    (examMeta.time_limit_minutes ?? 60) * 60
+  );
 
   const { data: questions, error: qError } = await supabase
     .from("questions")
@@ -333,20 +399,20 @@ export async function submitExam(formData: FormData) {
 
   if (uaError) throw new Error("Failed to save answers");
 
-  const { data: examMeta } = await supabase
-    .from("exams")
-    .select("type")
-    .eq("id", examId)
-    .single();
+  revalidatePath("/history");
+  revalidatePath("/dashboard");
+  revalidatePath("/progress");
 
-  if (examMeta?.type === "pre_post_test") {
+  if (examMeta.type === "pre_post_test") {
     redirect(`/progress`);
   }
 
   redirect(`/history`);
 }
 
-export async function getPrePostTestHistory(userId: string) {
+export async function getPrePostTestHistory() {
+  const userId = await getSessionUserId();
+  if (!userId) return [];
   const supabase = createSupabaseServerClient();
 
   const prePostExam = await getPrePostTestExam();

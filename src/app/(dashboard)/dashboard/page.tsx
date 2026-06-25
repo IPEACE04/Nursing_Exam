@@ -59,13 +59,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!user) return;
-    const uid = user.id;
 
     async function fetchData() {
       try {
         const [data, gate] = await Promise.all([
-          getDashboardData(uid),
-          getPrePostTestGate(uid),
+          getDashboardData(),
+          getPrePostTestGate(),
         ]);
         const attemptsData = data.attempts as unknown as ExamAttemptRow[];
         if (attemptsData.length > 0) {

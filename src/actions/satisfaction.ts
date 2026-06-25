@@ -9,6 +9,19 @@ import type {
   SatisfactionAnalysis,
 } from "@/types";
 
+async function requireAdmin() {
+  const userId = await getSessionUserId();
+  if (!userId) return null;
+  const supabase = createSupabaseServerClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .single();
+  if (profile?.role !== "admin") return null;
+  return { supabase, userId };
+}
+
 export async function getQuestions() {
   const supabase = createSupabaseServerClient();
 
@@ -97,7 +110,9 @@ export async function submitSurvey(formData: FormData) {
 // ── Category CRUD ──────────────────────────────────────────────────
 
 export async function getCategories() {
-  const supabase = createSupabaseServerClient();
+  const auth = await requireAdmin();
+  if (!auth) return [];
+  const { supabase } = auth;
 
   const { data } = await supabase
     .from("satisfaction_categories")
@@ -108,10 +123,13 @@ export async function getCategories() {
 }
 
 export async function addCategory(formData: FormData) {
+  const auth = await requireAdmin();
+  if (!auth) return { error: "ไม่มีสิทธิ์เข้าถึง" };
+
   const name = (formData.get("name") as string)?.trim();
   if (!name) return { error: "กรุณากรอกชื่อหมวดหมู่" };
 
-  const supabase = createSupabaseServerClient();
+  const { supabase } = auth;
 
   const { count } = await supabase
     .from("satisfaction_categories")
@@ -128,10 +146,13 @@ export async function addCategory(formData: FormData) {
 }
 
 export async function updateCategory(id: string, formData: FormData) {
+  const auth = await requireAdmin();
+  if (!auth) return { error: "ไม่มีสิทธิ์เข้าถึง" };
+
   const name = (formData.get("name") as string)?.trim();
   if (!name) return { error: "กรุณากรอกชื่อหมวดหมู่" };
 
-  const supabase = createSupabaseServerClient();
+  const { supabase } = auth;
 
   await supabase
     .from("satisfaction_categories")
@@ -143,7 +164,10 @@ export async function updateCategory(id: string, formData: FormData) {
 }
 
 export async function deleteCategory(id: string) {
-  const supabase = createSupabaseServerClient();
+  const auth = await requireAdmin();
+  if (!auth) return { error: "ไม่มีสิทธิ์เข้าถึง" };
+
+  const { supabase } = auth;
 
   await supabase
     .from("satisfaction_questions")
@@ -159,7 +183,9 @@ export async function deleteCategory(id: string) {
 // ── Admin Question CRUD ────────────────────────────────────────────
 
 export async function getAdminQuestions() {
-  const supabase = createSupabaseServerClient();
+  const auth = await requireAdmin();
+  if (!auth) return [];
+  const { supabase } = auth;
 
   const { data } = await supabase
     .from("satisfaction_questions")
@@ -178,11 +204,14 @@ export async function getAdminQuestions() {
 }
 
 export async function addQuestion(formData: FormData) {
+  const auth = await requireAdmin();
+  if (!auth) return { error: "ไม่มีสิทธิ์เข้าถึง" };
+
   const questionText = formData.get("question_text") as string;
   const categoryId = (formData.get("category_id") as string) || null;
   if (!questionText) return { error: "กรุณากรอกคำถาม" };
 
-  const supabase = createSupabaseServerClient();
+  const { supabase } = auth;
 
   let countQuery = supabase
     .from("satisfaction_questions")
@@ -208,13 +237,16 @@ export async function addQuestion(formData: FormData) {
 }
 
 export async function updateQuestion(id: string, formData: FormData) {
+  const auth = await requireAdmin();
+  if (!auth) return { error: "ไม่มีสิทธิ์เข้าถึง" };
+
   const questionText = formData.get("question_text") as string;
   const categoryId = (formData.get("category_id") as string) || null;
   const isActive = formData.get("is_active") === "true";
 
   if (!questionText) return { error: "กรุณากรอกคำถาม" };
 
-  const supabase = createSupabaseServerClient();
+  const { supabase } = auth;
 
   await supabase
     .from("satisfaction_questions")
@@ -226,14 +258,19 @@ export async function updateQuestion(id: string, formData: FormData) {
 }
 
 export async function deleteQuestion(id: string) {
-  const supabase = createSupabaseServerClient();
+  const auth = await requireAdmin();
+  if (!auth) return { error: "ไม่มีสิทธิ์เข้าถึง" };
+
+  const { supabase } = auth;
   await supabase.from("satisfaction_questions").delete().eq("id", id);
   revalidatePath("/admin/satisfaction");
   return { success: true };
 }
 
-export async function getAnalysis(): Promise<SatisfactionAnalysis> {
-  const supabase = createSupabaseServerClient();
+export async function getAnalysis(): Promise<SatisfactionAnalysis | null> {
+  const auth = await requireAdmin();
+  if (!auth) return null;
+  const { supabase } = auth;
 
   const { count: totalResponses } = await supabase
     .from("satisfaction_responses")

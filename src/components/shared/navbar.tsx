@@ -28,12 +28,12 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/community" className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
           <img src="/kk.png" alt="NurseUp" className="size-9 rounded-xl object-cover" />
           <span className="text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap">
             NurseUp
           </span>
-        </Link>
+        </div>
 
         <nav className="hidden md:flex items-center gap-1 mx-4">
           {studentNavItems.map((item) => {

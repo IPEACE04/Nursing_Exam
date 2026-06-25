@@ -50,10 +50,9 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (!user) return;
-    const uid = user.id;
 
     async function fetchHistory() {
-      const data = await getHistory(uid);
+      const data = await getHistory();
 
       if (data && data.length > 0) {
         setAttempts(

@@ -43,9 +43,9 @@ export default function Home() {
   useEffect(() => {
     if (!isLoading && user) {
       if (profile?.role === "admin") {
-        router.push("/admin");
+        router.replace("/admin");
       } else {
-        router.push("/community");
+        router.replace("/community");
       }
     }
   }, [isLoading, user, profile, router]);

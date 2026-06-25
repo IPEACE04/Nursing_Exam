@@ -37,9 +37,9 @@ export default function DashboardLayout({
       return;
     }
 
-    getPrePostTestGate(user.id).then((gate) => {
+    getPrePostTestGate().then((gate) => {
       if (!gate.preTestCompleted && gate.prePostExamId) {
-        router.push(`/exam/${gate.prePostExamId}`);
+        router.replace(`/exam/${gate.prePostExamId}`);
       } else {
         setCheckingGate(false);
       }

@@ -74,7 +74,7 @@ export default function ExamPage({
       }
 
       if (data.exam.type === "pre_post_test") {
-        const gateData = await getPrePostTestGate(user!.id);
+        const gateData = await getPrePostTestGate();
         setGate(gateData);
       }
       setGateLoading(false);
@@ -306,7 +306,7 @@ export default function ExamPage({
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {isPreTest
-                    ? "นี่คือการทดสอบก่อนเริ่มฝึก — ทำให้เต็มที่นะ"
+                    ? "ข้อสอบ PreTest เพื่อประเมินความรู้ก่อนทำแบบทดสอบย่อย เมื่อคุณทำข้อสอบเสร็จแล้ว คุณสามารถใช้ Features ต่างๆของเว็ปไซต์นี้ได้"
                     : isPostTestReady
                       ? "คุณทำข้อสอบปกติครบแล้ว — มาวัดผลกัน"
                       : ""}

@@ -10,7 +10,7 @@ export function MobileNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
-      <div className="flex items-center justify-around px-2 py-3">
+      <div className="flex items-center justify-around px-1.5 py-2 sm:px-2 sm:py-3">
         {studentNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -22,7 +22,7 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1.5 rounded-xl px-3 py-1 transition-colors duration-150 min-w-0",
+                "flex flex-col items-center gap-0.5 sm:gap-1.5 rounded-lg px-1.5 sm:px-3 py-1 transition-colors duration-150 min-w-0",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
@@ -30,13 +30,13 @@ export function MobileNav() {
             >
               <div
                 className={cn(
-                  "rounded-full p-1.5 transition-colors duration-150",
+                  "rounded-full p-1 sm:p-1.5 transition-colors duration-150",
                   isActive && "bg-primary/5"
                 )}
               >
-                <Icon className="size-5" />
+                <Icon className="size-4 sm:size-5" />
               </div>
-              <span className="text-xs font-medium leading-tight truncate">{item.label}</span>
+              <span className="text-[10px] sm:text-xs font-medium leading-tight truncate max-w-[56px] text-center">{item.label}</span>
             </Link>
           );
         })}

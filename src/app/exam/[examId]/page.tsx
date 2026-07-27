@@ -351,7 +351,7 @@ export default function ExamPage({
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-border bg-background">
-        <div className="mx-auto flex h-14 sm:h-18 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-14 sm:h-18 max-w-6xl items-center justify-between px-4 sm:px-6 md:px-8 xl:px-10">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <GraduationCap className="size-5 sm:size-6 shrink-0 text-primary" />
             <span className="line-clamp-1 text-sm sm:text-lg font-semibold tracking-tight text-foreground">
@@ -371,7 +371,7 @@ export default function ExamPage({
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setShowMobileNav(true)}
-              className="inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:hidden"
+              className="inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
               aria-label="แสดงรายการข้อ"
             >
               <List className="size-5 sm:size-6" />
@@ -393,7 +393,7 @@ export default function ExamPage({
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-5 sm:gap-6 pt-5 sm:pt-6 pb-20 lg:pb-6 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-6xl gap-5 sm:gap-6 pt-5 sm:pt-6 pb-20 md:pb-6 px-4 sm:px-6 md:px-8 xl:px-10">
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -486,7 +486,7 @@ export default function ExamPage({
           </div>
         </div>
 
-        <aside className="hidden w-48 shrink-0 lg:block">
+        <aside className="hidden w-48 shrink-0 md:block">
           <div className="sticky top-24 rounded-2xl border border-border bg-card p-3 sm:p-4">
             <p className="mb-2.5 sm:mb-3 text-xs font-medium text-muted-foreground">
               ข้อที่ตอบแล้ว
@@ -499,7 +499,7 @@ export default function ExamPage({
                   <button
                     key={q.id}
                     onClick={() => goTo(i)}
-                    className={`flex size-7.5 sm:size-9 items-center justify-center rounded-lg text-xs font-medium transition-all ${
+                     className={`flex size-[30px] sm:size-9 items-center justify-center rounded-lg text-xs font-medium transition-all ${
                       isActive
                         ? "bg-primary text-primary-foreground ring-2 ring-primary/20"
                         : isAnswered
@@ -584,7 +584,7 @@ export default function ExamPage({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 lg:hidden"
+            className="fixed inset-0 z-50 md:hidden"
           >
             <div
               className="absolute inset-0 bg-black/20 backdrop-blur-sm"

@@ -194,15 +194,15 @@ export default function AdminExamsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
             >
-              <GlassCard className="p-5">
-                <div className="flex items-start justify-between gap-4">
+              <GlassCard className="p-4 sm:p-5">
+                <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-semibold tracking-tight text-foreground truncate">
+                    <div className="flex items-center flex-wrap gap-2">
+                      <h3 className="text-sm sm:text-base font-semibold tracking-tight text-foreground truncate">
                         {exam.title}
                       </h3>
                       <span
-                        className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium border ${
+                        className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium border ${
                           exam.is_published
                             ? "border-emerald-500/30 text-emerald-600"
                             : "border-amber-500/30 text-amber-600"
@@ -212,55 +212,46 @@ export default function AdminExamsPage() {
                       </span>
                     </div>
                     {exam.description && (
-                      <p className="mt-1 text-sm text-muted-foreground leading-relaxed line-clamp-1">
+                      <p className="mt-1 text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-1">
                         {exam.description}
                       </p>
                     )}
-                    <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
-                        <FileText className="size-3.5" />
+                        <FileText className="size-3 sm:size-3.5" />
                         {exam.question_count} ข้อ
                       </span>
                       <span className="flex items-center gap-1">
-                        <Clock className="size-3.5" />
+                        <Clock className="size-3 sm:size-3.5" />
                         {exam.time_limit_minutes} นาที
                       </span>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-2">
                       <button
                         onClick={() => handleTogglePublish(exam.id, exam.is_published)}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-all border ${
+                        className={`inline-flex items-center gap-1 rounded-full px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-semibold transition-all border ${
                           exam.is_published
                             ? "border-red-500/20 text-red-600 hover:bg-red-500/5"
                             : "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
                         }`}
                       >
-                        {exam.is_published ? (
-                          <>
-                            <Rocket className="size-3.5" />
-                            Cancel Launch
-                          </>
-                        ) : (
-                          <>
-                            <Rocket className="size-3.5" />
-                            Launch Exam
-                          </>
-                        )}
+                        <Rocket className="size-3 sm:size-3.5" />
+                        <span className="hidden sm:inline">{exam.is_published ? "Cancel Launch" : "Launch Exam"}</span>
                       </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                     <Link
                       href={`/admin/exams/${exam.id}`}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
-                      <Pencil className="size-4" />
+                      <Pencil className="size-3.5 sm:size-4" />
                     </Link>
                     <button
                       onClick={() => handleDelete(exam.id)}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-3.5 sm:size-4" />
                     </button>
                   </div>
                 </div>

@@ -16,7 +16,7 @@ export function AdminMobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] md:hidden">
       <div className="flex items-center justify-around px-2 py-3">
         {adminItems.map((item) => {
           const isActive = pathname.startsWith(item.href);

@@ -125,12 +125,12 @@ export default function ResultPage({
   const incorrectCount = total - score;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <div className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 xl:px-10 py-8 sm:py-10">
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="space-y-8 sm:space-y-10"
+        className="space-y-8 sm:space-y-10 md:space-y-12"
       >
         <div>
           <button

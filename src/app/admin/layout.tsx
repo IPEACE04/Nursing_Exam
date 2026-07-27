@@ -42,8 +42,8 @@ export default function AdminLayout({
       <AdminNavbar />
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />
-        <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">{children}</div>
+        <main className="flex-1 overflow-y-auto pb-24 md:pb-0">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8 xl:max-w-7xl 2xl:max-w-[90rem] py-6 sm:py-8 md:py-10">{children}</div>
         </main>
       </div>
       <AdminMobileNav />

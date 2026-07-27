@@ -49,7 +49,7 @@ export default function ExamListPage() {
   const normalExams = exams.filter((e) => (e as unknown as Record<string, unknown>).type !== "pre_post_test");
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 pt-4">
+    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 md:space-y-10 pt-4">
       <PageHeader
         badge="Exam Library"
         title="คลังข้อสอบ"

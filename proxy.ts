@@ -9,7 +9,7 @@ const JWT_SECRET = new TextEncoder().encode(process.env.AUTH_SECRET);
 
 const adminRoutes = ["/admin"];
 const studentRoutes = ["/dashboard", "/exam", "/history", "/ranking", "/profile", "/community", "/progress", "/satisfaction"];
-const authRoutes = ["/login", "/register"];
+const authRoutes = ["/login", "/register", "/forgot-password"];
 
 async function getSessionFromCookie(
   req: NextRequest

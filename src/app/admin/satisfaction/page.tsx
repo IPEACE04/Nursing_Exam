@@ -109,58 +109,61 @@ export default function AdminSatisfactionPage() {
         <div className="space-y-3">
           {categories.map((cat) => (
             <GlassCard key={cat.id} className="p-4 sm:p-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-muted shrink-0">
-                  <Layers className="size-4 text-primary" />
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-muted shrink-0">
+                    <Layers className="size-4 text-primary" />
+                  </div>
+
+                  {editingCatId === cat.id ? (
+                    <div className="flex-1 flex items-center gap-2">
+                      <input
+                        value={editCatName}
+                        onChange={(e) => setEditCatName(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleUpdateCategory(cat.id)}
+                        className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none"
+                        autoFocus
+                      />
+                      <button onClick={() => handleUpdateCategory(cat.id)} className="rounded-lg p-2 text-primary hover:bg-primary/5">
+                        <Check className="size-4" />
+                      </button>
+                      <button onClick={() => setEditingCatId(null)} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
+                        <X className="size-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-base font-semibold text-foreground truncate">{cat.name}</p>
+                  )}
                 </div>
 
-                {editingCatId === cat.id ? (
-                  <div className="flex-1 flex items-center gap-2">
-                    <input
-                      value={editCatName}
-                      onChange={(e) => setEditCatName(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleUpdateCategory(cat.id)}
-                      className="h-10 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none"
-                      autoFocus
-                    />
-                    <button onClick={() => handleUpdateCategory(cat.id)} className="rounded-lg p-2 text-primary hover:bg-primary/5">
-                      <Check className="size-4" />
-                    </button>
-                    <button onClick={() => setEditingCatId(null)} className="rounded-lg p-2 text-muted-foreground hover:bg-muted">
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-base font-semibold text-foreground">{cat.name}</p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setEditingCatId(cat.id);
-                        setEditCatName(cat.name);
-                      }}
-                      className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                    >
-                      <Pencil className="size-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteCategory(cat.id)}
-                      className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                    >
-                      <Trash2 className="size-4" />
-                    </button>
-                  </>
-                )}
-
-                <Link
-                  href={`/admin/satisfaction/${cat.id}`}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px shrink-0"
-                >
-                  จัดการคำถาม
-                  <ArrowRight className="size-4" />
-                </Link>
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0 self-end sm:self-auto">
+                  {editingCatId !== cat.id && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setEditingCatId(cat.id);
+                          setEditCatName(cat.name);
+                        }}
+                        className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                      >
+                        <Pencil className="size-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCategory(cat.id)}
+                        className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </>
+                  )}
+                  <Link
+                    href={`/admin/satisfaction/${cat.id}`}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px shrink-0"
+                  >
+                    จัดการ
+                    <ArrowRight className="size-3" />
+                  </Link>
+                </div>
               </div>
             </GlassCard>
           ))}

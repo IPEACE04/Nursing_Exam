@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Building, Save, Lock, KeyRound, Shield, Camera } from "lucide-react";
+import { User, Mail, Building, Save, Lock, KeyRound, Shield, Camera, IdCard } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { changePassword } from "@/actions/auth";
 import { uploadAvatar, updateProfile } from "@/actions/profile";
@@ -15,6 +15,10 @@ export default function ProfilePage() {
   const { profile, user, refreshProfile } = useAuth();
   const [name, setName] = useState("");
   const [university, setUniversity] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [gpa, setGpa] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [saving, setSaving] = useState(false);
@@ -32,6 +36,10 @@ export default function ProfilePage() {
       hasInitialized.current = true;
       setName(profile.name || "");
       setUniversity(profile.university || "");
+      setGender(profile.gender || "");
+      setAge(profile.age ? String(profile.age) : "");
+      setStudentId(profile.student_id || "");
+      setGpa(profile.gpa ? String(profile.gpa) : "");
     }
   }, [profile]);
 
@@ -43,6 +51,10 @@ export default function ProfilePage() {
     const formData = new FormData();
     formData.set("name", name);
     formData.set("university", university);
+    formData.set("gender", gender);
+    formData.set("age", age);
+    formData.set("studentId", studentId);
+    formData.set("gpa", gpa);
 
     await updateProfile(formData);
     await refreshProfile();
@@ -185,6 +197,7 @@ export default function ProfilePage() {
             icon={User}
             value={name}
             onChange={(e) => setName(e.target.value)}
+            autoComplete="off"
           />
 
           <FormField
@@ -194,6 +207,69 @@ export default function ProfilePage() {
             value={university}
             onChange={(e) => setUniversity(e.target.value)}
             placeholder="ชื่อมหาวิทยาลัย"
+            autoComplete="off"
+          />
+
+          <div>
+            <label htmlFor="gender" className="mb-1.5 block text-sm font-medium text-foreground">
+              เพศ
+            </label>
+            <select
+              id="gender"
+              value={gender}
+              onChange={(e) => setGender(e.target.value)}
+              className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            >
+              <option value="">ไม่ระบุ</option>
+              <option value="ชาย">ชาย</option>
+              <option value="หญิง">หญิง</option>
+              <option value="อื่นๆ">อื่นๆ</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="age" className="mb-1.5 block text-sm font-medium text-foreground">
+                อายุ
+              </label>
+              <input
+                id="age"
+                type="number"
+                min={15}
+                max={99}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="อายุ"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="gpa" className="mb-1.5 block text-sm font-medium text-foreground">
+                เกรดเฉลี่ย
+              </label>
+              <input
+                id="gpa"
+                type="number"
+                min={0}
+                max={4}
+                step={0.01}
+                value={gpa}
+                onChange={(e) => setGpa(e.target.value)}
+                placeholder="เช่น 3.50"
+                className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              />
+            </div>
+          </div>
+
+          <FormField
+            id="studentId"
+            label="รหัสนักศึกษา"
+            icon={IdCard}
+            value={studentId}
+            onChange={(e) => setStudentId(e.target.value)}
+            placeholder="รหัสนักศึกษา"
+            autoComplete="off"
           />
 
           <button
@@ -227,6 +303,7 @@ export default function ProfilePage() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="••••••••"
+            autoComplete="off"
             minLength={6}
           />
 
@@ -238,6 +315,7 @@ export default function ProfilePage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="••••••••"
+            autoComplete="off"
           />
 
           {passwordError && (

@@ -42,7 +42,7 @@ function LoginForm() {
           name="email"
           icon={Mail}
           type="email"
-          autoComplete="email"
+          autoComplete="off"
           placeholder="อีเมล"
           required
         />
@@ -52,7 +52,7 @@ function LoginForm() {
           name="password"
           icon={Lock}
           type="password"
-          autoComplete="current-password"
+          autoComplete="off"
           placeholder="รหัสผ่าน"
           required
         />
@@ -66,6 +66,15 @@ function LoginForm() {
             {state.error}
           </motion.p>
         )}
+
+        <div className="flex justify-end">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-muted-foreground transition-colors hover:text-primary"
+          >
+            ลืมรหัสผ่าน?
+          </Link>
+        </div>
 
         <motion.button
           type="submit"
@@ -103,7 +112,7 @@ export default function LoginPage() {
       className="w-full"
     >
       <div className="mb-8 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
           ยินดีต้อนรับ
         </h1>
         <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">

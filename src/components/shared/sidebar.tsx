@@ -9,7 +9,7 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card lg:flex">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
       <div className="border-b border-border px-5 py-5">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           เมนูหลัก

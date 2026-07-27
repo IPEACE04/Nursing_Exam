@@ -4,7 +4,13 @@ export interface Profile {
   email: string;
   avatar_url: string | null;
   university: string | null;
+  gender: string | null;
+  age: number | null;
+  student_id: string | null;
+  gpa: number | null;
   password_hash: string;
+  personal_question: string | null;
+  personal_answer_hash: string | null;
   role: "student" | "admin";
   created_at: string;
   updated_at: string;

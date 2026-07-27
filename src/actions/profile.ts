@@ -86,11 +86,25 @@ export async function updateProfile(formData: FormData) {
 
   const name = formData.get("name") as string;
   const university = formData.get("university") as string;
+  const gender = formData.get("gender") as string;
+  const ageRaw = formData.get("age") as string;
+  const studentId = formData.get("studentId") as string;
+  const gpaRaw = formData.get("gpa") as string;
+
+  const age = ageRaw ? parseInt(ageRaw, 10) : null;
+  const gpa = gpaRaw ? parseFloat(parseFloat(gpaRaw).toFixed(2)) : null;
 
   const supabase = createSupabaseServerClient();
   const { error } = await supabase
     .from("profiles")
-    .update({ name, university })
+    .update({
+      name,
+      university,
+      gender: gender || null,
+      age: age && !isNaN(age) ? age : null,
+      student_id: studentId || null,
+      gpa: gpa && !isNaN(gpa) ? gpa : null,
+    })
     .eq("id", userId);
 
   if (error) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,9 +30,12 @@ export function FormField({
   placeholder,
   required,
   disabled,
-  autoComplete,
+  autoComplete = "off",
   minLength,
 }: FormFieldProps) {
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="relative group">
       {label && (
@@ -42,6 +46,7 @@ export function FormField({
       <div className="relative">
         <Icon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
         <input
+          ref={inputRef}
           id={id}
           name={name}
           type={type}
@@ -52,6 +57,8 @@ export function FormField({
           disabled={disabled}
           autoComplete={autoComplete}
           minLength={minLength}
+          readOnly={!focused && type !== "password"}
+          onFocus={() => setFocused(true)}
           className={cn(
             "h-12 w-full rounded-xl border border-border bg-background px-5 py-2 pl-12 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150",
             "focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10",

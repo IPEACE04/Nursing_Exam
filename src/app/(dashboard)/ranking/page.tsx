@@ -66,7 +66,7 @@ export default function RankingPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-6 sm:space-y-8"
+      className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       <PageHeader
         badge="Rankings"

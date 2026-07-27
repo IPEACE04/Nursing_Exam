@@ -35,7 +35,7 @@ export function Navbar() {
           </span>
         </div>
 
-        <nav className="hidden lg:flex items-center gap-1 mx-4">
+        <nav className="hidden md:flex items-center gap-1 mx-4">
           {studentNavItems.map((item) => {
             const isActive =
               pathname === item.href ||

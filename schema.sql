@@ -15,7 +15,9 @@ CREATE TABLE public.profiles (
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now(),
   email text UNIQUE NOT NULL,
-  password_hash text
+  password_hash text,
+  personal_question text,
+  personal_answer_hash text
 );
 
 -- ── Exams ────────────────────────────────────────────────────

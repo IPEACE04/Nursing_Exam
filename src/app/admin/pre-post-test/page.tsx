@@ -418,7 +418,7 @@ function QuestionForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {["A", "B", "C", "D"].map((key) => (
           <div key={key}>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">
@@ -435,15 +435,15 @@ function QuestionForm({
         ))}
       </div>
 
-      <div className="flex items-center gap-4">
-        <div>
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div className="sm:w-auto">
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
             เฉลย (คำตอบที่ถูก)
           </label>
           <select
             name="correctOption"
             defaultValue={correct}
-            className="h-12 rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="h-12 w-full sm:w-auto rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           >
             <option value="A">A</option>
             <option value="B">B</option>

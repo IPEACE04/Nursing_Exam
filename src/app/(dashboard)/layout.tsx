@@ -37,13 +37,17 @@ export default function DashboardLayout({
       return;
     }
 
-    getPrePostTestGate().then((gate) => {
-      if (!gate.preTestCompleted && gate.prePostExamId) {
-        router.replace(`/exam/${gate.prePostExamId}`);
-      } else {
+    getPrePostTestGate()
+      .then((gate) => {
+        if (!gate.preTestCompleted && gate.prePostExamId) {
+          router.replace(`/exam/${gate.prePostExamId}`);
+        } else {
+          setCheckingGate(false);
+        }
+      })
+      .catch(() => {
         setCheckingGate(false);
-      }
-    });
+      });
   }, [profile, isLoading, user, router, pathname]);
 
   if (isLoading || checkingGate) {
@@ -61,8 +65,8 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
-      <main className="flex-1 overflow-y-auto pb-24 lg:pb-0">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+      <main className="flex-1 overflow-y-auto pb-24 md:pb-0">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 xl:max-w-7xl 2xl:max-w-[90rem] py-6 sm:py-8 md:py-10">
           {children}
         </div>
       </main>

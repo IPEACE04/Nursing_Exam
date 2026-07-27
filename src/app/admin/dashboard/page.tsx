@@ -66,14 +66,14 @@ export default function AdminDashboardPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6 sm:space-y-8"
+      className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       <PageHeader
         title="Admin Dashboard"
         description="ภาพรวมระบบและสถิติการใช้งานทั้งหมด"
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4">
             <Users className="size-6 text-primary shrink-0" />

@@ -125,7 +125,7 @@ export default function DashboardPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6 sm:space-y-8"
+      className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
@@ -133,7 +133,7 @@ export default function DashboardPage() {
           <p className="text-sm text-muted-foreground mb-1">
             สวัสดี!! พร้อมจะเริ่มสอบแล้วรึยัง <span role="img" aria-label="wave">👋</span>
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
             แดชบอร์ดของคุณ
           </h1>
         </div>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
         <StatCard
           icon={<Activity className="size-6" />}
           label="ทำไปแล้ว"
@@ -206,7 +206,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-3">
         {/* Progress Card */}
         <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-4 sm:mb-5">

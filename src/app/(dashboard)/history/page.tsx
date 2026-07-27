@@ -102,7 +102,7 @@ export default function HistoryPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="space-y-8 sm:space-y-10"
+      className="space-y-8 sm:space-y-10 md:space-y-12"
     >
       <PageHeader
         badge="History"

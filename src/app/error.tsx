@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 export default function Error({
   error,
@@ -11,6 +13,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { locale } = useLocale();
+
   useEffect(() => {
     // eslint-disable-next-line no-console
     console.error("[Next.js error boundary]", error.message, error.digest, error.stack);
@@ -27,10 +31,10 @@ export default function Error({
           <AlertTriangle className="size-8 text-destructive" />
         </div>
         <h1 className="text-lg font-semibold text-foreground">
-          เกิดข้อผิดพลาด
+          {t(locale, "error.title")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          กรุณาลองใหม่อีกครั้ง หรือติดต่อผู้ดูแลระบบ
+          {t(locale, "error.desc")}
         </p>
         <motion.button
           onClick={reset}
@@ -38,7 +42,7 @@ export default function Error({
           className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-6"
         >
           <RefreshCw className="size-4" />
-          ลองอีกครั้ง
+          {t(locale, "error.retry")}
         </motion.button>
       </motion.div>
     </div>

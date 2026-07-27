@@ -12,33 +12,14 @@ import {
   CheckLine,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-
-const features = [
-  {
-    icon: Activity,
-    title: "Exam Mode",
-    desc: "หน้าสอบได้ครบถ้วน พร้อมจับเวลา",
-  },
-  {
-    icon: BarChart3,
-    title: "Progress",
-    desc: "วิเคราะห์พัฒนาการเป็นกราฟ",
-  },
-  {
-    icon: Radio,
-    title: "Community",
-    desc: "คอมมูนิตี้เพื่อแบ่งปันความรู้ และเทคนิคในการทำข้อสอบ",
-  },
-  {
-    icon: CheckLine,
-    title: "Answer Keys",
-    desc: "เฉลยพร้อมอธิบายอย่างละเอียด",
-  },
-];
+import { useLocale } from "@/context/locale-context";
+import { LocaleToggle } from "@/components/shared/locale-toggle";
+import { t } from "@/lib/translations";
 
 export default function Home() {
   const router = useRouter();
   const { user, profile, isLoading } = useAuth();
+  const { locale } = useLocale();
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -60,6 +41,29 @@ export default function Home() {
 
   if (user) return null;
 
+  const features = [
+    {
+      icon: Activity,
+      title: t(locale, "landing.f1_title"),
+      desc: t(locale, "landing.f1_desc"),
+    },
+    {
+      icon: BarChart3,
+      title: t(locale, "landing.f2_title"),
+      desc: t(locale, "landing.f2_desc"),
+    },
+    {
+      icon: Radio,
+      title: t(locale, "landing.f3_title"),
+      desc: t(locale, "landing.f3_desc"),
+    },
+    {
+      icon: CheckLine,
+      title: t(locale, "landing.f4_title"),
+      desc: t(locale, "landing.f4_desc"),
+    },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* ── Navbar ──────────────────────────────────────────────── */}
@@ -72,17 +76,18 @@ export default function Home() {
             </span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
+            <LocaleToggle />
             <Link
               href="/login"
               className="px-4 py-2 text-base text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
-              เข้าสู่ระบบ
+              {t(locale, "landing.login")}
             </Link>
             <Link
               href="/register"
               className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
             >
-              เริ่มฟรี
+              {t(locale, "landing.startFree")}
               <ArrowRight className="size-4" />
             </Link>
           </div>
@@ -100,9 +105,9 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.05 }}
               className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-tight"
             >
-              ฝึกสอบอย่างมืออาชีพ
+              {t(locale, "landing.hero")}
               <br />
-              ก่อนลงสนามจริง
+              {t(locale, "landing.heroSub")}
             </motion.h1>
 
             <motion.p
@@ -111,8 +116,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mx-auto mt-6 max-w-2xl text-lg sm:text-xl leading-relaxed text-muted-foreground"
             >
-              แพลตฟอร์มข้อสอบสำหรับนักศึกษาพยาบาล — วิเคราะห์ผล ติดตามพัฒนาการ
-              และวัดความพร้อมก่อนสอบใบประกอบ ในประสบการณ์ที่ได้จากข้อสอบจริง
+              {t(locale, "landing.desc")}
             </motion.p>
 
             <motion.div
@@ -125,14 +129,14 @@ export default function Home() {
                 href="/register"
                 className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-8 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
               >
-                สมัครใช้งานฟรี
+                {t(locale, "landing.cta")}
                 <ArrowRight className="size-5" />
               </Link>
               <Link
                 href="/login"
                 className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-transparent px-8 text-base font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
               >
-                มีบัญชีอยู่แล้ว
+                {t(locale, "landing.hasAccount")}
               </Link>
             </motion.div>
           </div>

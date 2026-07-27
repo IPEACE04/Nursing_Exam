@@ -4,16 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, ClipboardList, Smile, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const navItems = [
-  { href: "/admin/dashboard", label: "แดชบอร์ด", icon: LayoutDashboard },
-  { href: "/admin/exams", label: "จัดการข้อสอบ", icon: ClipboardList },
-  { href: "/admin/pre-post-test", label: "Pre/Post Test", icon: ClipboardCheck },
-  { href: "/admin/satisfaction", label: "แบบประเมิน", icon: Smile },
+  { href: "/admin/dashboard", label: "admin.nav.dashboard", icon: LayoutDashboard },
+  { href: "/admin/exams", label: "admin.nav.exams", icon: ClipboardList },
+  { href: "/admin/pre-post-test", label: "admin.nav.prepost", icon: ClipboardCheck },
+  { href: "/admin/satisfaction", label: "admin.nav.satisfaction", icon: Smile },
 ];
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { locale } = useLocale();
 
   return (
     <aside className="hidden w-64 flex-col border-r border-border bg-card md:flex md:w-64 xl:w-72">
@@ -34,7 +37,7 @@ export function AdminSidebar() {
               )}
             >
               <Icon className="size-5" />
-              {item.label}
+              {t(locale, item.label)}
             </Link>
           );
         })}

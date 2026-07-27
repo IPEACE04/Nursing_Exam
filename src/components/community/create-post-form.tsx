@@ -4,12 +4,21 @@ import { useState, useTransition } from "react";
 import { Send } from "lucide-react";
 import { createPost } from "@/actions/community";
 import { CATEGORIES } from "@/lib/community-constants";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 interface CreatePostFormProps {
   onPostCreated?: () => void;
 }
 
+const categoryKeyMap: Record<string, string> = {
+  "เทคนิค": "community.category.technique",
+  "แชร์ความรู้": "community.category.knowledge",
+  "ถาม-ตอบ": "community.category.qna",
+};
+
 export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
+  const { locale } = useLocale();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("แชร์ความรู้");
@@ -42,13 +51,13 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label className="block text-sm font-medium text-foreground mb-1.5">
-          หัวข้อ
+          {t(locale, "community.postTitle")}
         </label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="หัวข้อโพสต์..."
+          placeholder={t(locale, "community.postTitlePlaceholder")}
           className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           required
         />
@@ -56,7 +65,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
       <div>
         <label className="block text-sm font-medium text-foreground mb-1.5">
-          หมวดหมู่
+          {t(locale, "community.category")}
         </label>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.filter((c) => c !== "ทั้งหมด").map((cat) => (
@@ -70,7 +79,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
-              {cat}
+              {t(locale, categoryKeyMap[cat] ?? cat)}
             </button>
           ))}
         </div>
@@ -78,12 +87,12 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
       <div>
         <label className="block text-sm font-medium text-foreground mb-1.5">
-          เนื้อหา
+          {t(locale, "community.content")}
         </label>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          placeholder="เขียนเนื้อหาโพสต์..."
+          placeholder={t(locale, "community.contentPlaceholder")}
           rows={6}
           className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           required
@@ -99,7 +108,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
-          {isPending ? "กำลังโพสต์..." : "โพสต์"}
+          {isPending ? t(locale, "community.posting") : t(locale, "community.post")}
         </button>
       </div>
     </form>

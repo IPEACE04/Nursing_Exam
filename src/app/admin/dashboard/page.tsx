@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Users, ClipboardList, BarChart3, AlertTriangle, BookOpen } from "lucide-react";
 import { getAdminStats } from "@/actions/admin";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import {
   ChartContainer,
   ChartTooltip,
@@ -28,6 +30,7 @@ const itemAnim = {
 };
 
 export default function AdminDashboardPage() {
+  const { locale } = useLocale();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAttempts: 0,
@@ -58,7 +61,7 @@ export default function AdminDashboardPage() {
   if (loading) return <LoadingSpinner />;
 
   const chartConfig = {
-    errorRate: { label: "อัตราผิด (%)", color: "var(--chart-5)" },
+    errorRate: { label: t(locale, "admin.dashboard.worstRate"), color: "var(--chart-5)" },
   };
 
   return (
@@ -70,7 +73,7 @@ export default function AdminDashboardPage() {
     >
       <PageHeader
         title="Admin Dashboard"
-        description="ภาพรวมระบบและสถิติการใช้งานทั้งหมด"
+        description={t(locale, "admin.dashboard.title")}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
@@ -79,7 +82,7 @@ export default function AdminDashboardPage() {
             <Users className="size-6 text-primary shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                ผู้ใช้ทั้งหมด
+                {t(locale, "admin.dashboard.totalUsers")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.totalUsers}</p>
             </div>
@@ -90,7 +93,7 @@ export default function AdminDashboardPage() {
             <ClipboardList className="size-6 text-emerald-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                ข้อสอบที่ทำ
+                {t(locale, "admin.dashboard.examsTaken")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.totalAttempts}</p>
             </div>
@@ -101,7 +104,7 @@ export default function AdminDashboardPage() {
             <BarChart3 className="size-6 text-amber-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                คะแนนเฉลี่ย
+                {t(locale, "admin.dashboard.avgScore")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.avgScore}%</p>
             </div>
@@ -112,7 +115,7 @@ export default function AdminDashboardPage() {
             <BookOpen className="size-6 text-purple-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                ชุดข้อสอบ
+                {t(locale, "admin.dashboard.examSets")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{stats.totalExams}</p>
             </div>
@@ -125,13 +128,13 @@ export default function AdminDashboardPage() {
           <div className="mb-4 sm:mb-5 flex items-center gap-3">
             <AlertTriangle className="size-5 sm:size-6 text-destructive shrink-0" />
             <h2 className="text-lg sm:text-xl font-semibold text-foreground">
-              ข้อสอบที่ทำผิดมากที่สุด
+              {t(locale, "admin.dashboard.worstQuestions")}
             </h2>
           </div>
 
           {itemAnalysis.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              ยังไม่มีข้อมูลการตอบข้อสอบ
+              {t(locale, "admin.dashboard.noAttemptData")}
             </p>
           ) : (
             <ChartContainer

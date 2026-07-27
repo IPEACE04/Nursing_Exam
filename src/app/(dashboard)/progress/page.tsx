@@ -18,6 +18,8 @@ import type { ProgressComparison } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const PrePostChart = dynamic(
   () => import("@/components/premium/progress-chart").then((m) => ({ default: m.ProgressChart })),
@@ -42,6 +44,7 @@ function formatShortDate(dateStr: string) {
 export default function ProgressPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { locale } = useLocale();
   const [data, setData] = useState<ProgressComparison | null>(null);
   const [history, setHistory] = useState<{ score: number; total: number; percentage: number; completed_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,8 +66,8 @@ export default function ProgressPage() {
 
   const chartData = history.map((a, i) => ({
     index: i + 1,
-    คะแนน: a.percentage,
-    label: `ครั้งที่ ${i + 1}`,
+    ["คะแนน"]: a.percentage,
+    label: t(locale, "progress.attemptN", { n: i + 1 }),
   }));
 
   return (
@@ -75,8 +78,8 @@ export default function ProgressPage() {
     >
       <PageHeader
         badge="Progress"
-        title="พัฒนาการของคุณ"
-        description="ติดตามพัฒนาการ PreTest และ PostTest ของคุณ"
+        title={t(locale, "progress.title")}
+        description={t(locale, "progress.desc")}
       />
 
       {!data.hasCompletedPreTest ? (
@@ -85,7 +88,7 @@ export default function ProgressPage() {
             <Target className="size-8 text-muted-foreground" />
           </div>
           <p className="text-base text-muted-foreground">
-            ยังไม่มีข้อมูล — กรุณาทำ PreTest ก่อน
+            {t(locale, "progress.noData")}
           </p>
         </GlassCard>
       ) : (
@@ -102,7 +105,7 @@ export default function ProgressPage() {
                 {data.preTest?.percentage ?? 0}%
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                {data.preTest?.score ?? 0}/{data.preTest?.total ?? 0} ข้อ
+                {data.preTest?.score ?? 0}/{data.preTest?.total ?? 0} {t(locale, "progress.questions")}
                 {data.preTest && (
                   <span className="block text-xs text-muted-foreground/60">
                     {formatDate(data.preTest.completed_at)}
@@ -124,7 +127,7 @@ export default function ProgressPage() {
                     {data.postTest.percentage}%
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {data.postTest.score}/{data.postTest.total} ข้อ
+                    {data.postTest.score}/{data.postTest.total} {t(locale, "progress.questions")}
                     <span className="block text-xs text-muted-foreground/60">
                       {formatDate(data.postTest.completed_at)}
                     </span>
@@ -133,10 +136,10 @@ export default function ProgressPage() {
               ) : (
                 <div className="mt-2">
                   <Lock className="mx-auto size-8 text-muted-foreground/30" />
-                  <p className="text-sm text-muted-foreground mt-1">ยังไม่ได้ทำ</p>
+                  <p className="text-sm text-muted-foreground mt-1">{t(locale, "progress.notTaken")}</p>
                   {!data.hasCompletedAllNormalExams && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      ทำข้อสอบปกติให้ครบทุกชุดก่อน
+                      {t(locale, "progress.completeAllFirst")}
                     </p>
                   )}
                 </div>
@@ -148,7 +151,7 @@ export default function ProgressPage() {
             <GlassCard className="p-5 sm:p-6">
               <div className="mb-4 flex items-center gap-2.5">
                 <TrendingUp className="size-5 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">กราฟพัฒนาการ</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t(locale, "progress.chart")}</h2>
               </div>
               <PrePostChart data={chartData} />
               <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-sm text-muted-foreground">
@@ -157,7 +160,7 @@ export default function ProgressPage() {
                     <span className="inline-block size-2.5 rounded-full"
                       style={{ backgroundColor: i === 0 ? "oklch(0.55 0.10 200)" : i === history.length - 1 ? "oklch(0.52 0.09 235)" : "oklch(0.60 0.10 85)" }}
                     />
-                    <span>ครั้งที่ {i + 1}</span>
+                    <span>{t(locale, "progress.attemptN", { n: i + 1 })}</span>
                     <span className="font-medium text-foreground">{a.percentage}%</span>
                     <span className="text-xs">({formatShortDate(a.completed_at)})</span>
                   </div>
@@ -172,17 +175,17 @@ export default function ProgressPage() {
                 <TrendingUp className="size-7 sm:size-8 text-emerald-600" />
               </div>
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                ผลต่าง (PreTest → PostTest ล่าสุด)
+                {t(locale, "progress.diff")}
               </p>
               <p className={`mt-2 text-4xl sm:text-5xl font-bold tracking-tight font-heading ${data.improvement >= 0 ? "text-emerald-600" : "text-destructive"}`}>
                 {data.improvement > 0 ? "+" : ""}{data.improvement}%
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 {data.improvement > 0
-                  ? `ยินดีด้วย! คุณพัฒนาขึ้น ${data.postTest.score - data.preTest.score} ข้อ`
+                  ? t(locale, "progress.improved", { n: data.postTest.score - data.preTest.score })
                   : data.improvement === 0
-                    ? "คะแนนเท่ากับ PreTest"
-                    : "PostTest ได้คะแนนน้อยกว่า PreTest"}
+                    ? t(locale, "progress.same")
+                    : t(locale, "progress.worse")}
               </p>
               <div className="mt-5 flex items-center justify-center gap-3 text-sm text-muted-foreground">
                 <span>
@@ -201,9 +204,9 @@ export default function ProgressPage() {
               <div className="flex items-center gap-3 mb-4">
                 <Lock className="size-5 text-amber-500 shrink-0" />
                 <div>
-                  <h2 className="font-semibold text-foreground">PostTest ยังไม่ปลดล็อค</h2>
+                  <h2 className="font-semibold text-foreground">{t(locale, "progress.locked")}</h2>
                   <p className="text-xs text-muted-foreground">
-                    ต้องทำข้อสอบปกติให้ครบทุกชุดก่อน
+                    {t(locale, "progress.lockedDesc")}
                   </p>
                 </div>
               </div>
@@ -218,7 +221,7 @@ export default function ProgressPage() {
                       onClick={() => router.push(`/exam/${e.id}`)}
                       className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                     >
-                      ไปทำ <ArrowRight className="size-3" />
+                      {t(locale, "progress.goDo")} <ArrowRight className="size-3" />
                     </button>
                   </div>
                 ))}
@@ -232,17 +235,17 @@ export default function ProgressPage() {
                 <CheckCircle2 className="size-6 text-emerald-600" />
               </div>
               <p className="text-base font-medium text-foreground">
-                PostTest พร้อมให้ทำแล้ว
+                {t(locale, "progress.unlocked")}
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                คุณทำข้อสอบปกติครบทุกชุดแล้ว — ไปวัดผลกัน
+                {t(locale, "progress.unlockedDesc")}
               </p>
               <button
                 onClick={() => router.push("/exam")}
                 className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-4"
               >
                 <ArrowRight className="size-4" />
-                ไปหน้าข้อสอบ
+                {t(locale, "progress.goToExam")}
               </button>
             </GlassCard>
           )}

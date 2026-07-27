@@ -8,10 +8,10 @@ export interface NavItem {
 }
 
 export const studentNavItems: NavItem[] = [
-  { href: "/dashboard", label: "แดชบอร์ด", icon: LayoutDashboard },
-  { href: "/exam", label: "ทำข้อสอบ", icon: ClipboardList },
-  { href: "/community", label: "Community", icon: MessageCircle },
-  { href: "/history", label: "ประวัติผลสอบ", icon: BarChart3 },
-  { href: "/progress", label: "พัฒนาการ", icon: TrendingUp },
-  { href: "/ranking", label: "อันดับ", icon: Trophy },
+  { href: "/dashboard", label: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/exam", label: "nav.exam", icon: ClipboardList },
+  { href: "/community", label: "nav.community", icon: MessageCircle },
+  { href: "/history", label: "nav.history", icon: BarChart3 },
+  { href: "/progress", label: "nav.progress", icon: TrendingUp },
+  { href: "/ranking", label: "nav.ranking", icon: Trophy },
 ];

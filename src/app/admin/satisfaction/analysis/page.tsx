@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { BarChart3, FileText, Star, MessageSquare, Layers } from "lucide-react";
 import { getAnalysis } from "@/actions/satisfaction";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import type { SatisfactionAnalysis } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
@@ -23,6 +25,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function AnalysisPage() {
+  const { locale } = useLocale();
   const [analysis, setAnalysis] = useState<SatisfactionAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -57,21 +60,21 @@ export default function AnalysisPage() {
         .summary-label { font-size: 11px; color: #888; }
         @media print { body { padding: 20px; } }
       </style></head><body>
-        <h1>NurseUp — รายงานความพึงพอใจ</h1>
-        <p class="subtitle">ผู้ตอบทั้งหมด ${analysis.total_responses} คน · วันที่ ${new Date().toLocaleDateString("th-TH")}</p>
+        <h1>NurseUp — ${t(locale, "admin.analysis.title")}</h1>
+        <p class="subtitle">${t(locale, "admin.analysis.totalRespondents", { n: analysis.total_responses })} · วันที่ ${new Date().toLocaleDateString("th-TH")}</p>
 
         <div class="summary">
           <div class="summary-item">
             <div class="summary-value">${analysis.total_responses}</div>
-            <div class="summary-label">ผู้ตอบ</div>
+            <div class="summary-label">${t(locale, "admin.analysis.totalResponses")}</div>
           </div>
           <div class="summary-item">
             <div class="summary-value">${analysis.total_responses > 0 ? (analysis.average_per_question.reduce((sum, q) => sum + q.avg_score, 0) / analysis.average_per_question.length).toFixed(1) : "0.0"}</div>
-            <div class="summary-label">คะแนนเฉลี่ย</div>
+            <div class="summary-label">${t(locale, "admin.dashboard.avgScore")}</div>
           </div>
           <div class="summary-item">
             <div class="summary-value">${analysis.feedbacks.length}</div>
-            <div class="summary-label">ข้อเสนอแนะ</div>
+            <div class="summary-label">${t(locale, "admin.analysis.feedback")}</div>
           </div>
         </div>
     `;
@@ -79,9 +82,9 @@ export default function AnalysisPage() {
     analysis.categories.forEach((cat) => {
       html += `
         <h2>${cat.category_name}</h2>
-        <p style="font-size:12px;color:#888;margin-top:-8px">เฉลี่ย ${cat.avg_score}/5 · ${cat.questions.length} คำถาม</p>
+        <p style="font-size:12px;color:#888;margin-top:-8px">${t(locale, "admin.analysis.perCategory", { score: cat.avg_score, count: cat.questions.length })}</p>
         <table>
-          <tr><th style="width:70%">คำถาม</th><th style="width:15%">คะแนน</th><th style="width:15%">ผู้ตอบ</th></tr>
+          <tr><th style="width:70%">${t(locale, "admin.edit.questionLabel")}</th><th style="width:15%">${t(locale, "chart.score")}</th><th style="width:15%">${t(locale, "admin.analysis.totalResponses")}</th></tr>
       `;
 
       const catQuestions = analysis.average_per_question.filter(
@@ -102,10 +105,10 @@ export default function AnalysisPage() {
       html += `</table>`;
     });
 
-    html += `<h2>ข้อเสนอแนะ</h2>`;
+    html += `<h2>${t(locale, "admin.analysis.feedback")}</h2>`;
 
     if (analysis.feedbacks.length === 0) {
-      html += `<p style="color:#999">ไม่มีข้อเสนอแนะ</p>`;
+      html += `<p style="color:#999">${t(locale, "admin.analysis.noData")}</p>`;
     } else {
       analysis.feedbacks.forEach((f) => {
         html += `
@@ -130,15 +133,15 @@ export default function AnalysisPage() {
   if (!analysis) return null;
 
   const chartConfig = {
-    score: { label: "คะแนนเฉลี่ย", color: "var(--chart-1)" },
+    score: { label: t(locale, "admin.dashboard.avgScore"), color: "var(--chart-1)" },
   };
 
   return (
     <div className="space-y-6 sm:space-y-8">
       <PageHeader
         badge="Analysis"
-        title="ผลวิเคราะห์ความพึงพอใจ"
-        description={`ผู้ตอบทั้งหมด ${analysis.total_responses} คน`}
+        title={t(locale, "admin.analysis.title")}
+        description={t(locale, "admin.analysis.totalRespondents", { n: analysis.total_responses })}
         action={
           <button
             onClick={handleExportPDF}
@@ -154,7 +157,7 @@ export default function AnalysisPage() {
         <GlassCard className="p-5 sm:p-6 text-center">
           <BarChart3 className="mx-auto size-8 text-primary mb-2" />
           <p className="text-3xl font-bold tracking-tight text-foreground">{analysis.total_responses}</p>
-          <p className="text-sm text-muted-foreground">ผู้ตอบทั้งหมด</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.analysis.totalResponses")}</p>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6 text-center">
           <Star className="mx-auto size-8 text-amber-500 mb-2" />
@@ -168,19 +171,19 @@ export default function AnalysisPage() {
                 ).toFixed(1)
               : "0.0"}
           </p>
-          <p className="text-sm text-muted-foreground">คะแนนรวมเฉลี่ย</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.analysis.avgScore")}</p>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6 text-center">
           <MessageSquare className="mx-auto size-8 text-emerald-500 mb-2" />
           <p className="text-3xl font-bold tracking-tight text-foreground">{analysis.feedbacks.length}</p>
-          <p className="text-sm text-muted-foreground">ข้อเสนอแนะ</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.analysis.feedback")}</p>
         </GlassCard>
       </div>
 
       {analysis.categories.length === 0 ? (
         <GlassCard className="p-8 text-center">
           <Layers className="mx-auto mb-3 size-10 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground">ยังไม่มีข้อมูล</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.analysis.noData")}</p>
         </GlassCard>
       ) : (
         analysis.categories.map((cat) => {
@@ -203,7 +206,7 @@ export default function AnalysisPage() {
                     {cat.category_name}
                   </h2>
                   <p className="text-xs text-muted-foreground">
-                    เฉลี่ย {cat.avg_score}/5 · {cat.questions.length} คำถาม
+                    {t(locale, "admin.analysis.perCategory", { score: cat.avg_score, count: cat.questions.length })}
                   </p>
                 </div>
               </div>
@@ -253,7 +256,7 @@ export default function AnalysisPage() {
       {analysis.feedbacks.length > 0 && (
         <GlassCard className="p-5 sm:p-6">
           <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-4">
-            ข้อเสนอแนะ ({analysis.feedbacks.length})
+            {t(locale, "admin.analysis.feedbackCount", { count: analysis.feedbacks.length })}
           </h2>
           <div className="space-y-3">
             {analysis.feedbacks.map((f, i) => (

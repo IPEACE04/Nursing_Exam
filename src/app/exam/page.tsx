@@ -9,6 +9,8 @@ import type { ExamWithQuestionCount } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const container = {
   hidden: { opacity: 0 },
@@ -24,6 +26,7 @@ const itemAnim = {
 };
 
 export default function ExamListPage() {
+  const { locale } = useLocale();
   const [exams, setExams] = useState<ExamWithQuestionCount[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -51,9 +54,9 @@ export default function ExamListPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 md:space-y-10 pt-4">
       <PageHeader
-        badge="Exam Library"
-        title="คลังข้อสอบ"
-        description="เลือกชุดข้อสอบที่ต้องการฝึกทำ — ระบบจับเวลาและเฉลยละเอียดทันทีหลังส่ง"
+        badge={t(locale, "exam.list.title")}
+        title={t(locale, "exam.list.title")}
+        description={t(locale, "exam.list.desc")}
       />
 
       <motion.div
@@ -66,7 +69,7 @@ export default function ExamListPage() {
           <GlassCard className="py-20 text-center">
             <BookOpen className="mx-auto mb-4 size-16 text-muted-foreground/30" />
             <p className="text-base text-muted-foreground">
-              ยังไม่มีชุดข้อสอบในขณะนี้
+              {t(locale, "exam.list.empty")}
             </p>
           </GlassCard>
         ) : (
@@ -101,11 +104,11 @@ export default function ExamListPage() {
                       <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1.5">
                           <FileText className="size-4" />
-                          {prePostExam.question_count} ข้อ
+                          {prePostExam.question_count} {t(locale, "exam.list.questions")}
                         </span>
                         <span className="flex items-center gap-1.5">
                           <Clock className="size-4" />
-                          {prePostExam.time_limit_minutes} นาที
+                          {prePostExam.time_limit_minutes} {t(locale, "exam.list.minutes")}
                         </span>
                       </div>
                     </div>
@@ -114,7 +117,7 @@ export default function ExamListPage() {
                       className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
                     >
                       <Play className="size-5" />
-                      {prePostExam.id ? "เริ่มสอบ" : "เริ่มสอบ"}
+                      {t(locale, "exam.list.start")}
                     </Link>
                   </GlassCard>
                 </motion.div>
@@ -126,7 +129,7 @@ export default function ExamListPage() {
                 <div className="flex items-center gap-2 pt-2">
                   <BookOpen className="size-4 text-muted-foreground" />
                   <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                    ข้อสอบปกติ ({normalExams.length})
+                    {t(locale, "exam.list.normalExams")} ({normalExams.length})
                   </h2>
                 </div>
                 {normalExams.map((exam) => (
@@ -151,11 +154,11 @@ export default function ExamListPage() {
                         <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1.5">
                             <FileText className="size-4" />
-                            {exam.question_count} ข้อ
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <Clock className="size-4" />
-                            {exam.time_limit_minutes} นาที
+                          {exam.question_count} {t(locale, "exam.list.questions")}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="size-4" />
+                          {exam.time_limit_minutes} {t(locale, "exam.list.minutes")}
                           </span>
                         </div>
                       </div>
@@ -164,7 +167,7 @@ export default function ExamListPage() {
                         className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
                       >
                         <Play className="size-5" />
-                        เริ่มสอบ
+                        {t(locale, "exam.list.start")}
                       </Link>
                     </GlassCard>
                   </motion.div>

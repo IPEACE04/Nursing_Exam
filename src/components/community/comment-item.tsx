@@ -3,6 +3,8 @@
 import { Trash2 } from "lucide-react";
 import { deleteComment } from "@/actions/community";
 import { useAuth } from "@/context/auth-context";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { CommunityCommentWithAuthor } from "@/types";
 
@@ -23,6 +25,7 @@ export function CommentItem({
   comment: CommunityCommentWithAuthor;
   onDelete?: (id: string) => void;
 }) {
+  const { locale } = useLocale();
   const { user } = useAuth();
   const isOwner = user?.id === comment.user_id;
 
@@ -60,7 +63,7 @@ export function CommentItem({
           <button
             onClick={handleDelete}
             className="shrink-0 rounded-lg p-2.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-            title="ลบคอมเมนต์"
+            title={t(locale, "community.deleteComment")}
           >
             <Trash2 className="size-4" />
           </button>

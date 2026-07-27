@@ -11,6 +11,8 @@ import type { AttemptWithExam } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const HistoryChart = dynamic(
   () => import("@/components/premium/history-chart").then((m) => ({ default: m.HistoryChart })),
@@ -45,6 +47,7 @@ interface ExamAttemptRow {
 
 export default function HistoryPage() {
   const { user } = useAuth();
+  const { locale } = useLocale();
   const [attempts, setAttempts] = useState<AttemptWithExam[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -106,8 +109,8 @@ export default function HistoryPage() {
     >
       <PageHeader
         badge="History"
-        title="ประวัติการสอบ"
-        description="ติดตามพัฒนาการและผลการสอบที่ผ่านมาทั้งหมด"
+        title={t(locale, "history.title")}
+        description={t(locale, "history.desc")}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-3">
@@ -116,7 +119,7 @@ export default function HistoryPage() {
             <ClipboardList className="size-6 text-primary shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                ข้อสอบทั้งหมด
+                {t(locale, "history.totalExams")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{totalExams}</p>
             </div>
@@ -128,7 +131,7 @@ export default function HistoryPage() {
             <Target className="size-6 text-emerald-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                คะแนนเฉลี่ย
+                {t(locale, "history.avgScore")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{avgScore}%</p>
             </div>
@@ -140,7 +143,7 @@ export default function HistoryPage() {
             <BarChart3 className="size-6 text-amber-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                คะแนนสูงสุด
+                {t(locale, "history.bestScore")}
               </p>
               <p className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">{bestScore}%</p>
             </div>
@@ -152,22 +155,22 @@ export default function HistoryPage() {
         <GlassCard className="p-5 sm:p-6">
           <div className="mb-4 sm:mb-5 flex items-center gap-2.5">
             <TrendingUp className="size-5 sm:size-6 text-primary" />
-            <h2 className="text-lg sm:text-xl font-semibold text-foreground">พัฒนาการคะแนน</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">{t(locale, "history.progressTitle")}</h2>
           </div>
           <HistoryChart data={chartData} />
         </GlassCard>
       )}
 
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-5 sm:space-y-6">
         {attempts.length === 0 ? (
           <GlassCard className="py-16 text-center">
             <ClipboardList className="mx-auto mb-4 size-14 text-muted-foreground/30" />
-            <p className="text-base text-muted-foreground">ยังไม่มีประวัติการสอบ</p>
+            <p className="text-base text-muted-foreground">{t(locale, "history.empty")}</p>
             <Link
               href="/exam"
               className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-5"
             >
-              เริ่มทำข้อสอบเลย
+              {t(locale, "history.startNow")}
             </Link>
           </GlassCard>
         ) : (

@@ -9,12 +9,15 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/actions/satisfaction";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import type { SatisfactionCategory } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 
 export default function AdminSatisfactionPage() {
+  const { locale } = useLocale();
   const [categories, setCategories] = useState<SatisfactionCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [newCatName, setNewCatName] = useState("");
@@ -54,7 +57,7 @@ export default function AdminSatisfactionPage() {
   }
 
   async function handleDeleteCategory(id: string) {
-    if (!confirm("ลบหมวดหมู่นี้? คำถามในหมวดนี้จะถูกย้ายออก")) return;
+    if (!confirm(t(locale, "admin.satisfaction.deleteCategoryConfirm"))) return;
     await deleteCategory(id);
     fetchData();
   }
@@ -65,15 +68,15 @@ export default function AdminSatisfactionPage() {
     <div className="space-y-6 sm:space-y-8">
       <PageHeader
         badge="Admin"
-        title="จัดการแบบประเมิน"
-        description="สร้างและจัดการหมวดหมู่ของแบบประเมินความพึงพอใจ"
+        title={t(locale, "admin.satisfaction.title")}
+        description={t(locale, "admin.satisfaction.desc")}
         action={
           <Link
             href="/admin/satisfaction/analysis"
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <BarChart3 className="size-4" />
-            ดูผลวิเคราะห์
+            {t(locale, "admin.satisfaction.viewAnalysis")}
           </Link>
         }
       />
@@ -86,7 +89,7 @@ export default function AdminSatisfactionPage() {
             value={newCatName}
             onChange={(e) => setNewCatName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
-            placeholder="ชื่อหมวดหมู่ใหม่..."
+            placeholder={t(locale, "admin.satisfaction.newCategoryPlaceholder")}
             className="h-12 flex-1 rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
           <button
@@ -94,7 +97,7 @@ export default function AdminSatisfactionPage() {
             className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <Plus className="size-4" />
-            เพิ่มหมวดหมู่
+            {t(locale, "admin.satisfaction.addCategory")}
           </button>
         </div>
       </GlassCard>
@@ -103,7 +106,7 @@ export default function AdminSatisfactionPage() {
       {categories.length === 0 ? (
         <GlassCard className="p-8 text-center">
           <Layers className="mx-auto mb-3 size-10 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground">ยังไม่มีหมวดหมู่ — สร้างหมวดหมู่แรกเลย</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.satisfaction.noCategories")}</p>
         </GlassCard>
       ) : (
         <div className="space-y-3">
@@ -160,7 +163,7 @@ export default function AdminSatisfactionPage() {
                     href={`/admin/satisfaction/${cat.id}`}
                     className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px shrink-0"
                   >
-                    จัดการ
+                    {t(locale, "admin.satisfaction.manage")}
                     <ArrowRight className="size-3" />
                   </Link>
                 </div>

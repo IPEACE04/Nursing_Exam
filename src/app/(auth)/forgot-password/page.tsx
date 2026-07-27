@@ -9,10 +9,13 @@ import {
   verifyPersonalAnswer,
   resetPasswordWithToken,
 } from "@/actions/auth";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 type Step = "email" | "answer" | "reset" | "done";
 
 export default function ForgotPasswordPage() {
+  const { locale } = useLocale();
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [question, setQuestion] = useState("");
@@ -82,13 +85,13 @@ export default function ForgotPasswordPage() {
     >
       <div className="mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-          ลืมรหัสผ่าน
+          {t(locale, "forgot.title")}
         </h1>
         <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">
-          {step === "email" && "กรอกอีเมลเพื่อกู้คืนรหัสผ่าน"}
-          {step === "answer" && "ตอบคำถามส่วนตัวเพื่อยืนยันตัวตน"}
-          {step === "reset" && "ตั้งรหัสผ่านใหม่"}
-          {step === "done" && "เปลี่ยนรหัสผ่านเรียบร้อย"}
+          {step === "email" && t(locale, "forgot.stepEmail")}
+          {step === "answer" && t(locale, "forgot.stepAnswer")}
+          {step === "reset" && t(locale, "forgot.stepReset")}
+          {step === "done" && t(locale, "forgot.stepDone")}
         </p>
       </div>
 
@@ -104,7 +107,7 @@ export default function ForgotPasswordPage() {
           >
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium text-foreground">
-                อีเมล
+                {t(locale, "auth.email")}
               </label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50" />
@@ -113,7 +116,7 @@ export default function ForgotPasswordPage() {
                   name="email"
                   type="email"
                   required
-                  placeholder="กรอกอีเมลที่ลงทะเบียนไว้"
+                  placeholder={t(locale, "forgot.emailPlaceholder")}
                   autoComplete="off"
                   className="h-12 w-full rounded-xl border border-border bg-background px-5 py-2 pl-12 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                 />
@@ -140,7 +143,7 @@ export default function ForgotPasswordPage() {
                 <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
               ) : (
                 <>
-                  ต่อไป
+                  {t(locale, "common.next")}
                   <ArrowRight className="size-4" />
                 </>
               )}
@@ -161,7 +164,7 @@ export default function ForgotPasswordPage() {
               <div className="flex items-start gap-3">
                 <HelpCircle className="mt-0.5 size-5 shrink-0 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">คำถามส่วนตัวของคุณ</p>
+                  <p className="text-sm text-muted-foreground">{t(locale, "forgot.yourQuestion")}</p>
                   <p className="mt-1 text-base font-semibold text-foreground">{question}</p>
                 </div>
               </div>
@@ -169,14 +172,14 @@ export default function ForgotPasswordPage() {
 
             <div className="space-y-2">
               <label htmlFor="answer" className="block text-sm font-medium text-foreground">
-                คำตอบของคุณ
+                {t(locale, "forgot.yourAnswer")}
               </label>
               <input
                 id="answer"
                 name="answer"
                 type="text"
                 required
-                placeholder="พิมพ์คำตอบที่เคยตั้งไว้ตอนสมัคร"
+                placeholder={t(locale, "forgot.answerPlaceholder")}
                 autoComplete="off"
                 className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
@@ -201,7 +204,7 @@ export default function ForgotPasswordPage() {
               {pending ? (
                 <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
               ) : (
-                "ยืนยันคำตอบ"
+                t(locale, "forgot.confirmBtn")
               )}
             </motion.button>
 
@@ -211,7 +214,7 @@ export default function ForgotPasswordPage() {
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-border text-base font-medium text-muted-foreground transition-all duration-150 hover:bg-muted/50"
             >
               <ArrowLeft className="size-4" />
-              ย้อนกลับ
+              {t(locale, "common.back")}
             </button>
           </motion.form>
         )}
@@ -228,7 +231,7 @@ export default function ForgotPasswordPage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="newPassword" className="block text-sm font-medium text-foreground">
-                  รหัสผ่านใหม่
+                  {t(locale, "forgot.newPassword")}
                 </label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50" />
@@ -238,7 +241,7 @@ export default function ForgotPasswordPage() {
                     type="password"
                     required
                     minLength={6}
-                    placeholder="รหัสผ่านใหม่อย่างน้อย 6 ตัว"
+                    placeholder={t(locale, "forgot.newPasswordPlaceholder")}
                     autoComplete="off"
                     className="h-12 w-full rounded-xl border border-border bg-background px-5 py-2 pl-12 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
@@ -247,7 +250,7 @@ export default function ForgotPasswordPage() {
 
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground">
-                  ยืนยันรหัสผ่านใหม่
+                  {t(locale, "forgot.confirmPassword")}
                 </label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50" />
@@ -257,7 +260,7 @@ export default function ForgotPasswordPage() {
                     type="password"
                     required
                     minLength={6}
-                    placeholder="กรอกรหัสผ่านอีกครั้ง"
+                    placeholder={t(locale, "forgot.confirmPasswordPlaceholder")}
                     autoComplete="off"
                     className="h-12 w-full rounded-xl border border-border bg-background px-5 py-2 pl-12 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
@@ -284,7 +287,7 @@ export default function ForgotPasswordPage() {
               {pending ? (
                 <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
               ) : (
-                "เปลี่ยนรหัสผ่าน"
+                t(locale, "forgot.resetBtn")
               )}
             </motion.button>
           </motion.form>
@@ -302,15 +305,15 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div>
-              <p className="text-lg font-semibold text-foreground">เปลี่ยนรหัสผ่านสำเร็จ</p>
-              <p className="mt-1 text-sm text-muted-foreground">คุณสามารถเข้าสู่ระบบด้วยรหัสผ่านใหม่ได้แล้ว</p>
+              <p className="text-lg font-semibold text-foreground">{t(locale, "forgot.doneTitle")}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t(locale, "forgot.doneDesc")}</p>
             </div>
 
             <Link
               href="/login"
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90"
             >
-              ไปที่หน้าเข้าสู่ระบบ
+              {t(locale, "forgot.goToLogin")}
               <ArrowRight className="size-4" />
             </Link>
           </motion.div>
@@ -318,12 +321,12 @@ export default function ForgotPasswordPage() {
       </AnimatePresence>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
-        นึกออกแล้ว?{" "}
+        {t(locale, "forgot.remembered")}{" "}
         <Link
           href="/login"
           className="font-semibold text-primary transition-colors hover:text-primary/80"
         >
-          เข้าสู่ระบบ
+          {t(locale, "auth.loginBtn")}
         </Link>
       </p>
     </motion.div>

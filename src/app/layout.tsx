@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans_Thai, Sora } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
+import { LocaleProvider } from "@/context/locale-context";
 
 const ibmPlex = IBM_Plex_Sans_Thai({
   variable: "--font-sans",
@@ -39,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="th" className={`${ibmPlex.variable} ${sora.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-notebook text-foreground">
-        <AuthProvider>{children}</AuthProvider>
+        <LocaleProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

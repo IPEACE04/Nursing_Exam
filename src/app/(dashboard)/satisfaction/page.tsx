@@ -9,17 +9,20 @@ import type { SatisfactionQuestion } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
-const ratings = [
-  { value: 5, label: "ดีมาก" },
-  { value: 4, label: "ดี" },
-  { value: 3, label: "ปานกลาง" },
-  { value: 2, label: "น้อย" },
-  { value: 1, label: "ควรปรับปรุง" },
-];
+const ratingKeyMap: Record<number, string> = {
+  5: "satisfaction.rating.excellent",
+  4: "satisfaction.rating.good",
+  3: "satisfaction.rating.average",
+  2: "satisfaction.rating.poor",
+  1: "satisfaction.rating.veryPoor",
+};
 
 export default function SatisfactionPage() {
   const router = useRouter();
+  const { locale } = useLocale();
   const [questions, setQuestions] = useState<SatisfactionQuestion[]>([]);
   const [scores, setScores] = useState<Record<string, number>>({});
   const [feedback, setFeedback] = useState("");
@@ -57,7 +60,7 @@ export default function SatisfactionPage() {
 
     const unanswered = Object.values(scores).some((s) => s === 0);
     if (unanswered) {
-      setError("กรุณาตอบให้ครบทุกข้อ");
+      setError(t(locale, "satisfaction.pleaseAnswerAll"));
       return;
     }
 
@@ -82,16 +85,16 @@ export default function SatisfactionPage() {
       <div className="mx-auto max-w-lg text-center py-10 sm:py-16">
         <CheckCircle className="mx-auto size-16 text-emerald-500 mb-4" />
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-2">
-          ขอบคุณสำหรับการประเมิน
+          {t(locale, "satisfaction.thankYou")}
         </h1>
         <p className="text-base text-muted-foreground leading-relaxed mb-6">
-          คุณได้ทำแบบประเมินความพึงพอใจเรียบร้อยแล้ว
+          {t(locale, "satisfaction.alreadySubmitted")}
         </p>
         <button
           onClick={() => router.push("/dashboard")}
           className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
-          กลับแดชบอร์ด
+          {t(locale, "satisfaction.backToDashboard")}
         </button>
       </div>
     );
@@ -105,20 +108,20 @@ export default function SatisfactionPage() {
     >
       <PageHeader
         badge="Survey"
-        title="แบบประเมินความพึงพอใจ"
-        description="ประเมินการใช้งานเว็บไซต์ NurseUp (ทำได้ 1 ครั้ง)"
+        title={t(locale, "satisfaction.title")}
+        description={t(locale, "satisfaction.desc")}
       />
 
       {questions.length === 0 ? (
         <GlassCard className="p-8 text-center">
-          <p className="text-muted-foreground">ยังไม่มีคำถามในขณะนี้</p>
+          <p className="text-muted-foreground">{t(locale, "satisfaction.noQuestions")}</p>
         </GlassCard>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           {(() => {
             const grouped = new Map<string, SatisfactionQuestion[]>();
             questions.forEach((q) => {
-              const cat = q.category_name || "ทั่วไป";
+              const cat = q.category_name || t(locale, "satisfaction.general");
               if (!grouped.has(cat)) grouped.set(cat, []);
               grouped.get(cat)!.push(q);
             });
@@ -138,30 +141,30 @@ export default function SatisfactionPage() {
                     </p>
 
                     <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-                      {ratings.map((r) => (
+                      {[5, 4, 3, 2, 1].map((r) => (
                         <button
-                          key={r.value}
+                          key={r}
                           type="button"
-                          onClick={() => setScore(q.id, r.value)}
+                          onClick={() => setScore(q.id, r)}
                           className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all border ${
-                            scores[q.id] === r.value
+                            scores[q.id] === r
                               ? "border-primary bg-primary text-primary-foreground"
                               : "border-border bg-muted text-muted-foreground hover:bg-muted/80"
                           }`}
                         >
                           <div className="flex items-center gap-0.5">
-                            {Array.from({ length: r.value }).map((_, j) => (
+                            {Array.from({ length: r }).map((_, j) => (
                               <Star
                                 key={j}
                                 className={`size-3.5 ${
-                                  scores[q.id] === r.value
+                                  scores[q.id] === r
                                     ? "fill-primary-foreground"
                                     : "fill-muted-foreground/30"
                                 }`}
                               />
                             ))}
                           </div>
-                          <span className="text-xs font-medium">{r.label}</span>
+                          <span className="text-xs font-medium">{t(locale, ratingKeyMap[r])}</span>
                         </button>
                       ))}
                     </div>
@@ -173,12 +176,12 @@ export default function SatisfactionPage() {
 
           <GlassCard className="p-5 sm:p-6">
             <label className="block text-sm font-medium text-foreground mb-2">
-              ข้อเสนอแนะเพิ่มเติม (ไม่บังคับ)
+              {t(locale, "satisfaction.feedback")}
             </label>
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="เขียนข้อเสนอแนะของคุณ..."
+              placeholder={t(locale, "satisfaction.feedbackPlaceholder")}
               rows={4}
               className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
@@ -198,12 +201,12 @@ export default function SatisfactionPage() {
             {isPending ? (
               <>
                 <span className="size-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-                กำลังส่ง...
+                {t(locale, "satisfaction.sending")}
               </>
             ) : (
               <>
                 <Send className="size-4" />
-                ส่งแบบประเมิน
+                {t(locale, "satisfaction.submit")}
               </>
             )}
           </button>

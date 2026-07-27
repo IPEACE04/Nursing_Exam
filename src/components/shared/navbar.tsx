@@ -3,10 +3,13 @@
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { logout } from "@/actions/auth";
 import { LogOut, User, Shield } from "lucide-react";
 import { studentNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
+import { LocaleToggle } from "@/components/shared/locale-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +23,7 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { profile } = useAuth();
+  const { locale } = useLocale();
 
   const initials = profile?.name
     ? profile.name.charAt(0).toUpperCase()
@@ -54,13 +58,14 @@ export function Navbar() {
                 )}
               >
                 <Icon className="size-4 shrink-0" />
-                {item.label}
+                {t(locale, item.label)}
               </Link>
             );
           })}
         </nav>
 
         <div className="flex items-center gap-1.5 shrink-0">
+          <LocaleToggle />
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
               <Avatar className="size-9 ring-1 ring-border">
@@ -76,7 +81,7 @@ export function Navbar() {
             >
               <div className="mb-1 px-3 py-2">
                 <p className="text-sm font-semibold text-foreground truncate">
-                  {profile?.name || "ผู้ใช้"}
+                  {profile?.name || t(locale, "common.user")}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
                   {profile?.email}
@@ -88,7 +93,7 @@ export function Navbar() {
                 onClick={() => router.push("/profile")}
               >
                 <User className="mr-2.5 size-4" />
-                โปรไฟล์
+                {t(locale, "common.profile")}
               </DropdownMenuItem>
               {profile?.role === "admin" && (
                 <DropdownMenuItem
@@ -96,7 +101,7 @@ export function Navbar() {
                   onClick={() => router.push("/admin")}
                 >
                   <Shield className="mr-2.5 size-4" />
-                  แอดมิน
+                  {t(locale, "common.admin")}
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator className="my-1 bg-border/40" />
@@ -105,7 +110,7 @@ export function Navbar() {
                 onClick={() => logout()}
               >
                 <LogOut className="mr-2.5 size-4" />
-                ออกจากระบบ
+                {t(locale, "common.logout")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

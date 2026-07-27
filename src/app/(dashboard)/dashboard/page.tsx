@@ -17,6 +17,8 @@ import { getDashboardData, getPrePostTestGate } from "@/actions/exam";
 import type { AttemptWithExam } from "@/types";
 import { StatCard } from "@/components/premium/stat-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const ProgressChart = dynamic(
   () => import("@/components/premium/progress-chart").then((m) => ({ default: m.ProgressChart })),
@@ -52,6 +54,7 @@ interface ExamAttemptRow {
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth();
+  const { locale } = useLocale();
   const [attempts, setAttempts] = useState<AttemptWithExam[]>([]);
   const [userRank, setUserRank] = useState(0);
   const [remainingCount, setRemainingCount] = useState(0);
@@ -131,17 +134,17 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground mb-1">
-            สวัสดี!! พร้อมจะเริ่มสอบแล้วรึยัง <span role="img" aria-label="wave">👋</span>
+            {t(locale, "dashboard.greeting")} <span role="img" aria-label="wave">👋</span>
           </p>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-            แดชบอร์ดของคุณ
+            {t(locale, "dashboard.title")}
           </h1>
         </div>
         <Link
           href="/exam"
           className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
-          เริ่มทำข้อสอบ <ArrowRight className="size-4" />
+          {t(locale, "dashboard.startExam")} <ArrowRight className="size-4" />
         </Link>
       </div>
 
@@ -149,15 +152,15 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
         <StatCard
           icon={<Activity className="size-6" />}
-          label="ทำไปแล้ว"
+          label={t(locale, "dashboard.examsDone")}
           value={totalExams}
-          suffix="ครั้ง"
+          suffix={t(locale, "dashboard.times")}
           delay={0}
           accent="primary"
         />
         <StatCard
           icon={<Target className="size-6" />}
-          label="คะแนนเฉลี่ย"
+          label={t(locale, "dashboard.avgScore")}
           value={avgScore}
           suffix="%"
           delay={0.05}
@@ -165,7 +168,7 @@ export default function DashboardPage() {
         />
         <StatCard
           icon={<Flame className="size-6" />}
-          label="คะแนนสูงสุด"
+          label={t(locale, "dashboard.bestScore")}
           value={maxScore}
           suffix="%"
           delay={0.1}
@@ -173,9 +176,9 @@ export default function DashboardPage() {
         />
         <StatCard
           icon={<BookOpen className="size-6" />}
-          label="ข้อสอบที่เหลือ"
+          label={t(locale, "dashboard.remaining")}
           value={remainingCount}
-          suffix="ชุด"
+          suffix={t(locale, "dashboard.sets")}
           delay={0.15}
           accent="primary"
         />
@@ -192,10 +195,10 @@ export default function DashboardPage() {
                 <ClipboardCheck className="size-6 text-primary" />
                 <div>
                   <p className="text-base sm:text-lg font-semibold text-foreground">
-                    แบบประเมินความพึงพอใจ
+                    {t(locale, "dashboard.satisfactionTitle")}
                   </p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    ช่วยประเมินการใช้งาน NurseUp เพื่อให้เราปรับปรุงให้ดีขึ้น
+                    {t(locale, "dashboard.satisfactionDesc")}
                   </p>
                 </div>
               </div>
@@ -210,8 +213,8 @@ export default function DashboardPage() {
         {/* Progress Card */}
         <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-foreground">พัฒนาการ</h2>
-            <span className="text-xs text-muted-foreground">20 ครั้งล่าสุด</span>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">{t(locale, "dashboard.progress")}</h2>
+            <span className="text-xs text-muted-foreground">{t(locale, "dashboard.last20")}</span>
           </div>
           
           {chartData.length > 1 ? (
@@ -219,7 +222,7 @@ export default function DashboardPage() {
           ) : (
              <div className="flex h-32 sm:h-40 items-center justify-center">
                 <p className="text-sm text-muted-foreground text-center">
-                  ยังไม่มีข้อมูล ทดลองทำข้อสอบเพื่อดูพัฒนาการ
+                  {t(locale, "dashboard.noProgressData")}
                 </p>
              </div>
           )}
@@ -228,19 +231,19 @@ export default function DashboardPage() {
         {/* Ranking Card */}
         <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
           <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-foreground">อันดับของคุณ</h2>
-            <Link href="/ranking" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">{t(locale, "dashboard.yourRank")}</h2>
+            <Link href="/ranking" className="text-xs text-primary hover:underline font-medium">{t(locale, "common.viewAll")}</Link>
           </div>
           
           <div className="flex-1 flex flex-col items-center justify-center">
             {userRank > 0 ? (
                <div className="text-center">
                  <span className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground font-heading">{userRank}</span>
-                 <p className="text-sm text-muted-foreground mt-2">จากผู้ใช้งานทั้งหมด</p>
+                 <p className="text-sm text-muted-foreground mt-2">{t(locale, "dashboard.ofAllUsers")}</p>
                </div>
             ) : (
                <p className="text-sm text-muted-foreground text-center">
-                 ทำข้อสอบเพื่อจัดอันดับ
+                 {t(locale, "dashboard.noRank")}
                </p>
             )}
           </div>
@@ -250,15 +253,15 @@ export default function DashboardPage() {
       {/* History */}
       <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
         <div className="flex items-center justify-between mb-4 sm:mb-5">
-          <h2 className="text-base sm:text-lg font-semibold text-foreground">ประวัติล่าสุด</h2>
-          <Link href="/history" className="text-xs text-primary hover:underline font-medium">ดูทั้งหมด</Link>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">{t(locale, "dashboard.recentHistory")}</h2>
+          <Link href="/history" className="text-xs text-primary hover:underline font-medium">{t(locale, "common.viewAll")}</Link>
         </div>
         
         <div className="space-y-3 sm:space-y-4">
           {attempts.length === 0 ? (
             <div className="flex h-24 items-center justify-center">
               <p className="text-sm text-muted-foreground text-center">
-                ยังไม่มีประวัติ — เริ่มทำข้อสอบชุดแรกของคุณ
+                {t(locale, "dashboard.noHistory")}
               </p>
             </div>
           ) : (

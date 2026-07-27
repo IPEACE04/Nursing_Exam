@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { Send } from "lucide-react";
 import { addComment } from "@/actions/community";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 interface CommentFormProps {
   postId: string;
@@ -10,6 +12,7 @@ interface CommentFormProps {
 }
 
 export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
+  const { locale } = useLocale();
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
@@ -34,7 +37,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="เขียนความคิดเห็น..."
+        placeholder={t(locale, "community.commentPlaceholder")}
         rows={3}
         className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
       />
@@ -48,7 +51,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
           className="inline-flex h-9 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
-          {isPending ? "กำลังส่ง..." : "ส่ง"}
+          {isPending ? t(locale, "community.sending") : t(locale, "community.send")}
         </button>
       </div>
     </form>

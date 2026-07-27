@@ -22,6 +22,8 @@ import { useAuth } from "@/context/auth-context";
 import { useTimer } from "@/hooks/use-timer";
 import { submitExam, getExamSession, getPrePostTestGate } from "@/actions/exam";
 import type { Question, PrePostTestGate } from "@/types";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const STORAGE_ANSWERS_PREFIX = "exam_answers_";
 
@@ -33,6 +35,7 @@ export default function ExamPage({
   const { examId } = use(params);
   const router = useRouter();
   const { user } = useAuth();
+  const { locale } = useLocale();
 
   const [exam, setExam] = useState<{ title: string; description: string | null; time_limit_minutes: number; type: string } | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -175,16 +178,16 @@ export default function ExamPage({
                 <Lock className="size-8 sm:size-10 text-amber-500" />
               </div>
               <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
-                PostTest ยังไม่ปลดล็อค
+                {t(locale, "exam.take.postLocked")}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                ทำข้อสอบปกติให้ครบทุกชุดก่อนเพื่อปลดล็อค PostTest
+                {t(locale, "exam.take.postLockedDesc")}
               </p>
 
               {gate && gate.remainingExams.length > 0 && (
                 <div className="mt-5 sm:mt-6 space-y-2 text-left">
                   <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    ข้อสอบที่ยังไม่ได้ทำ ({gate.remainingExams.length})
+                    {t(locale, "exam.take.remainingExams")} ({gate.remainingExams.length})
                   </p>
                   <div className="space-y-1.5">
                     {gate.remainingExams.map((e) => (
@@ -197,7 +200,7 @@ export default function ExamPage({
                           onClick={() => router.push(`/exam/${e.id}`)}
                           className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition-all hover:bg-primary/90"
                         >
-                          ไปทำ <ArrowRight className="size-3" />
+                          {t(locale, "progress.goDo")} <ArrowRight className="size-3" />
                         </button>
                       </div>
                     ))}
@@ -206,13 +209,13 @@ export default function ExamPage({
               )}
 
               <p className="mt-4 text-xs text-muted-foreground">
-                คุณทำ PreTest แล้ว — เหลือข้อสอบปกติอีก {gate?.remainingExams.length ?? 0} ชุด
+                {t(locale, "exam.take.remainingN", { n: gate?.remainingExams.length ?? 0 })}
               </p>
               <button
                 onClick={() => router.push("/progress")}
                 className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px mt-4"
               >
-                ดูความคืบหน้า
+                {t(locale, "exam.take.viewProgress")}
               </button>
             </div>
           </motion.div>
@@ -234,10 +237,10 @@ export default function ExamPage({
                 <CheckCircle2 className="size-8 sm:size-10 text-emerald-600" />
               </div>
               <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
-                PostTest สำเร็จแล้ว
+                {t(locale, "exam.take.postDone")}
               </h1>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                ยินดีด้วย! คุณทำครบทุกขั้นตอนแล้ว สามารถทำข้อสอบซ้ำได้ไม่จำกัด
+                {t(locale, "exam.take.postDoneDesc")}
               </p>
               <div className="mt-5 flex flex-col gap-3">
                 <button
@@ -245,14 +248,14 @@ export default function ExamPage({
                   className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
                 >
                   <ArrowRight className="size-4" />
-                  ดูผลเปรียบเทียบ PreTest vs PostTest
+                  {t(locale, "exam.take.compareResult")}
                 </button>
                 <button
                   onClick={handleStart}
                   className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
                 >
                   <Play className="size-4" />
-                  ทำข้อสอบนี้อีกครั้ง
+                  {t(locale, "exam.take.retake")}
                 </button>
               </div>
             </div>
@@ -288,14 +291,14 @@ export default function ExamPage({
                 <p className="text-base sm:text-lg font-semibold text-foreground">
                   {questions.length}
                 </p>
-                <p className="text-xs text-muted-foreground">จำนวนข้อ</p>
+                <p className="text-xs text-muted-foreground">{t(locale, "exam.take.questions")}</p>
               </div>
               <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
                 <Clock className="mx-auto mb-1 size-4 sm:size-5 text-chart-2" />
                 <p className="text-base sm:text-lg font-semibold text-foreground">
                   {exam.time_limit_minutes}
                 </p>
-                <p className="text-xs text-muted-foreground">นาที</p>
+                <p className="text-xs text-muted-foreground">{t(locale, "exam.take.minutes")}</p>
               </div>
             </div>
 
@@ -306,9 +309,9 @@ export default function ExamPage({
                 </p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {isPreTest
-                    ? "ข้อสอบ PreTest เพื่อประเมินความรู้ก่อนทำแบบทดสอบย่อย เมื่อคุณทำข้อสอบเสร็จแล้ว คุณสามารถใช้ Features ต่างๆของเว็ปไซต์นี้ได้"
+                    ? t(locale, "exam.take.preTestDesc")
                     : isPostTestReady
-                      ? "คุณทำข้อสอบปกติครบแล้ว — มาวัดผลกัน"
+                      ? t(locale, "exam.take.preTestUnlocked")
                       : ""}
                 </p>
               </div>
@@ -319,19 +322,19 @@ export default function ExamPage({
                 <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[10px] font-bold text-muted-foreground">
                   1
                 </div>
-                <span>เมื่อเริ่มแล้ว จับเวลาทันที และไม่สามารถหยุดได้</span>
+                <span>{t(locale, "exam.take.rule1")}</span>
               </div>
               <div className="flex items-start gap-2.5 sm:gap-3">
                 <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[10px] font-bold text-muted-foreground">
                   2
                 </div>
-                <span>เลือกคำตอบโดยกดที่ตัวเลือกที่ต้องการ</span>
+                <span>{t(locale, "exam.take.rule2")}</span>
               </div>
               <div className="flex items-start gap-2.5 sm:gap-3">
                   <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-destructive/20 bg-destructive/8 text-[10px] font-bold text-destructive">
                   3
                 </div>
-                <span>เมื่อหมดเวลาหรือส่งคำตอบแล้ว จะเห็นผลและเฉลยทันที</span>
+                <span>{t(locale, "exam.take.rule3")}</span>
               </div>
             </div>
 
@@ -340,7 +343,7 @@ export default function ExamPage({
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-6 sm:mt-8"
             >
               <Play className="size-4 sm:size-5" />
-              เริ่มทำข้อสอบ
+              {t(locale, "exam.take.startBtn")}
             </button>
           </div>
         </motion.div>
@@ -372,7 +375,7 @@ export default function ExamPage({
             <button
               onClick={() => setShowMobileNav(true)}
               className="inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
-              aria-label="แสดงรายการข้อ"
+              aria-label={t(locale, "exam.take.showQuestions")}
             >
               <List className="size-5 sm:size-6" />
             </button>
@@ -406,10 +409,10 @@ export default function ExamPage({
               <div className="rounded-2xl border border-border bg-card p-5 sm:p-8">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground">
-                    ข้อ {currentIndex + 1} จาก {questions.length}
+                    {t(locale, "exam.take.questionN", { n: currentIndex + 1, total: questions.length })}
                   </p>
                   <span className="text-xs sm:text-sm text-muted-foreground">
-                    ตอบแล้ว {answeredCount} ข้อ
+                    {t(locale, "exam.take.answeredN", { n: answeredCount })}
                   </span>
                 </div>
                 <h2 className="mt-4 text-base sm:text-xl leading-relaxed text-foreground">
@@ -462,7 +465,7 @@ export default function ExamPage({
               className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-5 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px disabled:opacity-30 disabled:pointer-events-none"
             >
               <ChevronLeft className="size-4 sm:size-5" />
-              ก่อนหน้า
+              {t(locale, "exam.take.prev")}
             </button>
 
             {currentIndex < questions.length - 1 ? (
@@ -470,7 +473,7 @@ export default function ExamPage({
                 onClick={() => goTo(currentIndex + 1)}
                 className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
               >
-                ถัดไป
+                {t(locale, "exam.take.next")}
                 <ChevronRight className="size-4 sm:size-5" />
               </button>
             ) : (
@@ -480,7 +483,7 @@ export default function ExamPage({
                 className="inline-flex h-11 items-center gap-2 rounded-xl bg-emerald-600 px-6 text-sm font-semibold text-white transition-all duration-150 hover:bg-emerald-700 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
               >
                 <Send className="size-4 sm:size-5" />
-                ส่งกระดาษคำตอบ
+                {t(locale, "exam.take.submitAnswers")}
               </button>
             )}
           </div>
@@ -489,7 +492,7 @@ export default function ExamPage({
         <aside className="hidden w-48 shrink-0 md:block">
           <div className="sticky top-24 rounded-2xl border border-border bg-card p-3 sm:p-4">
             <p className="mb-2.5 sm:mb-3 text-xs font-medium text-muted-foreground">
-              ข้อที่ตอบแล้ว
+              {t(locale, "exam.take.answeredHeader")}
             </p>
             <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
               {questions.map((q, i) => {
@@ -516,11 +519,11 @@ export default function ExamPage({
             <div className="mt-2.5 sm:mt-3 flex items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
                 <span className="inline-block size-2.5 sm:size-3 rounded border border-border bg-muted" />
-                ตอบแล้ว
+                {t(locale, "exam.take.answered")}
               </span>
               <span className="flex items-center gap-1">
                 <span className="inline-block size-2.5 sm:size-3 rounded border border-border bg-card" />
-                ยังไม่ตอบ
+                {t(locale, "exam.take.unanswered")}
               </span>
             </div>
 
@@ -530,7 +533,7 @@ export default function ExamPage({
               className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3 text-xs font-semibold text-white transition-all duration-150 hover:bg-emerald-700 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none mt-3 sm:mt-4"
             >
               <Send className="size-3 sm:size-3.5" />
-              ส่งคำตอบ
+              {t(locale, "exam.take.submitBtn")}
             </button>
           </div>
         </aside>
@@ -551,26 +554,26 @@ export default function ExamPage({
               className="mx-4 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-lg"
             >
               <h3 className="text-base font-semibold text-foreground">
-                ยืนยันส่งคำตอบ
+                {t(locale, "exam.take.confirmTitle")}
               </h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                 {allAnswered
-                  ? "คุณตอบครบทุกข้อแล้ว ยืนยันส่งคำตอบ?"
-                  : `คุณตอบไปแล้ว ${answeredCount} จาก ${questions.length} ข้อ ข้อที่ยังไม่ตอบจะถือว่าผิด ยืนยันส่งคำตอบ?`}
+                  ? t(locale, "exam.take.confirmAllDone")
+                  : t(locale, "exam.take.confirmPartial", { n: answeredCount, total: questions.length })}
               </p>
               <div className="mt-5 flex gap-3">
                 <button
                   onClick={() => setShowConfirm(false)}
                   className="inline-flex h-11 flex-1 items-center justify-center rounded-xl border border-border bg-transparent px-5 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
                 >
-                  ยกเลิก
+                  {t(locale, "common.cancel")}
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
                   className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white transition-all duration-150 hover:bg-emerald-700 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
                 >
-                  {submitting ? "กำลังส่ง..." : "ยืนยันส่ง"}
+                  {submitting ? t(locale, "exam.take.submitting") : t(locale, "exam.take.confirmSubmit")}
                 </button>
               </div>
             </motion.div>
@@ -599,7 +602,7 @@ export default function ExamPage({
             >
               <div className="mb-4 flex items-center justify-between">
                 <p className="text-sm font-medium text-foreground">
-                  รายการข้อสอบ
+                  {t(locale, "exam.take.questionList")}
                 </p>
                 <button
                   onClick={() => setShowMobileNav(false)}
@@ -632,11 +635,11 @@ export default function ExamPage({
               <div className="mt-3 sm:mt-4 flex items-center justify-center gap-3 sm:gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1 sm:gap-1.5">
                   <span className="inline-block size-2.5 sm:size-3 rounded border border-border bg-muted" />
-                  ตอบแล้ว
+                  {t(locale, "exam.take.answered")}
                 </span>
                 <span className="flex items-center gap-1 sm:gap-1.5">
                   <span className="inline-block size-2.5 sm:size-3 rounded border border-border bg-card" />
-                  ยังไม่ตอบ
+                  {t(locale, "exam.take.unanswered")}
                 </span>
               </div>
             </motion.div>

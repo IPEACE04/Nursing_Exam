@@ -9,8 +9,18 @@ import type { CommunityPostWithAuthor } from "@/types";
 import { PostCard } from "@/components/community/post-card";
 import { CreatePostForm } from "@/components/community/create-post-form";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
+
+const categoryKeyMap: Record<string, string> = {
+  "ทั้งหมด": "community.category.all",
+  "เทคนิค": "community.category.technique",
+  "แชร์ความรู้": "community.category.knowledge",
+  "ถาม-ตอบ": "community.category.qna",
+};
 
 export default function CommunityPage() {
+  const { locale } = useLocale();
   const [posts, setPosts] = useState<CommunityPostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
@@ -50,10 +60,10 @@ export default function CommunityPage() {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-            Community
+            {t(locale, "community.title")}
           </h1>
           <p className="mt-1 text-base text-muted-foreground leading-relaxed">
-            แบ่งปันความรู้และเทคนิคการทำข้อสอบ
+            {t(locale, "community.desc")}
           </p>
         </div>
         <button
@@ -61,7 +71,7 @@ export default function CommunityPage() {
           className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
           <Plus className="size-5" />
-          <span className="hidden sm:inline">สร้างโพสต์</span>
+          <span className="hidden sm:inline">{t(locale, "community.createPost")}</span>
         </button>
       </div>
 
@@ -79,7 +89,7 @@ export default function CommunityPage() {
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold tracking-tight text-foreground">
-                สร้างโพสต์ใหม่
+                {t(locale, "community.newPost")}
               </h2>
               <button
                 onClick={() => setShowCreateForm(false)}
@@ -105,7 +115,7 @@ export default function CommunityPage() {
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
-            {cat}
+            {t(locale, categoryKeyMap[cat] ?? cat)}
           </button>
         ))}
       </div>
@@ -116,14 +126,14 @@ export default function CommunityPage() {
       ) : posts.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card py-12 sm:py-16 text-center">
           <p className="text-base text-muted-foreground">
-            ยังไม่มีโพสต์ในขณะนี้
+            {t(locale, "community.empty")}
           </p>
           <button
             onClick={() => setShowCreateForm(true)}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-4"
           >
             <Plus className="size-4" />
-            สร้างโพสต์แรก
+            {t(locale, "community.createFirst")}
           </button>
         </div>
       ) : (

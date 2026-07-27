@@ -4,15 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { studentNavItems } from "@/lib/navigation";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { locale } = useLocale();
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
       <div className="border-b border-border px-5 py-5">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          เมนูหลัก
+          {t(locale, "common.mainMenu")}
         </p>
       </div>
       <nav className="flex flex-1 flex-col gap-1 p-3">
@@ -34,7 +37,7 @@ export function Sidebar() {
               )}
             >
               <Icon className="size-5" />
-              {item.label}
+              {t(locale, item.label)}
             </Link>
           );
         })}

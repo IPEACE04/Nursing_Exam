@@ -18,6 +18,8 @@ import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import type { QuestionResult } from "@/types";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const container = {
   hidden: { opacity: 0 },
@@ -71,6 +73,7 @@ export default function ResultPage({
 }) {
   const { attemptId } = use(params);
   const router = useRouter();
+  const { locale } = useLocale();
 
   const [examTitle, setExamTitle] = useState("");
   const [score, setScore] = useState(0);
@@ -138,12 +141,12 @@ export default function ResultPage({
             className="mb-5 inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <ArrowLeft className="size-5" />
-            กลับไปแดชบอร์ด
+            {t(locale, "result.backToDashboard")}
           </button>
           <PageHeader
-            badge={passed ? "ผ่าน" : "ไม่ผ่าน"}
+            badge={passed ? t(locale, "result.pass") : t(locale, "result.fail")}
             title={examTitle}
-            description="ผลการสอบของคุณ"
+            description={t(locale, "result.title")}
           />
         </div>
 
@@ -178,14 +181,14 @@ export default function ResultPage({
               transition={{ delay: 0.4 }}
               className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed"
             >
-              {passed ? "ยินดีด้วย! คุณสอบผ่าน" : "ยังไม่ผ่านเกณฑ์ ลองใหม่อีกครั้งนะ"}
+              {passed ? t(locale, "result.congrats") : t(locale, "result.notPassed")}
             </motion.p>
 
             <div className="mt-8 sm:mt-10 grid grid-cols-3 gap-3 sm:gap-5">
               {[
-                { icon: Target, label: "ข้อที่ถูก", value: `${score}/${total}`, color: "text-emerald-600" },
-                { icon: XCircle, label: "ข้อที่ผิด", value: `${incorrectCount}`, color: "text-destructive" },
-                { icon: Clock, label: "เวลาที่ใช้", value: formatTime(timeSpent), color: "text-primary" },
+                { icon: Target, label: t(locale, "result.correct"), value: `${score}/${total}`, color: "text-emerald-600" },
+                { icon: XCircle, label: t(locale, "result.incorrect"), value: `${incorrectCount}`, color: "text-destructive" },
+                { icon: Clock, label: t(locale, "result.timeUsed"), value: formatTime(timeSpent), color: "text-primary" },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -203,7 +206,7 @@ export default function ResultPage({
         <motion.div variants={itemAnim}>
           <GlassCard className="p-5 sm:p-6">
             <h2 className="mb-6 text-lg sm:text-xl font-semibold text-foreground">
-              เฉลยละเอียด
+              {t(locale, "result.detail")}
             </h2>
             <div className="space-y-5">
               {results.map((r, i) => {
@@ -225,17 +228,17 @@ export default function ResultPage({
                   >
                     <div className="mb-3 flex items-center gap-2.5">
                       <span className="text-sm font-medium text-muted-foreground">
-                        ข้อ {i + 1}
+                        {t(locale, "result.questionN", { n: i + 1 })}
                       </span>
                       {r.is_correct ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-transparent px-3 py-1 text-xs font-medium text-emerald-600">
                           <CheckCircle2 className="size-3.5" />
-                          ถูก
+                          {t(locale, "result.correctBadge")}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full border border-destructive/20 bg-transparent px-3 py-1 text-xs font-medium text-destructive">
                           <XCircle className="size-3.5" />
-                          ผิด
+                          {t(locale, "result.incorrectBadge")}
                         </span>
                       )}
                     </div>
@@ -282,7 +285,7 @@ export default function ResultPage({
                               {value}
                               {isCorrect && (
                                 <span className="ml-2 text-xs text-muted-foreground">
-                                  (เฉลย)
+                                  {t(locale, "result.answer")}
                                 </span>
                               )}
                             </span>
@@ -293,13 +296,13 @@ export default function ResultPage({
 
                     {unanswered && (
                       <p className="mt-3 text-sm text-destructive">
-                        * ไม่ได้ตอบข้อนี้
+                        {t(locale, "result.unanswered")}
                       </p>
                     )}
 
                     {r.explanation_text && (
                       <div className="mt-4 rounded-xl border border-border bg-muted px-5 py-3.5 text-sm leading-relaxed whitespace-pre-wrap break-words">
-                        <span className="font-medium">คำอธิบาย: </span>
+                        <span className="font-medium">{t(locale, "result.explanation")} </span>
                         {r.explanation_text}
                       </div>
                     )}
@@ -316,14 +319,14 @@ export default function ResultPage({
             className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
           >
             <BarChart3 className="size-5" />
-            ไปแดชบอร์ด
+            {t(locale, "result.goDashboard")}
           </button>
           <button
             onClick={() => router.push("/exam")}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <GraduationCap className="size-5" />
-            ทำข้อสอบอื่น
+            {t(locale, "result.otherExams")}
           </button>
         </motion.div>
       </motion.div>

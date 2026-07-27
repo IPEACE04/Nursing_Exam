@@ -22,6 +22,8 @@ import {
   deletePrePostQuestion,
   togglePrePostPublish,
 } from "@/actions/admin";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import type { Question } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
@@ -36,6 +38,7 @@ interface ExamData {
 }
 
 export default function AdminPrePostTestPage() {
+  const { locale } = useLocale();
   const [exam, setExam] = useState<ExamData | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,20 +85,20 @@ export default function AdminPrePostTestPage() {
     >
       <PageHeader
         badge="PreTest / PostTest"
-        title="จัดการข้อสอบ PreTest & PostTest"
-        description="สร้างและจัดการชุดข้อสอบ PreTest/PostTest (มีได้เพียง 1 ชุดเท่านั้น)"
+        title={t(locale, "admin.prepost.title")}
+        description={t(locale, "admin.prepost.desc")}
       />
 
       {!exam && !showCreateExam ? (
         <GlassCard className="py-12 text-center">
           <GraduationCap className="mx-auto mb-3 size-12 text-muted-foreground/30" />
-          <p className="text-sm text-muted-foreground">ยังไม่ได้สร้างชุด PreTest/PostTest</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.prepost.empty")}</p>
           <button
             onClick={() => setShowCreateExam(true)}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-4"
           >
             <Plus className="size-4" />
-            สร้างเลย
+            {t(locale, "admin.prepost.createBtn")}
           </button>
         </GlassCard>
       ) : showCreateExam && !exam ? (
@@ -103,8 +106,8 @@ export default function AdminPrePostTestPage() {
           <div className="mb-5 flex items-center gap-3">
             <HelpCircle className="size-5 text-primary shrink-0" />
             <div>
-              <h2 className="font-semibold text-foreground">สร้างชุด PreTest/PostTest</h2>
-              <p className="text-xs text-muted-foreground">ตั้งค่าชื่อ เวลา และคำอธิบาย</p>
+              <h2 className="font-semibold text-foreground">{t(locale, "admin.prepost.createTitle")}</h2>
+              <p className="text-xs text-muted-foreground">{t(locale, "admin.edit.detailsDesc")}</p>
             </div>
           </div>
           <form
@@ -116,30 +119,30 @@ export default function AdminPrePostTestPage() {
           >
             <div>
               <label className="mb-1.5 block text-sm font-medium text-foreground">
-                ชื่อชุดข้อสอบ
+                {t(locale, "admin.edit.examName")}
               </label>
               <input
                 name="title"
                 type="text"
                 required
-                placeholder="เช่น PreTest & PostTest"
+                placeholder={t(locale, "admin.prepost.namePlaceholder")}
                 className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-foreground">
-                คำอธิบาย
+                {t(locale, "admin.exams.description")}
               </label>
               <textarea
                 name="description"
                 rows={2}
-                placeholder="คำอธิบายเกี่ยวกับ PreTest/PostTest"
+                placeholder={t(locale, "admin.prepost.descPlaceholder")}
                 className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium text-foreground">
-                เวลาที่กำหนด (นาที)
+                {t(locale, "admin.edit.timeLimit")}
               </label>
               <input
                 name="timeLimit"
@@ -155,7 +158,7 @@ export default function AdminPrePostTestPage() {
               className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
             >
               <Check className="size-4" />
-              สร้าง
+              {t(locale, "admin.exams.createBtn")}
             </button>
           </form>
         </GlassCard>
@@ -170,11 +173,11 @@ export default function AdminPrePostTestPage() {
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                     <span className="flex items-center gap-1">
                       <FileText className="size-3" />
-                      {questions.length} ข้อ
+                      {questions.length} {t(locale, "exam.list.questions")}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="size-3" />
-                      {exam.time_limit_minutes} นาที
+                      {exam.time_limit_minutes} {t(locale, "exam.list.minutes")}
                     </span>
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium border ${
@@ -183,7 +186,7 @@ export default function AdminPrePostTestPage() {
                           : "border-amber-500/30 text-amber-600"
                       }`}
                     >
-                      {exam.is_published ? "เผยแพร่" : "ร่าง"}
+                      {exam.is_published ? t(locale, "admin.exams.published") : t(locale, "admin.exams.draft")}
                     </span>
                   </div>
                 </div>
@@ -205,7 +208,7 @@ export default function AdminPrePostTestPage() {
               <input type="hidden" name="id" value={exam.id} />
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  ชื่อชุดข้อสอบ
+                  {t(locale, "admin.edit.examName")}
                 </label>
                 <input
                   name="title"
@@ -217,7 +220,7 @@ export default function AdminPrePostTestPage() {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  คำอธิบาย
+                  {t(locale, "admin.exams.description")}
                 </label>
                 <textarea
                   name="description"
@@ -228,7 +231,7 @@ export default function AdminPrePostTestPage() {
               </div>
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
-                  เวลาที่กำหนด (นาที)
+                  {t(locale, "admin.edit.timeLimit")}
                 </label>
                 <input
                   name="timeLimit"
@@ -244,7 +247,7 @@ export default function AdminPrePostTestPage() {
                 className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
               >
                 <Check className="size-4" />
-                บันทึก
+                {t(locale, "common.save")}
               </button>
             </form>
           </GlassCard>
@@ -253,9 +256,9 @@ export default function AdminPrePostTestPage() {
             <div className="mb-5 flex items-center justify-between">
               <div>
                 <h2 className="font-semibold text-foreground">
-                  คำถามทั้งหมด ({questions.length} ข้อ)
+                  {t(locale, "admin.prepost.totalQuestions", { count: questions.length })}
                 </h2>
-                <p className="text-xs text-muted-foreground">จัดการคำถามในชุด PreTest/PostTest</p>
+                <p className="text-xs text-muted-foreground">{t(locale, "admin.prepost.manageDesc")}</p>
               </div>
               <button
                 onClick={() => {
@@ -265,7 +268,7 @@ export default function AdminPrePostTestPage() {
                 className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
               >
                 <Plus className="size-4" />
-                เพิ่มคำถาม
+                {t(locale, "admin.edit.addQuestion")}
               </button>
             </div>
 
@@ -298,7 +301,7 @@ export default function AdminPrePostTestPage() {
               {questions.length === 0 ? (
                 <div className="py-10 text-center">
                   <HelpCircle className="mx-auto mb-3 size-10 text-muted-foreground/30" />
-                  <p className="text-sm text-muted-foreground">ยังไม่มีคำถาม เพิ่มคำถามแรกเลย</p>
+                  <p className="text-sm text-muted-foreground">{t(locale, "admin.edit.noQuestions")}</p>
                 </div>
               ) : (
                 questions.map((q, i) => (
@@ -312,7 +315,7 @@ export default function AdminPrePostTestPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground leading-relaxed">
-                          <span className="text-muted-foreground">ข้อ {i + 1}: </span>
+                          <span className="text-muted-foreground">{t(locale, "admin.edit.questionN", { n: i + 1 })} </span>
                           {q.question_text}
                         </p>
                         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -334,7 +337,7 @@ export default function AdminPrePostTestPage() {
                         </div>
                         {q.explanation_text && (
                           <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed break-words">
-                            <span className="font-medium text-foreground">เฉลย:</span> {q.explanation_text}
+                            <span className="font-medium text-foreground">{t(locale, "admin.edit.answerKey")}</span> {q.explanation_text}
                           </p>
                         )}
                       </div>
@@ -350,7 +353,7 @@ export default function AdminPrePostTestPage() {
                         </button>
                         <button
                           onClick={async () => {
-                            if (!confirm("ลบคำถามนี้?")) return;
+                            if (!confirm(t(locale, "admin.edit.deleteQuestionConfirm"))) return;
                             const fd = new FormData();
                             fd.set("id", q.id);
                             await deletePrePostQuestion(fd);
@@ -382,6 +385,7 @@ function QuestionForm({
   question?: Question;
   onClose: () => void;
 }) {
+  const { locale } = useLocale();
   const actionFn = question ? updatePrePostQuestion : createPrePostQuestion;
   const qText = question?.question_text ?? "";
   const opt = question?.options ?? { A: "", B: "", C: "", D: "" };
@@ -401,13 +405,13 @@ function QuestionForm({
       <div className="flex items-center gap-2 mb-3">
         <Plus className="size-4 text-primary" />
         <span className="text-sm font-medium text-foreground">
-          {question ? "แก้ไขคำถาม" : "เพิ่มคำถามใหม่"}
+          {question ? t(locale, "admin.edit.editQuestion") : t(locale, "admin.edit.addNewQuestion")}
         </span>
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-muted-foreground">
-          คำถาม
+          {t(locale, "admin.edit.questionLabel")}
         </label>
         <textarea
           name="questionText"
@@ -422,7 +426,7 @@ function QuestionForm({
         {["A", "B", "C", "D"].map((key) => (
           <div key={key}>
             <label className="mb-1 block text-xs font-medium text-muted-foreground">
-              ตัวเลือก {key}
+              {t(locale, "admin.edit.optionLabel", { x: key })}
             </label>
             <input
               name={`option${key}`}
@@ -438,7 +442,7 @@ function QuestionForm({
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <div className="sm:w-auto">
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            เฉลย (คำตอบที่ถูก)
+            {t(locale, "admin.edit.answerLabel")}
           </label>
           <select
             name="correctOption"
@@ -453,7 +457,7 @@ function QuestionForm({
         </div>
         <div className="flex-1">
           <label className="mb-1 block text-xs font-medium text-muted-foreground">
-            คำอธิบายเฉลย
+            {t(locale, "admin.edit.explanationLabel")}
           </label>
           <textarea
             name="explanation"
@@ -470,7 +474,7 @@ function QuestionForm({
           className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
           <Check className="size-4" />
-          {question ? "บันทึก" : "เพิ่ม"}
+          {question ? t(locale, "common.save") : t(locale, "admin.satisfaction.add")}
         </button>
         <button
           type="button"
@@ -478,7 +482,7 @@ function QuestionForm({
           className="inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
         >
           <X className="size-4" />
-          ยกเลิก
+          {t(locale, "common.cancel")}
         </button>
       </div>
     </form>

@@ -9,12 +9,15 @@ import Link from "next/link";
 import { register } from "@/actions/auth";
 import { PERSONAL_QUESTIONS } from "@/lib/personal-questions";
 import { useAuth } from "@/context/auth-context";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { FormField } from "@/components/premium/form-field";
 import { getPrePostTestExam } from "@/actions/exam";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { refreshProfile } = useAuth();
+  const { locale } = useLocale();
   const [state, formAction, pending] = useActionState(register, undefined);
 
   useEffect(() => {
@@ -44,10 +47,10 @@ export default function RegisterPage() {
     >
       <div className="mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-          สร้างบัญชีใหม่
+          {t(locale, "register.title")}
         </h1>
         <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">
-          ลงทะเบียนเพื่อเริ่มฝึกข้อสอบ
+          {t(locale, "register.desc")}
         </p>
       </div>
 
@@ -56,7 +59,7 @@ export default function RegisterPage() {
           id="name"
           name="name"
           icon={User}
-          placeholder="ชื่อ-นามสกุล"
+          placeholder={t(locale, "register.name")}
           autoComplete="off"
           required
         />
@@ -66,7 +69,7 @@ export default function RegisterPage() {
           name="email"
           icon={Mail}
           type="email"
-          placeholder="อีเมล"
+          placeholder={t(locale, "auth.email")}
           autoComplete="off"
           required
         />
@@ -76,7 +79,7 @@ export default function RegisterPage() {
           name="password"
           icon={Lock}
           type="password"
-          placeholder="รหัสผ่าน"
+          placeholder={t(locale, "auth.password")}
           autoComplete="off"
           minLength={6}
           required
@@ -84,30 +87,30 @@ export default function RegisterPage() {
 
         <div className="border-t border-border pt-4">
           <p className="mb-4 text-sm font-medium text-muted-foreground">
-            ข้อมูลส่วนตัว 
+            {t(locale, "register.personalInfo")}
           </p>
 
           <div className="space-y-4">
             <div>
               <label htmlFor="gender" className="mb-1.5 block text-sm font-medium text-foreground">
-                เพศ
+                {t(locale, "register.gender")}
               </label>
               <select
                 id="gender"
                 name="gender"
                 className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               >
-                <option value="">ไม่ระบุ</option>
-                <option value="ชาย">ชาย</option>
-                <option value="หญิง">หญิง</option>
-                <option value="อื่นๆ">อื่นๆ</option>
+                <option value="">{t(locale, "register.gender.none")}</option>
+                <option value="ชาย">{t(locale, "register.gender.male")}</option>
+                <option value="หญิง">{t(locale, "register.gender.female")}</option>
+                <option value="อื่นๆ">{t(locale, "register.gender.other")}</option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label htmlFor="age" className="mb-1.5 block text-sm font-medium text-foreground">
-                  อายุ
+                  {t(locale, "register.age")}
                 </label>
                 <input
                   id="age"
@@ -115,14 +118,14 @@ export default function RegisterPage() {
                   type="number"
                   min={15}
                   max={99}
-                  placeholder="อายุ"
+                  placeholder={t(locale, "register.age")}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                 />
               </div>
 
               <div>
                 <label htmlFor="gpa" className="mb-1.5 block text-sm font-medium text-foreground">
-                  เกรดเฉลี่ย
+                  {t(locale, "register.gpa")}
                 </label>
                 <input
                   id="gpa"
@@ -131,7 +134,7 @@ export default function RegisterPage() {
                   min={0}
                   max={4}
                   step={0.01}
-                  placeholder="เกรดเฉลี่ย"
+                  placeholder={t(locale, "register.gpaPlaceholder")}
                   className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                 />
               </div>
@@ -143,20 +146,20 @@ export default function RegisterPage() {
               id="studentId"
               name="studentId"
               icon={IdCard}
-              placeholder="รหัสนักศึกษา"
+              placeholder={t(locale, "register.studentId")}
             />
           </div>
         </div>
 
         <div className="border-t border-border pt-4">
           <p className="mb-4 text-sm font-medium text-muted-foreground">
-            คำถามส่วนตัว (สำหรับกู้คืนรหัสผ่าน)
+            {t(locale, "register.personalQuestion")}
           </p>
 
           <div className="space-y-4">
             <div>
               <label htmlFor="personalQuestion" className="mb-1.5 block text-sm font-medium text-foreground">
-                เลือกคำถาม
+                {t(locale, "register.selectQuestion")}
               </label>
               <select
                 id="personalQuestion"
@@ -165,7 +168,7 @@ export default function RegisterPage() {
                 defaultValue=""
                 className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               >
-                <option value="" disabled>กรุณาเลือกคำถาม</option>
+                <option value="" disabled>{t(locale, "register.chooseQuestion")}</option>
                 {PERSONAL_QUESTIONS.map((q) => (
                   <option key={q} value={q}>{q}</option>
                 ))}
@@ -174,7 +177,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="personalAnswer" className="mb-1.5 block text-sm font-medium text-foreground">
-                คำตอบ
+                {t(locale, "register.answer")}
               </label>
               <input
                 id="personalAnswer"
@@ -182,7 +185,7 @@ export default function RegisterPage() {
                 type="text"
                 required
                 minLength={2}
-                placeholder="พิมพ์คำตอบของคุณ"
+                placeholder={t(locale, "register.answerPlaceholder")}
                 autoComplete="off"
                 className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
@@ -209,18 +212,18 @@ export default function RegisterPage() {
           {pending ? (
             <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
           ) : (
-            "สมัครสมาชิก"
+            t(locale, "register.submit")
           )}
         </motion.button>
       </form>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
-        มีบัญชีอยู่แล้ว?{" "}
+        {t(locale, "auth.hasAccount")}{" "}
         <Link
           href="/login"
           className="font-semibold text-primary transition-colors hover:text-primary/80"
         >
-          เข้าสู่ระบบ
+          {t(locale, "auth.loginBtn")}
         </Link>
       </p>
     </motion.div>

@@ -4,9 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { studentNavItems } from "@/lib/navigation";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { locale } = useLocale();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] md:hidden">
@@ -36,7 +39,7 @@ export function MobileNav() {
               >
                 <Icon className="size-4 sm:size-5" />
               </div>
-              <span className="text-[10px] sm:text-xs font-medium leading-tight truncate max-w-[56px] text-center">{item.label}</span>
+              <span className="text-[10px] sm:text-xs font-medium leading-tight truncate max-w-[56px] text-center">{t(locale, item.label)}</span>
             </Link>
           );
         })}

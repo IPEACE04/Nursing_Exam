@@ -10,9 +10,12 @@ import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { FormField } from "@/components/premium/form-field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 export default function ProfilePage() {
   const { profile, user, refreshProfile } = useAuth();
+  const { locale } = useLocale();
   const [name, setName] = useState("");
   const [university, setUniversity] = useState("");
   const [gender, setGender] = useState("");
@@ -69,7 +72,7 @@ export default function ProfilePage() {
 
     const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
     if (file.size > MAX_AVATAR_SIZE) {
-      setAvatarError("รูปใหญ่เกินไป กรุณาใช้รูปไม่เกิน 2MB");
+      setAvatarError(t(locale, "profile.imageTooLarge"));
       return;
     }
 
@@ -120,8 +123,8 @@ export default function ProfilePage() {
     >
       <PageHeader
         badge="Profile"
-        title="โปรไฟล์"
-        description="จัดการข้อมูลส่วนตัวและความปลอดภัยของบัญชี"
+        title={t(locale, "profile.title")}
+        description={t(locale, "profile.desc")}
       />
 
       <GlassCard className="p-5 sm:p-8">
@@ -165,16 +168,16 @@ export default function ProfilePage() {
           {avatarError && <p className="text-sm text-destructive mt-1">{avatarError}</p>}
           <div className="min-w-0">
             <p className="text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate">
-              {profile?.name || "ผู้ใช้"}
+              {profile?.name || t(locale, "common.user")}
             </p>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <p className="text-sm sm:text-base text-muted-foreground truncate">{user?.email}</p>
               <span className="text-muted-foreground/30 hidden sm:inline">·</span>
               <span className="flex items-center gap-1 text-xs sm:text-sm font-medium text-primary">
                 {profile?.role === "admin" ? (
-                  <><Shield className="size-3.5" /> ผู้ดูแลระบบ</>
+                  <><Shield className="size-3.5" /> {t(locale, "common.adminRole")}</>
                 ) : (
-                  "นักศึกษา"
+                  t(locale, "common.student")
                 )}
               </span>
             </div>
@@ -184,7 +187,7 @@ export default function ProfilePage() {
         <form onSubmit={handleSaveProfile} className="space-y-5 sm:space-y-6">
           <FormField
             id="email"
-            label="อีเมล"
+            label={t(locale, "auth.email")}
             icon={Mail}
             type="email"
             value={user?.email ?? ""}
@@ -193,7 +196,7 @@ export default function ProfilePage() {
 
           <FormField
             id="name"
-            label="ชื่อ-นามสกุล"
+            label={t(locale, "register.name")}
             icon={User}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -202,17 +205,17 @@ export default function ProfilePage() {
 
           <FormField
             id="university"
-            label="มหาวิทยาลัย"
+            label={t(locale, "profile.university")}
             icon={Building}
             value={university}
             onChange={(e) => setUniversity(e.target.value)}
-            placeholder="ชื่อมหาวิทยาลัย"
+            placeholder={t(locale, "profile.universityPlaceholder")}
             autoComplete="off"
           />
 
           <div>
             <label htmlFor="gender" className="mb-1.5 block text-sm font-medium text-foreground">
-              เพศ
+              {t(locale, "register.gender")}
             </label>
             <select
               id="gender"
@@ -220,17 +223,17 @@ export default function ProfilePage() {
               onChange={(e) => setGender(e.target.value)}
               className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             >
-              <option value="">ไม่ระบุ</option>
-              <option value="ชาย">ชาย</option>
-              <option value="หญิง">หญิง</option>
-              <option value="อื่นๆ">อื่นๆ</option>
+              <option value="">{t(locale, "register.gender.none")}</option>
+              <option value="ชาย">{t(locale, "register.gender.male")}</option>
+              <option value="หญิง">{t(locale, "register.gender.female")}</option>
+              <option value="อื่นๆ">{t(locale, "register.gender.other")}</option>
             </select>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="age" className="mb-1.5 block text-sm font-medium text-foreground">
-                อายุ
+                {t(locale, "register.age")}
               </label>
               <input
                 id="age"
@@ -239,14 +242,14 @@ export default function ProfilePage() {
                 max={99}
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                placeholder="อายุ"
+                placeholder={t(locale, "register.age")}
                 className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
 
             <div>
               <label htmlFor="gpa" className="mb-1.5 block text-sm font-medium text-foreground">
-                เกรดเฉลี่ย
+                {t(locale, "register.gpa")}
               </label>
               <input
                 id="gpa"
@@ -256,7 +259,7 @@ export default function ProfilePage() {
                 step={0.01}
                 value={gpa}
                 onChange={(e) => setGpa(e.target.value)}
-                placeholder="เช่น 3.50"
+                placeholder={t(locale, "register.gpaPlaceholder")}
                 className="h-12 w-full rounded-xl border border-border bg-background px-4 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
@@ -264,11 +267,11 @@ export default function ProfilePage() {
 
           <FormField
             id="studentId"
-            label="รหัสนักศึกษา"
+            label={t(locale, "profile.studentId")}
             icon={IdCard}
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
-            placeholder="รหัสนักศึกษา"
+            placeholder={t(locale, "profile.studentId")}
             autoComplete="off"
           />
 
@@ -278,7 +281,7 @@ export default function ProfilePage() {
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
           >
             <Save className="size-5" />
-            {saving ? "กำลังบันทึก..." : saved ? "บันทึกแล้ว ✓" : "บันทึกข้อมูล"}
+            {saving ? t(locale, "common.saving") : saved ? t(locale, "common.saved") : t(locale, "common.save")}
           </button>
         </form>
       </GlassCard>
@@ -287,9 +290,9 @@ export default function ProfilePage() {
         <div className="mb-6 flex items-center gap-3 sm:gap-4">
           <Lock className="size-6 text-primary shrink-0" />
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-foreground">เปลี่ยนรหัสผ่าน</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">{t(locale, "profile.changePassword")}</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              ตั้งรหัสผ่านใหม่สำหรับบัญชีของคุณ
+              {t(locale, "profile.changePasswordDesc")}
             </p>
           </div>
         </div>
@@ -297,7 +300,7 @@ export default function ProfilePage() {
         <form onSubmit={handleChangePassword} className="space-y-5 sm:space-y-6">
           <FormField
             id="newPassword"
-            label="รหัสผ่านใหม่"
+            label={t(locale, "profile.newPassword")}
             icon={KeyRound}
             type="password"
             value={newPassword}
@@ -309,7 +312,7 @@ export default function ProfilePage() {
 
           <FormField
             id="confirmPassword"
-            label="ยืนยันรหัสผ่าน"
+            label={t(locale, "profile.confirmPassword")}
             icon={KeyRound}
             type="password"
             value={confirmPassword}
@@ -329,7 +332,7 @@ export default function ProfilePage() {
             className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
           >
             <KeyRound className="size-5" />
-            {passwordSaved ? "เปลี่ยนรหัสผ่านแล้ว ✓" : "เปลี่ยนรหัสผ่าน"}
+            {passwordSaved ? t(locale, "profile.passwordChanged") : t(locale, "profile.changeBtn")}
           </button>
         </form>
       </GlassCard>

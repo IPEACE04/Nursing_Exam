@@ -4,16 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, ClipboardList, Smile, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const adminItems = [
-  { href: "/admin/dashboard", label: "แดชบอร์ด", icon: LayoutDashboard },
-  { href: "/admin/exams", label: "ข้อสอบ", icon: ClipboardList },
-  { href: "/admin/pre-post-test", label: "Pre/Post", icon: ClipboardCheck },
-  { href: "/admin/satisfaction", label: "แบบประเมิน", icon: Smile },
+  { href: "/admin/dashboard", label: "admin.nav.dashboard", icon: LayoutDashboard },
+  { href: "/admin/exams", label: "admin.nav.exams_short", icon: ClipboardList },
+  { href: "/admin/pre-post-test", label: "admin.nav.prepost_short", icon: ClipboardCheck },
+  { href: "/admin/satisfaction", label: "admin.nav.satisfaction", icon: Smile },
 ];
 
 export function AdminMobileNav() {
   const pathname = usePathname();
+  const { locale } = useLocale();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] md:hidden">
@@ -42,7 +45,7 @@ export function AdminMobileNav() {
                 <Icon className="size-5" />
               </div>
                 <span className="text-xs font-medium leading-tight truncate">
-                {item.label}
+                {t(locale, item.label)}
               </span>
             </Link>
           );

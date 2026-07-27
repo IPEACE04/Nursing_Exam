@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { getPost, getComments, deletePost } from "@/actions/community";
 import { useAuth } from "@/context/auth-context";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type {
   CommunityPostDetail,
@@ -35,6 +37,7 @@ export default function PostDetailPage({
   const { postId } = use(params);
   const router = useRouter();
   const { user } = useAuth();
+  const { locale } = useLocale();
 
   const [post, setPost] = useState<CommunityPostDetail | null>(null);
   const [comments, setComments] = useState<CommunityCommentWithAuthor[]>([]);
@@ -74,7 +77,7 @@ export default function PostDetailPage({
   }, [postId]);
 
   async function handleDelete() {
-    if (!confirm("ต้องการลบโพสต์นี้?")) return;
+    if (!confirm(t(locale, "community.deleteConfirm"))) return;
     setDeleting(true);
     const result = await deletePost(postId);
     if (result.success) {
@@ -100,12 +103,12 @@ export default function PostDetailPage({
   if (!post) {
     return (
       <div className="text-center py-16">
-        <p className="text-muted-foreground">ไม่พบโพสต์นี้</p>
+        <p className="text-muted-foreground">{t(locale, "community.notFound")}</p>
         <Link
           href="/community"
           className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-4"
         >
-          กลับไป Community
+          {t(locale, "community.backToList")}
         </Link>
       </div>
     );
@@ -125,7 +128,7 @@ export default function PostDetailPage({
         className="inline-flex items-center gap-2 py-2 -ml-2 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-4" />
-        กลับไป Community
+        {t(locale, "community.backToList")}
       </Link>
 
       {/* Post */}
@@ -145,7 +148,7 @@ export default function PostDetailPage({
               onClick={handleDelete}
               disabled={deleting}
               className="shrink-0 rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-              title="ลบโพสต์"
+              title={t(locale, "community.deletePost")}
             >
               <Trash2 className="size-5" />
             </button>
@@ -182,13 +185,13 @@ export default function PostDetailPage({
       {/* Comments */}
       <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 lg:p-8">
         <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-6">
-          ความคิดเห็น ({comments.length})
+          {t(locale, "community.comments")} ({comments.length})
         </h2>
 
         <div className="space-y-4 mb-6">
           {comments.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">
-              ยังไม่มีความคิดเห็น — เป็นคนแรกที่แสดงความคิดเห็น
+              {t(locale, "community.noComments")}
             </p>
           ) : (
             comments.map((comment) => (

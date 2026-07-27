@@ -1,8 +1,11 @@
 "use client";
 
 import { useAuth } from "@/context/auth-context";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { logout } from "@/actions/auth";
 import { LogOut } from "lucide-react";
+import { LocaleToggle } from "@/components/shared/locale-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export function AdminNavbar() {
   const { profile } = useAuth();
+  const { locale } = useLocale();
   const initials = profile?.name
     ? profile.name.charAt(0).toUpperCase()
     : "?";
@@ -28,18 +32,20 @@ export function AdminNavbar() {
               Admin Panel
             </span>
             <p className="text-xs text-muted-foreground leading-none">
-              จัดการระบบ
+              {t(locale, "common.adminSubtitle")}
             </p>
           </div>
         </div>
 
+        <div className="flex items-center gap-2">
+          <LocaleToggle />
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-3 rounded-xl p-2 pr-4 transition-colors duration-150 hover:bg-muted">
             <div className="hidden text-right sm:block">
               <p className="text-base font-medium text-foreground">
-                {profile?.name || "ผู้ดูแล"}
+                {profile?.name || t(locale, "common.adminFallback")}
               </p>
-              <p className="text-xs text-primary font-medium">ผู้ดูแลระบบ</p>
+              <p className="text-xs text-primary font-medium">{t(locale, "common.adminRole")}</p>
             </div>
             <Avatar className="size-10 ring-1 ring-border">
               <AvatarFallback className="bg-primary text-sm font-semibold text-primary-foreground">
@@ -54,10 +60,11 @@ export function AdminNavbar() {
               onClick={() => logout()}
             >
               <LogOut className="size-4" />
-              ออกจากระบบ
+              {t(locale, "common.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
     </header>
   );

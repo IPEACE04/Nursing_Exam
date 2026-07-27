@@ -10,6 +10,8 @@ import {
   updateQuestion,
   deleteQuestion,
 } from "@/actions/satisfaction";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import type { SatisfactionQuestion, SatisfactionCategory } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
@@ -22,6 +24,7 @@ export default function CategoryDetailPage({
 }) {
   const { categoryId } = use(params);
   const router = useRouter();
+  const { locale } = useLocale();
 
   const [questions, setQuestions] = useState<SatisfactionQuestion[]>([]);
   const [category, setCategory] = useState<SatisfactionCategory | null>(null);
@@ -77,7 +80,7 @@ export default function CategoryDetailPage({
   }
 
   async function handleDeleteQuestion(id: string) {
-    if (!confirm("ต้องการลบคำถามนี้?")) return;
+    if (!confirm(t(locale, "admin.satisfaction.deleteQuestionConfirm"))) return;
     await deleteQuestion(id);
     fetchData();
   }
@@ -92,19 +95,19 @@ export default function CategoryDetailPage({
           className="mb-4 inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
-          กลับไปหน้าหมวดหมู่
+          {t(locale, "admin.satisfaction.categoryBack")}
         </button>
         <PageHeader
-          badge={category?.name ?? "หมวดหมู่"}
-          title="จัดการคำถาม"
-          description={`เพิ่ม แก้ไข และจัดการคำถามในหมวดนี้`}
+          badge={category?.name ?? t(locale, "admin.satisfaction.categoryFallback")}
+          title={t(locale, "admin.satisfaction.manageQuestions")}
+          description={t(locale, "admin.satisfaction.manageDesc")}
         />
       </div>
 
       {/* Add Question */}
       <GlassCard className="p-5 sm:p-6">
         <label className="block text-sm font-medium text-foreground mb-2">
-          เพิ่มคำถามใหม่ในหมวด {category?.name}
+          {t(locale, "admin.satisfaction.addInCategory", { name: category?.name ?? "" })}
         </label>
         <div className="flex gap-2">
           <input
@@ -112,7 +115,7 @@ export default function CategoryDetailPage({
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddQuestion()}
-            placeholder="พิมพ์คำถาม..."
+            placeholder={t(locale, "admin.satisfaction.questionPlaceholder")}
             className="h-12 flex-1 rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
           <button
@@ -120,7 +123,7 @@ export default function CategoryDetailPage({
             className="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <Plus className="size-4" />
-            เพิ่ม
+            {t(locale, "admin.satisfaction.add")}
           </button>
         </div>
       </GlassCard>
@@ -128,7 +131,7 @@ export default function CategoryDetailPage({
       {/* Questions List */}
       {questions.length === 0 ? (
         <GlassCard className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">ยังไม่มีคำถามในหมวดนี้ — เพิ่มคำถามแรกเลย</p>
+          <p className="text-sm text-muted-foreground">{t(locale, "admin.satisfaction.noQuestions")}</p>
         </GlassCard>
       ) : (
         <GlassCard className="overflow-hidden p-0">
@@ -169,7 +172,7 @@ export default function CategoryDetailPage({
                           : "border-border bg-muted text-muted-foreground"
                       }`}
                     >
-                      {q.is_active ? "เปิด" : "ปิด"}
+                      {q.is_active ? t(locale, "admin.satisfaction.active") : t(locale, "admin.satisfaction.inactive")}
                     </button>
 
                     <button

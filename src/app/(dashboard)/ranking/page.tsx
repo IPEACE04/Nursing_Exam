@@ -11,6 +11,8 @@ import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 const podiumColors = [
   { text: "text-amber-500", border: "border-amber-500/30" },
@@ -40,6 +42,7 @@ function mapEntries(data: Record<string, unknown>[]): LeaderboardEntry[] {
 
 export default function RankingPage() {
   const { user } = useAuth();
+  const { locale } = useLocale();
   const [tab, setTab] = useState<Tab>("assignment");
   const [assignmentEntries, setAssignmentEntries] = useState<LeaderboardEntry[]>([]);
   const [testEntries, setTestEntries] = useState<LeaderboardEntry[]>([]);
@@ -70,8 +73,8 @@ export default function RankingPage() {
     >
       <PageHeader
         badge="Rankings"
-        title="อันดับผู้ใช้งาน"
-        description="จัดอันดับตามคะแนนสอบเฉลี่ยสูงสุด"
+        title={t(locale, "ranking.title")}
+        description={t(locale, "ranking.desc")}
       />
 
       {/* Tabs */}
@@ -138,11 +141,11 @@ export default function RankingPage() {
                     {entry?.avg_score}%
                   </p>
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    {entry?.total_exams} ครั้ง
+                    {entry?.total_exams} {t(locale, "ranking.times")}
                   </p>
                   {isCurrentUser && (
                     <span className="px-2 sm:px-3 py-1 rounded-full border border-border/60 bg-transparent text-primary text-xs sm:text-sm font-medium">
-                      คุณ
+                      {t(locale, "ranking.you")}
                     </span>
                   )}
                 </div>
@@ -157,8 +160,8 @@ export default function RankingPage() {
         <GlassCard className="py-12 text-center">
           <p className="text-sm text-muted-foreground">
             {tab === "assignment"
-              ? "ยังไม่มีผู้ทำข้อสอบปกติ"
-              : "ยังไม่มีผู้ทำ PreTest/PostTest"}
+              ? t(locale, "ranking.noNormalUsers")
+              : t(locale, "ranking.noTestUsers")}
           </p>
         </GlassCard>
       ) : (
@@ -208,12 +211,12 @@ export default function RankingPage() {
                         </p>
                         {isCurrentUser && (
                           <span className="px-2 py-0.5 rounded-full border border-border/60 bg-transparent text-xs font-medium text-primary shrink-0">
-                            คุณ
+                            {t(locale, "ranking.you")}
                           </span>
                         )}
                       </div>
                       <p className="text-xs sm:text-sm text-muted-foreground">
-                        {entry.total_exams} ครั้งที่ทำ
+                        {entry.total_exams} {t(locale, "ranking.attempts")}
                       </p>
                     </div>
                   </div>
@@ -222,7 +225,7 @@ export default function RankingPage() {
                       {entry.avg_score}%
                     </p>
                     <p className="text-xs sm:text-sm text-muted-foreground">
-                      {entry.total_score} คะแนนรวม
+                      {entry.total_score} {t(locale, "ranking.totalScore")}
                     </p>
                   </div>
                 </motion.div>

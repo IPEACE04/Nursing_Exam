@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { login } from "@/actions/auth";
 import { useAuth } from "@/context/auth-context";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { FormField } from "@/components/premium/form-field";
 
 function LoginForm() {
@@ -15,6 +17,7 @@ function LoginForm() {
   const registered = searchParams.get("registered");
   const [state, formAction, pending] = useActionState(login, undefined);
   const { refreshProfile } = useAuth();
+  const { locale } = useLocale();
 
   useEffect(() => {
     if (state?.success) {
@@ -32,7 +35,7 @@ function LoginForm() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 rounded-xl border border-border bg-muted px-5 py-3.5 text-base text-foreground"
         >
-          ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ
+          {t(locale, "auth.registerSuccess")}
         </motion.div>
       )}
 
@@ -43,7 +46,7 @@ function LoginForm() {
           icon={Mail}
           type="email"
           autoComplete="off"
-          placeholder="อีเมล"
+          placeholder={t(locale, "auth.email")}
           required
         />
 
@@ -53,7 +56,7 @@ function LoginForm() {
           icon={Lock}
           type="password"
           autoComplete="off"
-          placeholder="รหัสผ่าน"
+          placeholder={t(locale, "auth.password")}
           required
         />
 
@@ -72,7 +75,7 @@ function LoginForm() {
             href="/forgot-password"
             className="text-sm text-muted-foreground transition-colors hover:text-primary"
           >
-            ลืมรหัสผ่าน?
+            {t(locale, "auth.forgotPassword")}
           </Link>
         </div>
 
@@ -82,21 +85,21 @@ function LoginForm() {
           whileTap={{ scale: 0.99 }}
           className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
-          {pending ? (
-            <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-          ) : (
-            "เข้าสู่ระบบ"
-          )}
+            {pending ? (
+              <span className="size-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+            ) : (
+              t(locale, "auth.loginBtn")
+            )}
         </motion.button>
       </form>
 
       <p className="mt-8 text-center text-sm text-muted-foreground">
-        ยังไม่มีบัญชี?{" "}
+        {t(locale, "auth.noAccount")}{" "}
         <Link
           href="/register"
           className="font-semibold text-primary transition-colors hover:text-primary/80"
         >
-          สมัครสมาชิก
+          {t(locale, "auth.register")}
         </Link>
       </p>
     </>
@@ -104,6 +107,8 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const { locale } = useLocale();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -113,10 +118,10 @@ export default function LoginPage() {
     >
       <div className="mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-          ยินดีต้อนรับ
+          {t(locale, "auth.welcome")}
         </h1>
         <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">
-          เข้าสู่ระบบเพื่อเริ่มทำข้อสอบ
+          {t(locale, "auth.loginDesc")}
         </p>
       </div>
 

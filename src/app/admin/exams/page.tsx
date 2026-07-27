@@ -13,6 +13,8 @@ import {
   Rocket,
 } from "lucide-react";
 import { togglePublish, deleteExam, createExam, getAdminExams } from "@/actions/admin";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
@@ -36,6 +38,7 @@ interface ExamWithCount {
 }
 
 export default function AdminExamsPage() {
+  const { locale } = useLocale();
   const [exams, setExams] = useState<ExamWithCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -61,7 +64,7 @@ export default function AdminExamsPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("ลบชุดข้อสอบนี้? (การกระทำนี้ไม่สามารถย้อนกลับได้)")) return;
+    if (!confirm(t(locale, "admin.exams.deleteConfirm"))) return;
     const fd = new FormData();
     fd.set("id", id);
     await deleteExam(fd);
@@ -82,15 +85,15 @@ export default function AdminExamsPage() {
       className="space-y-8"
     >
       <PageHeader
-        title="จัดการข้อสอบ"
-        description="สร้าง แก้ไข และจัดการชุดข้อสอบทั้งหมด"
+        title={t(locale, "admin.exams.title")}
+        description={t(locale, "admin.exams.desc")}
         action={
           <button
             onClick={() => setShowCreate(!showCreate)}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
           >
             <Plus className="size-4" />
-            สร้างข้อสอบ
+            {t(locale, "admin.exams.create")}
           </button>
         }
       />
@@ -116,27 +119,27 @@ export default function AdminExamsPage() {
                 }}
                 className="space-y-5"
               >
-                <h3 className="text-lg sm:text-xl font-semibold text-foreground">สร้างชุดข้อสอบใหม่</h3>
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">{t(locale, "admin.exams.createTitle")}</h3>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">ชื่อข้อสอบ</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">{t(locale, "admin.exams.name")}</label>
                   <input
                     name="title"
                     required
-                    placeholder="เช่น ข้อสอบการพยาบาลผู้ใหญ่ 1"
+                    placeholder={t(locale, "admin.exams.namePlaceholder")}
                     className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">คำอธิบาย</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">{t(locale, "admin.exams.description")}</label>
                   <textarea
                     name="description"
                     rows={3}
-                    placeholder="คำอธิบายเกี่ยวกับชุดข้อสอบนี้"
+                    placeholder={t(locale, "admin.exams.descPlaceholder")}
                     className="w-full resize-none rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">เวลา (นาที)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">{t(locale, "admin.exams.timeLimit")}</label>
                   <input
                     name="time_limit_minutes"
                     type="number"
@@ -151,14 +154,14 @@ export default function AdminExamsPage() {
                     className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
                   >
                     <Plus className="size-4" />
-                    สร้าง
+                    {t(locale, "admin.exams.createBtn")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreate(false)}
                     className="inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
                   >
-                    ยกเลิก
+                    {t(locale, "common.cancel")}
                   </button>
                 </div>
               </form>
@@ -170,7 +173,7 @@ export default function AdminExamsPage() {
       {/* Search */}
       <div className="relative max-w-md">
         <input
-          placeholder="ค้นหาชื่อข้อสอบ..."
+          placeholder={t(locale, "common.search")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-12 w-full rounded-xl border border-border bg-background px-5 pl-10 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
@@ -183,7 +186,7 @@ export default function AdminExamsPage() {
           <GlassCard className="py-12 text-center">
             <GraduationCap className="mx-auto mb-3 size-12 text-muted-foreground/30" />
             <p className="text-sm text-muted-foreground">
-              {search ? "ไม่พบชุดข้อสอบที่ค้นหา" : "ยังไม่มีชุดข้อสอบ"}
+              {search ? t(locale, "admin.exams.noResults") : t(locale, "admin.exams.noExams")}
             </p>
           </GlassCard>
         ) : (
@@ -208,7 +211,7 @@ export default function AdminExamsPage() {
                             : "border-amber-500/30 text-amber-600"
                         }`}
                       >
-                        {exam.is_published ? "เผยแพร่" : "ร่าง"}
+                        {exam.is_published ? t(locale, "admin.exams.published") : t(locale, "admin.exams.draft")}
                       </span>
                     </div>
                     {exam.description && (
@@ -219,11 +222,11 @@ export default function AdminExamsPage() {
                     <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <FileText className="size-3 sm:size-3.5" />
-                        {exam.question_count} ข้อ
+                        {exam.question_count} {t(locale, "exam.list.questions")}
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="size-3 sm:size-3.5" />
-                        {exam.time_limit_minutes} นาที
+                        {exam.time_limit_minutes} {t(locale, "exam.list.minutes")}
                       </span>
                     </div>
                     <div className="mt-2">

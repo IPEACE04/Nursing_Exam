@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 export default function NotFound() {
+  const { locale } = useLocale();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 text-center">
@@ -12,14 +17,14 @@ export default function NotFound() {
           404
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          ไม่พบหน้าที่คุณต้องการ
+          {t(locale, "notFound.title")}
         </p>
         <Link
           href="/community"
           className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px mt-6"
         >
           <ArrowLeft className="size-4" />
-          กลับหน้าแรก
+          {t(locale, "notFound.back")}
         </Link>
       </div>
     </div>

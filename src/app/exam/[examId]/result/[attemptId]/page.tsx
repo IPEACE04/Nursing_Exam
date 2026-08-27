@@ -20,6 +20,7 @@ import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import type { QuestionResult } from "@/types";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
+import { ImageGallery } from "@/components/shared/image-gallery";
 
 const container = {
   hidden: { opacity: 0 },
@@ -63,6 +64,8 @@ interface UserAnswerRow {
     options: Record<string, string>;
     correct_option: string;
     explanation_text: string | null;
+    question_image_url?: string | null;
+    option_image_urls?: Record<string, string>;
   };
 }
 
@@ -111,6 +114,8 @@ export default function ResultPage({
             options: a.questions.options,
             correct_option: a.questions.correct_option,
             explanation_text: a.questions.explanation_text,
+            question_image_url: a.questions.question_image_url,
+            option_image_urls: a.questions.option_image_urls,
           }))
         );
       }
@@ -247,6 +252,8 @@ export default function ResultPage({
                       {r.question_text}
                     </p>
 
+                    {r.question_image_url && <ImageGallery imageUrls={[r.question_image_url]} className="mt-4 max-w-md" />}
+
                     <div className="mt-4 space-y-2 text-sm">
                       {Object.entries(optionLabels).map(([key, value]) => {
                         const isSelected = key === r.selected_option;
@@ -283,6 +290,9 @@ export default function ResultPage({
                               }`}
                             >
                               {value}
+                              {r.option_image_urls?.[key] && (
+                                <img src={r.option_image_urls[key]} alt="" className="mt-2 max-h-40 max-w-full rounded-lg object-contain" />
+                              )}
                               {isCorrect && (
                                 <span className="ml-2 text-xs text-muted-foreground">
                                   {t(locale, "result.answer")}

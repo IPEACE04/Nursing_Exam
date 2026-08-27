@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
@@ -28,6 +28,10 @@ import type { Question } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { ImageGallery } from "@/components/shared/image-gallery";
+import { ImageUpload } from "@/components/shared/image-upload";
+import { scheduleScrollPositionRestore } from "@/lib/scroll-position";
+import { appendQuestionMediaToFormData } from "@/lib/question-media-form";
 
 interface ExamData {
   id: string;
@@ -46,6 +50,7 @@ export default function AdminPrePostTestPage() {
   const [showAddQuestion, setShowAddQuestion] = useState(false);
   const [editQuestionId, setEditQuestionId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const pendingScrollY = useRef<number | null>(null);
 
   const fetchData = useCallback(async () => {
     const result = await getPrePostExam();
@@ -59,6 +64,11 @@ export default function AdminPrePostTestPage() {
       setShowCreateExam(true);
     }
     setLoading(false);
+    const scrollY = pendingScrollY.current;
+    if (scrollY !== null) {
+      pendingScrollY.current = null;
+      scheduleScrollPositionRestore(window, scrollY, (callback) => window.requestAnimationFrame(callback));
+    }
   }, []);
 
   useEffect(() => {
@@ -287,7 +297,8 @@ export default function AdminPrePostTestPage() {
                         ? questions.find((q) => q.id === editQuestionId)
                         : undefined
                     }
-                    onClose={() => {
+                    onClose={(scrollY) => {
+                      if (typeof scrollY === "number") pendingScrollY.current = scrollY;
                       setShowAddQuestion(false);
                       setEditQuestionId(null);
                       setRefreshKey((k) => k + 1);
@@ -318,6 +329,7 @@ export default function AdminPrePostTestPage() {
                           <span className="text-muted-foreground">{t(locale, "admin.edit.questionN", { n: i + 1 })} </span>
                           {q.question_text}
                         </p>
+                        {q.question_image_url && <ImageGallery imageUrls={[q.question_image_url]} className="mt-3 max-w-xs" />}
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {Object.entries(q.options).map(([key, val]) => (
                             <span
@@ -329,6 +341,7 @@ export default function AdminPrePostTestPage() {
                               }`}
                             >
                               {key}. {val as string}
+                              {q.option_image_urls?.[key] && <img src={q.option_image_urls[key]} alt="" className="ml-1 size-5 rounded object-cover" />}
                               {key === q.correct_option && (
                                 <Check className="size-3" />
                               )}
@@ -383,7 +396,7 @@ function QuestionForm({
 }: {
   examId: string;
   question?: Question;
-  onClose: () => void;
+  onClose: (scrollY?: number) => void;
 }) {
   const { locale } = useLocale();
   const actionFn = question ? updatePrePostQuestion : createPrePostQuestion;
@@ -391,15 +404,38 @@ function QuestionForm({
   const opt = question?.options ?? { A: "", B: "", C: "", D: "" };
   const correct = question?.correct_option ?? "A";
   const explanation = question?.explanation_text ?? "";
+  const [formError, setFormError] = useState("");
+  const [isPending, startTransition] = useTransition();
+  const [questionImage, setQuestionImage] = useState<File[]>([]);
+  const [existingQuestionImage, setExistingQuestionImage] = useState<string[]>(question?.question_image_url ? [question.question_image_url] : []);
+  const [optionImages, setOptionImages] = useState<Record<string, File[]>>({ A: [], B: [], C: [], D: [] });
+  const [existingOptionImages, setExistingOptionImages] = useState<Record<string, string[]>>(
+    Object.fromEntries(["A", "B", "C", "D"].map((key) => [key, question?.option_image_urls?.[key] ? [question.option_image_urls[key]] : []])),
+  );
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFormError("");
+    const scrollY = window.scrollY;
+    const formData = new FormData(event.currentTarget);
+    formData.set("examId", examId);
+    if (question) formData.set("id", question.id);
+    appendQuestionMediaToFormData(formData, questionImage, optionImages);
+
+    startTransition(async () => {
+      try {
+        const result = await actionFn(formData);
+        if (result?.error) setFormError(result.error);
+        else onClose(scrollY);
+      } catch {
+        setFormError("ไม่สามารถบันทึกคำถามได้ กรุณาลองใหม่");
+      }
+    });
+  }
 
   return (
     <form
-      action={async (formData) => {
-        formData.set("examId", examId);
-        if (question) formData.set("id", question.id);
-        await actionFn(formData);
-        onClose();
-      }}
+      onSubmit={handleSubmit}
       className="rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-5"
     >
       <div className="flex items-center gap-2 mb-3">
@@ -422,6 +458,17 @@ function QuestionForm({
         />
       </div>
 
+      <input type="hidden" name="removeQuestionImage" value={existingQuestionImage.length === 0 && question?.question_image_url ? "true" : "false"} />
+      <ImageUpload
+        files={questionImage}
+        onChange={setQuestionImage}
+        maxFiles={1}
+        existingUrls={existingQuestionImage}
+        onRemoveExisting={() => setExistingQuestionImage([])}
+        label="รูปคำถาม"
+        name="questionImage"
+      />
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {["A", "B", "C", "D"].map((key) => (
           <div key={key}>
@@ -434,6 +481,16 @@ function QuestionForm({
               defaultValue={(opt as Record<string, string>)[key] ?? ""}
               required
               className="h-12 w-full rounded-xl border border-border bg-background px-5 text-base text-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            />
+            <input type="hidden" name={`removeOptionImage${key}`} value={existingOptionImages[key]?.length === 0 && question?.option_image_urls?.[key] ? "true" : "false"} />
+            <ImageUpload
+              files={optionImages[key] ?? []}
+              onChange={(files) => setOptionImages((prev) => ({ ...prev, [key]: files }))}
+              maxFiles={1}
+              existingUrls={existingOptionImages[key] ?? []}
+              onRemoveExisting={() => setExistingOptionImages((prev) => ({ ...prev, [key]: [] }))}
+              label={`รูปตัวเลือก ${key}`}
+              name={`optionImage${key}`}
             />
           </div>
         ))}
@@ -471,20 +528,22 @@ function QuestionForm({
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
+          disabled={isPending}
           className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
         >
           <Check className="size-4" />
-          {question ? t(locale, "common.save") : t(locale, "admin.satisfaction.add")}
+          {isPending ? t(locale, "common.saving") : question ? t(locale, "common.save") : t(locale, "admin.satisfaction.add")}
         </button>
         <button
           type="button"
-          onClick={onClose}
+          onClick={() => onClose()}
           className="inline-flex h-11 items-center gap-2 rounded-xl px-5 text-sm font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:translate-y-px"
         >
           <X className="size-4" />
           {t(locale, "common.cancel")}
         </button>
       </div>
+      {formError && <p className="text-sm text-destructive">{formError}</p>}
     </form>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart, MessageCircle } from "lucide-react";
 import type { CommunityPostWithAuthor } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ImageGallery } from "@/components/shared/image-gallery";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -31,6 +32,8 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
         <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2 mb-4">
           {post.content}
         </p>
+
+        <ImageGallery imageUrls={post.image_urls} className="mb-4" linkImages={false} />
 
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2 min-w-0">

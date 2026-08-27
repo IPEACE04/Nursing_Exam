@@ -6,6 +6,7 @@ import { createPost } from "@/actions/community";
 import { CATEGORIES } from "@/lib/community-constants";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
+import { ImageUpload } from "@/components/shared/image-upload";
 
 interface CreatePostFormProps {
   onPostCreated?: () => void;
@@ -24,6 +25,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [category, setCategory] = useState("แชร์ความรู้");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
+  const [images, setImages] = useState<File[]>([]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,16 +35,22 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     formData.set("title", title);
     formData.set("content", content);
     formData.set("category", category);
+    images.forEach((image) => formData.append("images", image));
 
     startTransition(async () => {
-      const result = await createPost(formData);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setTitle("");
-        setContent("");
-        setCategory("แชร์ความรู้");
-        onPostCreated?.();
+      try {
+        const result = await createPost(formData);
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setTitle("");
+          setContent("");
+          setCategory("แชร์ความรู้");
+          setImages([]);
+          onPostCreated?.();
+        }
+      } catch {
+        setError("ไม่สามารถสร้างโพสต์ได้ กรุณาลองใหม่");
       }
     });
   }
@@ -98,6 +106,8 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           required
         />
       </div>
+
+      <ImageUpload files={images} onChange={setImages} maxFiles={4} label={t(locale, "community.images")} />
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 

@@ -24,6 +24,7 @@ import { submitExam, getExamSession, getPrePostTestGate } from "@/actions/exam";
 import type { Question, PrePostTestGate } from "@/types";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
+import { ImageGallery } from "@/components/shared/image-gallery";
 
 const STORAGE_ANSWERS_PREFIX = "exam_answers_";
 
@@ -419,6 +420,10 @@ export default function ExamPage({
                   {currentQuestion?.question_text}
                 </h2>
 
+                {currentQuestion?.question_image_url && (
+                  <ImageGallery imageUrls={[currentQuestion.question_image_url]} className="mt-4 max-w-md" />
+                )}
+
                 <div className="mt-4 sm:mt-6 space-y-2.5 sm:space-y-4">
                   {currentQuestion &&
                     Object.entries(
@@ -449,6 +454,9 @@ export default function ExamPage({
                           </span>
                           <span className="pt-1.5 sm:pt-2 leading-relaxed text-foreground">
                             {value}
+                            {currentQuestion.option_image_urls?.[key] && (
+                              <img src={currentQuestion.option_image_urls[key]} alt="" className="mt-2 max-h-48 max-w-full rounded-lg object-contain" />
+                            )}
                           </span>
                         </button>
                       );

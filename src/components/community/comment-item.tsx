@@ -7,6 +7,7 @@ import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { CommunityCommentWithAuthor } from "@/types";
+import { ImageGallery } from "@/components/shared/image-gallery";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -31,7 +32,7 @@ export function CommentItem({
 
   async function handleDelete() {
     const result = await deleteComment(comment.id);
-    if (result.success && onDelete) {
+    if ("success" in result && result.success && onDelete) {
       onDelete(comment.id);
     }
   }
@@ -57,6 +58,7 @@ export function CommentItem({
           <p className="text-sm text-foreground leading-relaxed break-words">
             {comment.content}
           </p>
+          <ImageGallery imageUrls={comment.image_urls} className="mt-3" />
         </div>
 
         {isOwner && (

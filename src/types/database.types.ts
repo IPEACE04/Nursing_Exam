@@ -108,6 +108,8 @@ export interface Database {
           sort_order: number;
           created_at: string;
           updated_at: string;
+          question_image_path: string | null;
+          option_image_paths: Json;
         };
         Insert: {
           id?: string;
@@ -119,6 +121,8 @@ export interface Database {
           sort_order?: number;
           created_at?: string;
           updated_at?: string;
+          question_image_path?: string | null;
+          option_image_paths?: Json;
         };
         Update: {
           id?: string;
@@ -130,6 +134,8 @@ export interface Database {
           sort_order?: number;
           created_at?: string;
           updated_at?: string;
+          question_image_path?: string | null;
+          option_image_paths?: Json;
         };
       };
       exam_attempts: {
@@ -195,6 +201,7 @@ export interface Database {
           content: string;
           category: string;
           created_at: string | null;
+          image_paths: Json;
         };
         Insert: {
           id?: string;
@@ -203,6 +210,7 @@ export interface Database {
           content: string;
           category?: string;
           created_at?: string | null;
+          image_paths?: Json;
         };
         Update: {
           id?: string;
@@ -211,6 +219,7 @@ export interface Database {
           content?: string;
           category?: string;
           created_at?: string | null;
+          image_paths?: Json;
         };
       };
       community_comments: {
@@ -220,6 +229,7 @@ export interface Database {
           user_id: string;
           content: string;
           created_at: string | null;
+          image_paths: Json;
         };
         Insert: {
           id?: string;
@@ -227,6 +237,7 @@ export interface Database {
           user_id: string;
           content: string;
           created_at?: string | null;
+          image_paths?: Json;
         };
         Update: {
           id?: string;
@@ -234,6 +245,7 @@ export interface Database {
           user_id?: string;
           content?: string;
           created_at?: string | null;
+          image_paths?: Json;
         };
       };
       community_likes: {

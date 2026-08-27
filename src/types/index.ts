@@ -40,7 +40,11 @@ export interface Question {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  question_image_url?: string | null;
+  option_image_urls?: Record<string, string>;
 }
+
+export type ExamOption = "A" | "B" | "C" | "D";
 
 export interface ExamAttempt {
   id: string;
@@ -76,6 +80,8 @@ export interface QuestionResult extends UserAnswer {
   options: Record<string, string>;
   correct_option: string;
   explanation_text: string | null;
+  question_image_url?: string | null;
+  option_image_urls?: Record<string, string>;
 }
 
 export type LeaderboardEntry = {
@@ -95,6 +101,7 @@ export interface CommunityPost {
   content: string;
   category: string;
   created_at: string;
+  image_urls: string[];
 }
 
 export interface CommunityComment {
@@ -103,6 +110,7 @@ export interface CommunityComment {
   user_id: string;
   content: string;
   created_at: string;
+  image_urls: string[];
 }
 
 export interface CommunityPostWithAuthor extends CommunityPost {

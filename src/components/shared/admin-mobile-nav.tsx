@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ClipboardList, Smile, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, ClipboardList, Smile, ClipboardCheck, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
@@ -11,6 +11,7 @@ const adminItems = [
   { href: "/admin/dashboard", label: "admin.nav.dashboard", icon: LayoutDashboard },
   { href: "/admin/exams", label: "admin.nav.exams_short", icon: ClipboardList },
   { href: "/admin/pre-post-test", label: "admin.nav.prepost_short", icon: ClipboardCheck },
+  { href: "/admin/community", label: "admin.nav.community_short", icon: MessageCircle },
   { href: "/admin/satisfaction", label: "admin.nav.satisfaction", icon: Smile },
 ];
 

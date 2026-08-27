@@ -5,6 +5,7 @@ import { Send } from "lucide-react";
 import { addComment } from "@/actions/community";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
+import { ImageUpload } from "@/components/shared/image-upload";
 
 interface CommentFormProps {
   postId: string;
@@ -16,18 +17,29 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
+  const [images, setImages] = useState<File[]>([]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
+    const formData = new FormData();
+    formData.set("postId", postId);
+    formData.set("content", content);
+    images.forEach((image) => formData.append("images", image));
+
     startTransition(async () => {
-      const result = await addComment(postId, content);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setContent("");
-        onCommentAdded?.();
+      try {
+        const result = await addComment(formData);
+        if (result.error) {
+          setError(result.error);
+        } else {
+          setContent("");
+          setImages([]);
+          onCommentAdded?.();
+        }
+      } catch {
+        setError("ไม่สามารถส่งความคิดเห็นได้ กรุณาลองใหม่");
       }
     });
   }
@@ -41,6 +53,7 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
         rows={3}
         className="w-full rounded-xl border border-border bg-background px-5 py-3 text-base text-foreground placeholder:text-muted-foreground/60 resize-y transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
       />
+      <ImageUpload files={images} onChange={setImages} maxFiles={4} label={t(locale, "community.images")} />
       {error && (
         <p className="text-sm text-destructive">{error}</p>
       )}

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
+import { getPublicImageUrl, parseOptionImagePaths } from "@/lib/storage";
 
 const SUBMIT_COOLDOWN_MS = 30_000;
 
@@ -43,13 +44,21 @@ export async function getExamSession(examId: string) {
 
   const { data: questions } = await supabase
     .from("questions")
-    .select("id, exam_id, question_text, options, sort_order, created_at, updated_at")
+    .select("id, exam_id, question_text, options, question_image_path, option_image_paths, sort_order, created_at, updated_at")
     .eq("exam_id", examId)
     .order("sort_order", { ascending: true });
 
   return {
     exam: exam as { title: string; description: string | null; time_limit_minutes: number; type: string },
-    questions: (questions ?? []) as Record<string, unknown>[],
+    questions: (questions ?? []).map((question) => {
+      const row = question as Record<string, unknown>;
+      const optionPaths = parseOptionImagePaths(row.option_image_paths);
+      return {
+        ...question,
+        question_image_url: typeof row.question_image_path === "string" ? getPublicImageUrl("exam-media", row.question_image_path) : null,
+        option_image_urls: Object.fromEntries(Object.entries(optionPaths).map(([key, path]) => [key, getPublicImageUrl("exam-media", path)])),
+      };
+    }),
   };
 }
 
@@ -72,13 +81,26 @@ export async function getExamResult(attemptId: string) {
 
   const { data: answers } = await supabase
     .from("user_answers")
-    .select("*, questions ( question_text, options, correct_option, explanation_text )")
+    .select("*, questions ( question_text, options, correct_option, explanation_text, question_image_path, option_image_paths )")
     .eq("attempt_id", attemptId)
     .order("answered_at", { ascending: true });
 
   return {
     attempt: attempt as Record<string, unknown>,
-    answers: (answers ?? []) as Record<string, unknown>[],
+    answers: (answers ?? []).map((answer) => {
+      const row = answer as Record<string, unknown>;
+      const question = row.questions as Record<string, unknown> | null;
+      if (!question) return row;
+      const optionPaths = parseOptionImagePaths(question.option_image_paths);
+      return {
+        ...row,
+        questions: {
+          ...question,
+          question_image_url: typeof question.question_image_path === "string" ? getPublicImageUrl("exam-media", question.question_image_path) : null,
+          option_image_urls: Object.fromEntries(Object.entries(optionPaths).map(([key, path]) => [key, getPublicImageUrl("exam-media", path)])),
+        },
+      };
+    }),
   };
 }
 

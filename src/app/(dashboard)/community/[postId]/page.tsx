@@ -18,6 +18,7 @@ import { LikeButton } from "@/components/community/like-button";
 import { CommentItem } from "@/components/community/comment-item";
 import { CommentForm } from "@/components/community/comment-form";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { ImageGallery } from "@/components/shared/image-gallery";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -80,7 +81,7 @@ export default function PostDetailPage({
     if (!confirm(t(locale, "community.deleteConfirm"))) return;
     setDeleting(true);
     const result = await deletePost(postId);
-    if (result.success) {
+    if ("success" in result && result.success) {
       router.push("/community");
     } else if (result.error) {
       alert(result.error);
@@ -172,6 +173,8 @@ export default function PostDetailPage({
         <div className="prose prose-sm max-w-none text-foreground leading-relaxed whitespace-pre-wrap break-words">
           {post.content}
         </div>
+
+        <ImageGallery imageUrls={post.image_urls} className="mt-6" />
 
         <div className="mt-6 pt-4 border-t border-border">
           <LikeButton

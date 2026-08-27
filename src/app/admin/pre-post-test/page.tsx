@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, useTransition } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useCallback, useRef, useTransition, type FormEvent } from "react";
 import {
   Plus,
   Trash2,
@@ -50,6 +49,8 @@ export default function AdminPrePostTestPage() {
   const [showAddQuestion, setShowAddQuestion] = useState(false);
   const [editQuestionId, setEditQuestionId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [examFormError, setExamFormError] = useState("");
+  const [isExamSaving, startExamSaveTransition] = useTransition();
   const pendingScrollY = useRef<number | null>(null);
 
   const fetchData = useCallback(async () => {
@@ -85,22 +86,38 @@ export default function AdminPrePostTestPage() {
     setExam((prev) => (prev ? { ...prev, is_published: !prev.is_published } : null));
   }
 
+  function handleSaveExam(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    setExamFormError("");
+
+    startExamSaveTransition(async () => {
+      const result = await createPrePostExam(formData);
+      if ("error" in result) {
+        setExamFormError(result.error ?? "ไม่สามารถบันทึกชุดข้อสอบได้ กรุณาลองใหม่");
+        return;
+      }
+
+      setExam(result.exam);
+      setShowCreateExam(false);
+      form.reset();
+    });
+  }
+
   if (loading) return <LoadingSpinner />;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-4xl space-y-6 sm:space-y-8"
-    >
+    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
       <PageHeader
         badge="PreTest / PostTest"
         title={t(locale, "admin.prepost.title")}
         description={t(locale, "admin.prepost.desc")}
+        animated={false}
       />
 
       {!exam && !showCreateExam ? (
-        <GlassCard className="py-12 text-center">
+        <GlassCard animated={false} className="py-12 text-center">
           <GraduationCap className="mx-auto mb-3 size-12 text-muted-foreground/30" />
           <p className="text-sm text-muted-foreground">{t(locale, "admin.prepost.empty")}</p>
           <button
@@ -112,7 +129,7 @@ export default function AdminPrePostTestPage() {
           </button>
         </GlassCard>
       ) : showCreateExam && !exam ? (
-        <GlassCard className="p-5 sm:p-6">
+        <GlassCard animated={false} className="p-5 sm:p-6">
           <div className="mb-5 flex items-center gap-3">
             <HelpCircle className="size-5 text-primary shrink-0" />
             <div>
@@ -120,13 +137,7 @@ export default function AdminPrePostTestPage() {
               <p className="text-xs text-muted-foreground">{t(locale, "admin.edit.detailsDesc")}</p>
             </div>
           </div>
-          <form
-            action={async (formData) => {
-              await createPrePostExam(formData);
-              setRefreshKey((k) => k + 1);
-            }}
-            className="space-y-5"
-          >
+          <form onSubmit={handleSaveExam} className="space-y-5">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-foreground">
                 {t(locale, "admin.edit.examName")}
@@ -165,16 +176,18 @@ export default function AdminPrePostTestPage() {
             </div>
             <button
               type="submit"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+              disabled={isExamSaving}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
             >
               <Check className="size-4" />
-              {t(locale, "admin.exams.createBtn")}
+              {isExamSaving ? t(locale, "common.saving") : t(locale, "admin.exams.createBtn")}
             </button>
+            {examFormError && <p className="text-sm text-destructive">{examFormError}</p>}
           </form>
         </GlassCard>
       ) : exam ? (
         <>
-          <GlassCard className="p-5 sm:p-6">
+          <GlassCard animated={false} className="p-5 sm:p-6">
             <div className="mb-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <HelpCircle className="size-5 text-primary shrink-0" />
@@ -214,7 +227,7 @@ export default function AdminPrePostTestPage() {
               </button>
             </div>
 
-            <form action={createPrePostExam} className="space-y-5">
+            <form onSubmit={handleSaveExam} className="space-y-5">
               <input type="hidden" name="id" value={exam.id} />
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-foreground">
@@ -254,15 +267,17 @@ export default function AdminPrePostTestPage() {
               </div>
               <button
                 type="submit"
-                className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                disabled={isExamSaving}
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
               >
                 <Check className="size-4" />
-                {t(locale, "common.save")}
+                {isExamSaving ? t(locale, "common.saving") : t(locale, "common.save")}
               </button>
+              {examFormError && <p className="text-sm text-destructive">{examFormError}</p>}
             </form>
           </GlassCard>
 
-          <GlassCard className="p-5 sm:p-6">
+          <GlassCard animated={false} className="p-5 sm:p-6">
             <div className="mb-5 flex items-center justify-between">
               <div>
                 <h2 className="font-semibold text-foreground">
@@ -282,31 +297,24 @@ export default function AdminPrePostTestPage() {
               </button>
             </div>
 
-            <AnimatePresence>
-              {(showAddQuestion || editQuestionId) && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-4 overflow-hidden"
-                >
-                  <QuestionForm
-                    examId={exam.id}
-                    question={
-                      editQuestionId
-                        ? questions.find((q) => q.id === editQuestionId)
-                        : undefined
-                    }
-                    onClose={(scrollY) => {
-                      if (typeof scrollY === "number") pendingScrollY.current = scrollY;
-                      setShowAddQuestion(false);
-                      setEditQuestionId(null);
-                      setRefreshKey((k) => k + 1);
-                    }}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {(showAddQuestion || editQuestionId) && (
+              <div className="mb-4">
+                <QuestionForm
+                  examId={exam.id}
+                  question={
+                    editQuestionId
+                      ? questions.find((q) => q.id === editQuestionId)
+                      : undefined
+                  }
+                  onClose={(scrollY) => {
+                    if (typeof scrollY === "number") pendingScrollY.current = scrollY;
+                    setShowAddQuestion(false);
+                    setEditQuestionId(null);
+                    setRefreshKey((k) => k + 1);
+                  }}
+                />
+              </div>
+            )}
 
             <div className="space-y-3">
               {questions.length === 0 ? (
@@ -316,12 +324,9 @@ export default function AdminPrePostTestPage() {
                 </div>
               ) : (
                 questions.map((q, i) => (
-                  <motion.div
+                  <div
                     key={q.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.03 }}
-                    className="group rounded-2xl border border-border bg-card p-4 sm:p-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
+                    className="group rounded-2xl border border-border bg-card p-4 sm:p-5"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
@@ -341,7 +346,7 @@ export default function AdminPrePostTestPage() {
                               }`}
                             >
                               {key}. {val as string}
-                              {q.option_image_urls?.[key] && <img src={q.option_image_urls[key]} alt="" className="ml-1 size-5 rounded object-cover" />}
+                              {q.option_image_urls?.[key] && <img src={q.option_image_urls[key]} alt="" loading="lazy" className="ml-1 size-5 rounded object-cover" />}
                               {key === q.correct_option && (
                                 <Check className="size-3" />
                               )}
@@ -378,14 +383,14 @@ export default function AdminPrePostTestPage() {
                         </button>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))
               )}
             </div>
           </GlassCard>
         </>
       ) : null}
-    </motion.div>
+    </div>
   );
 }
 

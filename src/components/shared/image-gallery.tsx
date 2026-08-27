@@ -4,9 +4,10 @@ interface ImageGalleryProps {
   imageUrls: string[];
   className?: string;
   linkImages?: boolean;
+  imageLoading?: "eager" | "lazy";
 }
 
-export function ImageGallery({ imageUrls, className = "", linkImages = true }: ImageGalleryProps) {
+export function ImageGallery({ imageUrls, className = "", linkImages = true, imageLoading = "lazy" }: ImageGalleryProps) {
   if (imageUrls.length === 0) return null;
 
   return (
@@ -14,11 +15,11 @@ export function ImageGallery({ imageUrls, className = "", linkImages = true }: I
       {imageUrls.map((url) => (
         linkImages ? (
           <a key={url} href={url} target="_blank" rel="noreferrer" className="block overflow-hidden rounded-xl border border-border bg-muted">
-            <img src={url} alt="" className="aspect-square w-full object-cover transition-transform hover:scale-105" />
+            <img src={url} alt="" loading={imageLoading} className="aspect-square w-full object-cover transition-transform hover:scale-105" />
           </a>
         ) : (
           <div key={url} className="block overflow-hidden rounded-xl border border-border bg-muted">
-            <img src={url} alt="" className="aspect-square w-full object-cover" />
+            <img src={url} alt="" loading={imageLoading} className="aspect-square w-full object-cover" />
           </div>
         )
       ))}

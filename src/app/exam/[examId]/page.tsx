@@ -421,7 +421,7 @@ export default function ExamPage({
                 </h2>
 
                 {currentQuestion?.question_image_url && (
-                  <ImageGallery imageUrls={[currentQuestion.question_image_url]} className="mt-4 max-w-md" />
+                  <ImageGallery imageUrls={[currentQuestion.question_image_url]} className="mt-4 max-w-md" imageLoading="eager" />
                 )}
 
                 <div className="mt-4 sm:mt-6 space-y-2.5 sm:space-y-4">

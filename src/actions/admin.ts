@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
 import { validateImageFiles } from "@/lib/image-validation";
 import { deleteImageFiles, getFormFiles, getPublicImageUrl, parseOptionImagePaths, uploadImageFiles } from "@/lib/storage";
+import { toAdminExamListItem } from "@/lib/admin-exam";
 
 async function requireAdmin() {
   const userId = await getSessionUserId();
@@ -67,17 +68,17 @@ export async function createExam(formData: FormData) {
   const description = formData.get("description") as string;
   const timeLimit = parseInt(formData.get("timeLimit") as string, 10) || 60;
 
-  const { error } = await supabase.from("exams").insert({
+  const { data: exam, error } = await supabase.from("exams").insert({
     title,
     description,
     time_limit_minutes: timeLimit,
     is_published: false,
     created_by: userId,
-  });
+  }).select("id, title, description, time_limit_minutes, is_published, created_at").single();
 
-  if (error) throw new Error(error.message);
+  if (error || !exam) return { error: "ไม่สามารถสร้างชุดข้อสอบได้ กรุณาลองใหม่" };
   revalidatePath("/admin/exams");
-  redirect("/admin/exams");
+  return { success: true, exam: toAdminExamListItem(exam) };
 }
 
 export async function updateExam(formData: FormData) {
@@ -347,28 +348,30 @@ export async function createPrePostExam(formData: FormData) {
     .maybeSingle();
 
   if (existing) {
-    const { error } = await supabase
+    const { data: exam, error } = await supabase
       .from("exams")
       .update({ title, description, time_limit_minutes: timeLimit })
-      .eq("id", existing.id);
+      .eq("id", existing.id)
+      .select("id, title, description, time_limit_minutes, is_published")
+      .single();
 
-    if (error) throw new Error(error.message);
+    if (error || !exam) return { error: "ไม่สามารถบันทึกชุดข้อสอบได้ กรุณาลองใหม่" };
     revalidatePath("/admin/pre-post-test");
-    redirect("/admin/pre-post-test");
+    return { success: true, exam };
   }
 
-  const { error } = await supabase.from("exams").insert({
+  const { data: exam, error } = await supabase.from("exams").insert({
     title,
     description,
     time_limit_minutes: timeLimit,
     is_published: false,
     type: "pre_post_test",
     created_by: userId,
-  });
+  }).select("id, title, description, time_limit_minutes, is_published").single();
 
-  if (error) throw new Error(error.message);
+  if (error || !exam) return { error: "ไม่สามารถสร้างชุดข้อสอบได้ กรุณาลองใหม่" };
   revalidatePath("/admin/pre-post-test");
-  redirect("/admin/pre-post-test");
+  return { success: true, exam };
 }
 
 export async function getPrePostExam() {

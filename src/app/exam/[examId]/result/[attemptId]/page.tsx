@@ -291,7 +291,7 @@ export default function ResultPage({
                             >
                               {value}
                               {r.option_image_urls?.[key] && (
-                                <img src={r.option_image_urls[key]} alt="" className="mt-2 max-h-40 max-w-full rounded-lg object-contain" />
+                                <img src={r.option_image_urls[key]} alt="" loading="lazy" className="mt-2 max-h-40 max-w-full rounded-lg object-contain" />
                               )}
                               {isCorrect && (
                                 <span className="ml-2 text-xs text-muted-foreground">

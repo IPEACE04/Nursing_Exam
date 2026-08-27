@@ -2,7 +2,6 @@
 
 import { useEffect, useState, use, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   Plus,
@@ -76,11 +75,7 @@ export default function EditExamPage({
   if (loading || !exam) return <LoadingSpinner />;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-4xl space-y-6 sm:space-y-8"
-    >
+    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
       <div>
         <button
           onClick={() => router.push("/admin/exams")}
@@ -93,10 +88,11 @@ export default function EditExamPage({
           badge={exam.title}
           title={t(locale, "admin.edit.title")}
           description={t(locale, "admin.edit.desc")}
+          animated={false}
         />
       </div>
 
-      <GlassCard className="p-5 sm:p-6">
+      <GlassCard animated={false} className="p-5 sm:p-6">
         <div className="mb-5 flex items-center gap-3">
           <HelpCircle className="size-5 text-primary shrink-0" />
           <div>
@@ -152,7 +148,7 @@ export default function EditExamPage({
         </form>
       </GlassCard>
 
-      <GlassCard className="p-5 sm:p-6">
+      <GlassCard animated={false} className="p-5 sm:p-6">
         <div className="mb-5 flex items-center justify-between">
           <div>
             <h2 className="font-semibold text-foreground">
@@ -172,31 +168,24 @@ export default function EditExamPage({
           </button>
         </div>
 
-        <AnimatePresence>
-          {(showAddQuestion || editQuestionId) && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-4 overflow-hidden"
-            >
-              <QuestionForm
-                examId={examId}
-                question={
-                  editQuestionId
-                    ? questions.find((q) => q.id === editQuestionId)
-                    : undefined
-                }
-                onClose={(scrollY) => {
-                  if (typeof scrollY === "number") pendingScrollY.current = scrollY;
-                  setShowAddQuestion(false);
-                  setEditQuestionId(null);
-                  setRefreshKey((k) => k + 1);
-                }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {(showAddQuestion || editQuestionId) && (
+          <div className="mb-4">
+            <QuestionForm
+              examId={examId}
+              question={
+                editQuestionId
+                  ? questions.find((q) => q.id === editQuestionId)
+                  : undefined
+              }
+              onClose={(scrollY) => {
+                if (typeof scrollY === "number") pendingScrollY.current = scrollY;
+                setShowAddQuestion(false);
+                setEditQuestionId(null);
+                setRefreshKey((k) => k + 1);
+              }}
+            />
+          </div>
+        )}
 
         <div className="space-y-3">
           {questions.length === 0 ? (
@@ -206,12 +195,9 @@ export default function EditExamPage({
             </div>
           ) : (
             questions.map((q, i) => (
-              <motion.div
+              <div
                 key={q.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="group rounded-2xl border border-border bg-card p-4 sm:p-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
+                className="group rounded-2xl border border-border bg-card p-4 sm:p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -231,7 +217,7 @@ export default function EditExamPage({
                           }`}
                         >
                           {key}. {val as string}
-                          {q.option_image_urls?.[key] && <img src={q.option_image_urls[key]} alt="" className="ml-1 size-5 rounded object-cover" />}
+                          {q.option_image_urls?.[key] && <img src={q.option_image_urls[key]} alt="" loading="lazy" className="ml-1 size-5 rounded object-cover" />}
                           {key === q.correct_option && (
                             <Check className="size-3" />
                           )}
@@ -269,12 +255,12 @@ export default function EditExamPage({
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))
           )}
         </div>
       </GlassCard>
-    </motion.div>
+    </div>
   );
 }
 

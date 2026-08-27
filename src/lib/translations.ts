@@ -331,6 +331,12 @@ export const dict: TranslationDict = {
   "admin.edit.answerLabel": { th: "เฉลย (คำตอบที่ถูก)", en: "Answer (Correct)" },
   "admin.edit.explanationLabel": { th: "คำอธิบายเฉลย", en: "Explanation" },
   "community.images": { th: "รูปภาพ (สูงสุด 4 รูป)", en: "Images (up to 4)" },
+  "image.add": { th: "เพิ่มรูปภาพ", en: "Add image" },
+  "image.hint": { th: "JPG, PNG, WebP · ระบบย่อไฟล์อัตโนมัติ", en: "JPG, PNG, WebP · optimized automatically" },
+  "image.optimizing": { th: "กำลังปรับขนาดรูป...", en: "Optimizing image..." },
+  "image.error.unsupported": { th: "รองรับเฉพาะไฟล์ JPG, PNG หรือ WebP", en: "Only JPG, PNG, or WebP files are supported" },
+  "image.error.sourceTooLarge": { th: "ไฟล์ต้นฉบับต้องมีขนาดไม่เกิน 15 MB", en: "The original image must be 15 MB or smaller" },
+  "image.error.processingFailed": { th: "ไม่สามารถปรับขนาดรูปภาพได้ กรุณาลองใหม่", en: "Unable to optimize the image. Please try again" },
 
   "admin.community.title": { th: "จัดการ Community", en: "Manage Community" },
   "admin.community.desc": { th: "ดูและจัดการโพสต์กับความคิดเห็นทั้งหมด", en: "View and manage all posts and comments" },

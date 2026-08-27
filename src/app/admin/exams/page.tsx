@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition, type FormEvent } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -43,6 +43,8 @@ export default function AdminExamsPage() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [search, setSearch] = useState("");
+  const [createError, setCreateError] = useState("");
+  const [isCreating, startCreateTransition] = useTransition();
 
   useEffect(() => {
     async function load() {
@@ -69,6 +71,26 @@ export default function AdminExamsPage() {
     fd.set("id", id);
     await deleteExam(fd);
     setExams((prev) => prev.filter((e) => e.id !== id));
+  }
+
+  function handleCreateExam(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    formData.set("timeLimit", formData.get("time_limit_minutes") as string);
+    setCreateError("");
+
+    startCreateTransition(async () => {
+      const result = await createExam(formData);
+      if ("error" in result) {
+        setCreateError(result.error ?? "ไม่สามารถสร้างชุดข้อสอบได้ กรุณาลองใหม่");
+        return;
+      }
+
+      setExams((previous) => [result.exam, ...previous]);
+      form.reset();
+      setShowCreate(false);
+    });
   }
 
   if (loading) return <LoadingSpinner />;
@@ -109,14 +131,7 @@ export default function AdminExamsPage() {
           >
             <GlassCard className="p-6">
               <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const fd = new FormData(e.currentTarget);
-                  fd.set("timeLimit", fd.get("time_limit_minutes") as string);
-                  await createExam(fd);
-                  setShowCreate(false);
-                  window.location.reload();
-                }}
+                onSubmit={handleCreateExam}
                 className="space-y-5"
               >
                 <h3 className="text-lg sm:text-xl font-semibold text-foreground">{t(locale, "admin.exams.createTitle")}</h3>
@@ -151,10 +166,11 @@ export default function AdminExamsPage() {
                 <div className="flex gap-3">
                   <button
                     type="submit"
-                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+                    disabled={isCreating}
+                    className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:pointer-events-none disabled:opacity-60"
                   >
                     <Plus className="size-4" />
-                    {t(locale, "admin.exams.createBtn")}
+                    {isCreating ? t(locale, "common.saving") : t(locale, "admin.exams.createBtn")}
                   </button>
                   <button
                     type="button"
@@ -164,6 +180,7 @@ export default function AdminExamsPage() {
                     {t(locale, "common.cancel")}
                   </button>
                 </div>
+                {createError && <p className="text-sm text-destructive">{createError}</p>}
               </form>
             </GlassCard>
           </motion.div>

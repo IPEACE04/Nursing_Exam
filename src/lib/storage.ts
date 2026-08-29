@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { validateImageFiles } from "@/lib/image-validation";
+import { detectImageType, validateImageFiles } from "@/lib/image-validation";
 
 export type MediaBucket = "exam-media" | "community-media";
 
@@ -25,10 +25,15 @@ export async function uploadImageFiles(
   const uploadedPaths: string[] = [];
 
   for (const file of files) {
-    const extension = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+    const imageType = await detectImageType(file);
+    if (!imageType) {
+      await deleteImageFiles(bucket, uploadedPaths);
+      return { paths: [], error: "ไฟล์รูปภาพไม่ถูกต้อง" };
+    }
+    const extension = imageType === "image/jpeg" ? "jpg" : imageType.split("/")[1];
     const path = `${directory}/${randomUUID()}.${extension}`;
     const { error } = await supabase.storage.from(bucket).upload(path, file, {
-      contentType: file.type,
+      contentType: imageType,
       upsert: false,
     });
 

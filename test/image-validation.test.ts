@@ -15,6 +15,20 @@ test("accepts supported image files under the size limit", async () => {
   assert.equal(await validateImageFile(file), null);
 });
 
+test("accepts a JPEG whose browser MIME type is image/jpg", async () => {
+  const file = new File([new Uint8Array([0xff, 0xd8, 0xff, 0xe0])], "question.jpg", {
+    type: "image/jpg",
+  });
+
+  assert.equal(await validateImageFile(file), null);
+});
+
+test("accepts a JPEG whose browser MIME type is empty", async () => {
+  const file = new File([new Uint8Array([0xff, 0xd8, 0xff, 0xe0])], "question.jpeg");
+
+  assert.equal(await validateImageFile(file), null);
+});
+
 test("rejects unsupported image types", async () => {
   const file = new File(["not an image"], "question.gif", {
     type: "image/gif",

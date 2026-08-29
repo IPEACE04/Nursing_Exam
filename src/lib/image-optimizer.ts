@@ -1,8 +1,9 @@
+import { detectImageType } from "./image-validation.ts";
+
 export const MAX_IMAGE_DIMENSION = 1600;
 export const TARGET_IMAGE_SIZE_BYTES = 1.2 * 1024 * 1024;
 export const MAX_SOURCE_IMAGE_SIZE_BYTES = 15 * 1024 * 1024;
 
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
 const QUALITY_STEPS = [0.78, 0.7, 0.62, 0.54];
 
 export type ImageOptimizationErrorCode = "unsupported" | "sourceTooLarge" | "processingFailed";
@@ -58,14 +59,17 @@ function webpFileName(file: File): string {
 }
 
 export async function optimizeImageFile(file: File): Promise<File> {
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_TYPES)[number])) {
-    throw new ImageOptimizationError("unsupported");
-  }
   if (file.size > MAX_SOURCE_IMAGE_SIZE_BYTES) {
     throw new ImageOptimizationError("sourceTooLarge");
   }
 
-  const image = await loadImage(file);
+  const detectedType = await detectImageType(file);
+  if (!detectedType) throw new ImageOptimizationError("unsupported");
+
+  const normalizedFile = file.type === detectedType
+    ? file
+    : new File([file], file.name, { type: detectedType, lastModified: file.lastModified });
+  const image = await loadImage(normalizedFile);
   const { width, height } = calculateImageDimensions(image.naturalWidth, image.naturalHeight);
   const canvas = document.createElement("canvas");
   canvas.width = width;

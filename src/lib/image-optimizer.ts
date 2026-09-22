@@ -2,7 +2,7 @@ import { detectImageType } from "./image-validation.ts";
 
 export const MAX_IMAGE_DIMENSION = 1600;
 export const TARGET_IMAGE_SIZE_BYTES = 1.2 * 1024 * 1024;
-export const MAX_SOURCE_IMAGE_SIZE_BYTES = 15 * 1024 * 1024;
+export const MAX_SOURCE_IMAGE_SIZE_BYTES = 20 * 1024 * 1024;
 
 const QUALITY_STEPS = [0.78, 0.7, 0.62, 0.54];
 
@@ -44,18 +44,28 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   });
 }
 
-function encodeWebp(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
+function encodeImage(canvas: HTMLCanvasElement, quality: number): Promise<{ blob: Blob; type: "image/webp" | "image/jpeg" }> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob);
-      else reject(new ImageOptimizationError("processingFailed"));
+    canvas.toBlob((webpBlob) => {
+      if (webpBlob && webpBlob.size > 0) {
+        resolve({ blob: webpBlob, type: "image/webp" });
+        return;
+      }
+      canvas.toBlob((jpegBlob) => {
+        if (jpegBlob && jpegBlob.size > 0) {
+          resolve({ blob: jpegBlob, type: "image/jpeg" });
+        } else {
+          reject(new ImageOptimizationError("processingFailed"));
+        }
+      }, "image/jpeg", quality);
     }, "image/webp", quality);
   });
 }
 
-function webpFileName(file: File): string {
+function optimizedFileName(file: File, type: "image/webp" | "image/jpeg"): string {
   const baseName = file.name.replace(/\.[^.]+$/, "") || "image";
-  return `${baseName}.webp`;
+  const ext = type === "image/webp" ? "webp" : "jpg";
+  return `${baseName}.${ext}`;
 }
 
 export async function optimizeImageFile(file: File): Promise<File> {
@@ -76,14 +86,14 @@ export async function optimizeImageFile(file: File): Promise<File> {
   canvas.height = height;
   canvas.getContext("2d")?.drawImage(image, 0, 0, width, height);
 
-  let optimizedBlob = await encodeWebp(canvas, QUALITY_STEPS[0]);
+  let result = await encodeImage(canvas, QUALITY_STEPS[0]);
   for (const quality of QUALITY_STEPS.slice(1)) {
-    if (optimizedBlob.size <= TARGET_IMAGE_SIZE_BYTES) break;
-    optimizedBlob = await encodeWebp(canvas, quality);
+    if (result.blob.size <= TARGET_IMAGE_SIZE_BYTES) break;
+    result = await encodeImage(canvas, quality);
   }
 
-  return new File([optimizedBlob], webpFileName(file), {
-    type: "image/webp",
+  return new File([result.blob], optimizedFileName(file, result.type), {
+    type: result.type,
     lastModified: file.lastModified,
   });
 }

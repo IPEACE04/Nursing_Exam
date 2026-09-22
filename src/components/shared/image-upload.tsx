@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FileText, ImagePlus, Paperclip, X } from "lucide-react";
-import { openHiddenFileInput, releaseFileInputFocus } from "@/lib/file-input-focus";
+import { releaseFileInputFocus } from "@/lib/file-input-focus";
 import { createFilePreviewUrls, revokeFilePreviewUrls } from "@/lib/file-preview";
 import { ImageOptimizationError, optimizeImageFile } from "@/lib/image-optimizer";
 import { formatFileSize, getFileExtension, getFileNameFromUrl, isImageUrl, validateCommunityFile } from "@/lib/file-utils";
@@ -22,7 +22,18 @@ interface ImageUploadProps {
   allowAllFiles?: boolean;
 }
 
-const OPTIMIZABLE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const OPTIMIZABLE_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+]);
+
+function isOptimizableImage(file: File): boolean {
+  if (OPTIMIZABLE_IMAGE_TYPES.has(file.type.toLowerCase())) return true;
+  const ext = getFileExtension(file.name);
+  return ["jpg", "jpeg", "png", "webp"].includes(ext);
+}
 
 export function ImageUpload({
   files,
@@ -49,7 +60,7 @@ export function ImageUpload({
   useEffect(() => () => revokeFilePreviewUrls(previewUrls), [previewUrls]);
 
   async function handleFiles(selected: FileList | null) {
-    if (!selected) return;
+    if (!selected || selected.length === 0) return;
     const currentTotal = files.length + visibleExistingUrls.length;
     const availableSlots = maxFiles !== undefined ? Math.max(maxFiles - currentTotal, 0) : selected.length;
     if (availableSlots === 0) return;
@@ -65,7 +76,7 @@ export function ImageUpload({
 
     if (allowAllFiles) {
       for (const file of filesToProcess) {
-        const error = await validateCommunityFile(file);
+        const error = await validateCommunityFile(file, true);
         if (error) {
           setImageError(error);
           return;
@@ -78,8 +89,18 @@ export function ImageUpload({
     try {
       const processedFiles: File[] = [];
       for (const file of filesToProcess) {
-        if (OPTIMIZABLE_IMAGE_TYPES.has(file.type)) {
-          processedFiles.push(await optimizeImageFile(file));
+        if (isOptimizableImage(file)) {
+          try {
+            processedFiles.push(await optimizeImageFile(file));
+          } catch (err) {
+            console.warn("Optimization fallback:", err);
+            // Fallback to original file on mobile/tablet if under 10 MB
+            if (file.size <= 10 * 1024 * 1024) {
+              processedFiles.push(file);
+            } else {
+              throw err;
+            }
+          }
         } else {
           processedFiles.push(file);
         }
@@ -99,12 +120,16 @@ export function ImageUpload({
     } finally {
       setIsOptimizing(false);
       onOptimizingChange?.(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   }
 
+  // When allowAllFiles is true, omit accept so Android/iOS system pickers allow choosing any file or document
   const acceptTypes = allowAllFiles
-    ? "image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.7z,.csv"
-    : ".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp";
+    ? undefined
+    : "image/*,.jpg,.jpeg,.png,.webp";
 
   return (
     <div className="space-y-2">
@@ -112,20 +137,34 @@ export function ImageUpload({
         <span className="text-xs font-medium text-muted-foreground">{displayLabel}</span>
         <span className="text-[11px] text-muted-foreground">{displayHint}</span>
       </div>
-      <button
-        type="button"
-        disabled={isOptimizing || isFull}
+      <label
         className={cn(
-          "flex min-h-20 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground transition-colors",
-          isFull
-            ? "cursor-not-allowed opacity-50"
-            : "cursor-pointer hover:border-primary/50 hover:bg-muted"
+          "flex min-h-20 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground transition-colors select-none",
+          isFull || isOptimizing
+            ? "cursor-not-allowed opacity-50 pointer-events-none"
+            : "cursor-pointer hover:border-primary/50 hover:bg-muted active:scale-[0.99]"
         )}
         onClick={() => {
-          if (isFull) return;
-          if (fileInputRef.current) openHiddenFileInput(fileInputRef.current);
+          if (isFull || isOptimizing) return;
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
         }}
       >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept={acceptTypes}
+          multiple={maxFiles === undefined || maxFiles > 1}
+          name={name}
+          disabled={isOptimizing || isFull}
+          className="sr-only"
+          onChange={(event) => {
+            const selected = event.target.files;
+            void handleFiles(selected);
+            releaseFileInputFocus(event.currentTarget);
+          }}
+        />
         {allowAllFiles ? <Paperclip className="size-4" /> : <ImagePlus className="size-4" />}
         <span>
           {isOptimizing
@@ -138,20 +177,7 @@ export function ImageUpload({
                     : ""
               }`}
         </span>
-      </button>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept={acceptTypes}
-        multiple={maxFiles === undefined || maxFiles > 1}
-        name={name}
-        className="hidden"
-        onChange={(event) => {
-          void handleFiles(event.target.files);
-          event.currentTarget.value = "";
-          releaseFileInputFocus(event.currentTarget);
-        }}
-      />
+      </label>
       {imageError && <p className="text-xs text-destructive">{imageError}</p>}
       {(existingUrls.length > 0 || files.length > 0) && (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

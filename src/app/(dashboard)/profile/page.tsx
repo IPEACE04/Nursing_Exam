@@ -6,6 +6,7 @@ import { User, Mail, Building, Save, Lock, KeyRound, Shield, Camera, IdCard } fr
 import { useAuth } from "@/context/auth-context";
 import { changePassword } from "@/actions/auth";
 import { uploadAvatar, updateProfile } from "@/actions/profile";
+import { optimizeImageFile } from "@/lib/image-optimizer";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { FormField } from "@/components/premium/form-field";
@@ -70,24 +71,36 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
-    if (file.size > MAX_AVATAR_SIZE) {
-      setAvatarError(t(locale, "profile.imageTooLarge"));
-      return;
-    }
-
     setAvatarError(null);
     setUploading(true);
-    const formData = new FormData();
-    formData.set("file", file);
 
-    const result = await uploadAvatar(formData);
-    if (result.error) {
-      setAvatarError(result.error);
-    } else {
-      await refreshProfile();
+    try {
+      let fileToUpload = file;
+      try {
+        fileToUpload = await optimizeImageFile(file);
+      } catch {
+        if (file.size > 2 * 1024 * 1024) {
+          setAvatarError(t(locale, "profile.imageTooLarge"));
+          setUploading(false);
+          return;
+        }
+      }
+
+      const formData = new FormData();
+      formData.set("file", fileToUpload);
+
+      const result = await uploadAvatar(formData);
+      if (result.error) {
+        setAvatarError(result.error);
+      } else {
+        await refreshProfile();
+      }
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
-    setUploading(false);
   }
 
   async function handleChangePassword(e: React.FormEvent) {
@@ -133,13 +146,18 @@ export default function ProfilePage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/png,image/jpeg,image/heic"
+              accept="image/*,.jpg,.jpeg,.png,.webp"
               onChange={handleAvatarUpload}
-              className="hidden"
+              className="sr-only"
             />
             <button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                  fileInputRef.current.click();
+                }
+              }}
               disabled={uploading}
               className="relative cursor-pointer disabled:cursor-wait"
             >

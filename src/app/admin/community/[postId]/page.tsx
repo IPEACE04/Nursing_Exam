@@ -12,6 +12,8 @@ import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import { ImageGallery } from "@/components/shared/image-gallery";
+import { AttachmentList } from "@/components/shared/attachment-list";
+import { isImageUrl } from "@/lib/file-utils";
 
 export default function AdminCommunityDetailPage({ params }: { params: Promise<{ postId: string }> }) {
   const { postId } = use(params);
@@ -49,7 +51,52 @@ export default function AdminCommunityDetailPage({ params }: { params: Promise<{
     <Link href="/admin/community" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" />{t(locale, "admin.community.back")}</Link>
     <PageHeader badge={post.category} title={post.title} description={post.author_name} action={<button onClick={() => void handleDeletePost()} className="inline-flex h-10 items-center gap-2 rounded-xl border border-destructive/20 px-4 text-sm font-semibold text-destructive hover:bg-destructive/10"><Trash2 className="size-4" />{t(locale, "community.deletePost")}</button>} />
     {error && <p className="text-sm text-destructive">{error}</p>}
-    <GlassCard className="p-5 sm:p-7"><p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">{post.content}</p><ImageGallery imageUrls={post.image_urls} className="mt-5" /></GlassCard>
-    <GlassCard className="p-5 sm:p-7"><h2 className="mb-5 text-lg font-semibold text-foreground">{t(locale, "admin.community.comments")} ({comments.length})</h2><div className="space-y-3">{comments.length === 0 ? <p className="text-sm text-muted-foreground">{t(locale, "community.noComments")}</p> : comments.map((comment) => <div key={comment.id} className="rounded-xl border border-border p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0 flex-1"><div className="mb-2 flex items-center gap-2"><Avatar className="size-7"><AvatarImage src={comment.author_avatar_url ?? undefined} /><AvatarFallback>{comment.author_name.charAt(0)}</AvatarFallback></Avatar><span className="text-sm font-medium text-foreground">{comment.author_name}</span></div><p className="whitespace-pre-wrap break-words text-sm text-foreground">{comment.content}</p><ImageGallery imageUrls={comment.image_urls} className="mt-3" /></div><button onClick={() => void handleDeleteComment(comment.id)} className="rounded-lg p-2 text-destructive hover:bg-destructive/10"><Trash2 className="size-4" /></button></div></div>)}</div></GlassCard>
+    <GlassCard className="p-5 sm:p-7">
+      <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">{post.content}</p>
+      {(() => {
+        const imageUrls = post.image_urls.filter(isImageUrl);
+        const attachmentUrls = post.image_urls.filter((url) => !isImageUrl(url));
+        return (
+          <>
+            <ImageGallery imageUrls={imageUrls} className="mt-5" />
+            <AttachmentList attachmentUrls={attachmentUrls} className="mt-4" />
+          </>
+        );
+      })()}
+    </GlassCard>
+    <GlassCard className="p-5 sm:p-7">
+      <h2 className="mb-5 text-lg font-semibold text-foreground">{t(locale, "admin.community.comments")} ({comments.length})</h2>
+      <div className="space-y-3">
+        {comments.length === 0 ? (
+          <p className="text-sm text-muted-foreground">{t(locale, "community.noComments")}</p>
+        ) : (
+          comments.map((comment) => {
+            const imageUrls = comment.image_urls.filter(isImageUrl);
+            const attachmentUrls = comment.image_urls.filter((url) => !isImageUrl(url));
+            return (
+              <div key={comment.id} className="rounded-xl border border-border p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex items-center gap-2">
+                      <Avatar className="size-7">
+                        <AvatarImage src={comment.author_avatar_url ?? undefined} />
+                        <AvatarFallback>{comment.author_name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium text-foreground">{comment.author_name}</span>
+                    </div>
+                    <p className="whitespace-pre-wrap break-words text-sm text-foreground">{comment.content}</p>
+                    <ImageGallery imageUrls={imageUrls} className="mt-3" />
+                    <AttachmentList attachmentUrls={attachmentUrls} className="mt-2.5" />
+                  </div>
+                  <button onClick={() => void handleDeleteComment(comment.id)} className="rounded-lg p-2 text-destructive hover:bg-destructive/10">
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </GlassCard>
   </div>;
 }

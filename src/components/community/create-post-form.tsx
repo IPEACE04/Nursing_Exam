@@ -24,6 +24,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("แชร์ความรู้");
   const [isPending, startTransition] = useTransition();
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const [error, setError] = useState("");
   const [images, setImages] = useState<File[]>([]);
 
@@ -107,18 +108,24 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
         />
       </div>
 
-      <ImageUpload files={images} onChange={setImages} maxFiles={4} label={t(locale, "community.images")} />
+      <ImageUpload
+        files={images}
+        onChange={setImages}
+        label={t(locale, "community.filesAndImages")}
+        onOptimizingChange={setIsOptimizing}
+        allowAllFiles={true}
+      />
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={isPending || !title.trim() || !content.trim()}
+          disabled={isPending || isOptimizing || !title.trim() || !content.trim()}
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
-          {isPending ? t(locale, "community.posting") : t(locale, "community.post")}
+          {isOptimizing ? t(locale, "image.optimizing") : isPending ? t(locale, "community.posting") : t(locale, "community.post")}
         </button>
       </div>
     </form>

@@ -8,6 +8,8 @@ import { t } from "@/lib/translations";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { CommunityCommentWithAuthor } from "@/types";
 import { ImageGallery } from "@/components/shared/image-gallery";
+import { AttachmentList } from "@/components/shared/attachment-list";
+import { isImageUrl } from "@/lib/file-utils";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -58,7 +60,16 @@ export function CommentItem({
           <p className="text-sm text-foreground leading-relaxed break-words">
             {comment.content}
           </p>
-          <ImageGallery imageUrls={comment.image_urls} className="mt-3" />
+          {(() => {
+            const imageUrls = comment.image_urls.filter(isImageUrl);
+            const attachmentUrls = comment.image_urls.filter((url) => !isImageUrl(url));
+            return (
+              <>
+                <ImageGallery imageUrls={imageUrls} className="mt-3" />
+                <AttachmentList attachmentUrls={attachmentUrls} className="mt-2.5" />
+              </>
+            );
+          })()}
         </div>
 
         {isOwner && (

@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { detectImageType, validateImageFiles } from "@/lib/image-validation";
+import {
+  encodeFileNameForStorage,
+  validateCommunityFiles,
+} from "@/lib/file-utils";
 
 export type MediaBucket = "exam-media" | "community-media";
 
@@ -40,6 +44,39 @@ export async function uploadImageFiles(
     if (error) {
       await deleteImageFiles(bucket, uploadedPaths);
       return { paths: [], error: "ไม่สามารถอัปโหลดรูปภาพได้ กรุณาลองใหม่" };
+    }
+
+    uploadedPaths.push(path);
+  }
+
+  return { paths: uploadedPaths, error: null };
+}
+
+export async function uploadCommunityFiles(
+  files: File[],
+  directory: string,
+): Promise<{ paths: string[]; error: string | null }> {
+  const validationError = await validateCommunityFiles(files, files.length);
+  if (validationError) return { paths: [], error: validationError };
+
+  const supabase = createSupabaseServerClient();
+  const uploadedPaths: string[] = [];
+
+  for (const file of files) {
+    const storageName = encodeFileNameForStorage(file.name);
+    const path = `${directory}/${randomUUID()}_${storageName}`;
+
+    const contentType = file.type || "application/octet-stream";
+
+    const { error } = await supabase.storage.from("community-media").upload(path, file, {
+      contentType,
+      upsert: false,
+    });
+
+    if (error) {
+      console.error("Storage upload error in uploadCommunityFiles:", error);
+      await deleteImageFiles("community-media", uploadedPaths);
+      return { paths: [], error: "ไม่สามารถอัปโหลดไฟล์ได้ กรุณาลองใหม่" };
     }
 
     uploadedPaths.push(path);

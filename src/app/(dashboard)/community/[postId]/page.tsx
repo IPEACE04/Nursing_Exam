@@ -19,6 +19,8 @@ import { CommentItem } from "@/components/community/comment-item";
 import { CommentForm } from "@/components/community/comment-form";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import { ImageGallery } from "@/components/shared/image-gallery";
+import { AttachmentList } from "@/components/shared/attachment-list";
+import { isImageUrl } from "@/lib/file-utils";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -174,7 +176,16 @@ export default function PostDetailPage({
           {post.content}
         </div>
 
-        <ImageGallery imageUrls={post.image_urls} className="mt-6" />
+        {(() => {
+          const imageUrls = post.image_urls.filter(isImageUrl);
+          const attachmentUrls = post.image_urls.filter((url) => !isImageUrl(url));
+          return (
+            <>
+              <ImageGallery imageUrls={imageUrls} className="mt-6" />
+              <AttachmentList attachmentUrls={attachmentUrls} className="mt-4" />
+            </>
+          );
+        })()}
 
         <div className="mt-6 pt-4 border-t border-border">
           <LikeButton

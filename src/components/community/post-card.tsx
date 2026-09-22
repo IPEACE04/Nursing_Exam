@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle } from "lucide-react";
+import { Heart, MessageCircle, Paperclip } from "lucide-react";
 import type { CommunityPostWithAuthor } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageGallery } from "@/components/shared/image-gallery";
+import { getFileExtension, getFileNameFromUrl, isImageUrl } from "@/lib/file-utils";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -17,6 +18,9 @@ function formatDate(dateStr: string) {
 }
 
 export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
+  const imageUrls = post.image_urls.filter(isImageUrl);
+  const attachmentUrls = post.image_urls.filter((url) => !isImageUrl(url));
+
   return (
     <Link href={`/community/${post.id}`}>
       <article className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm cursor-pointer">
@@ -33,7 +37,26 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
           {post.content}
         </p>
 
-        <ImageGallery imageUrls={post.image_urls} className="mb-4" linkImages={false} />
+        <ImageGallery imageUrls={imageUrls} className="mb-4" linkImages={false} />
+
+        {attachmentUrls.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {attachmentUrls.map((url) => {
+              const fileName = getFileNameFromUrl(url);
+              const ext = getFileExtension(fileName).toUpperCase();
+              return (
+                <span
+                  key={url}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border/70 bg-muted/40 px-2.5 py-1 text-xs text-muted-foreground"
+                >
+                  <Paperclip className="size-3 text-primary" />
+                  <span className="truncate max-w-[200px]">{fileName}</span>
+                  {ext && <span className="text-[10px] font-semibold text-muted-foreground/80">{ext}</span>}
+                </span>
+              );
+            })}
+          </div>
+        )}
 
         <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2 min-w-0">

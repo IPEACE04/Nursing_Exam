@@ -3,11 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
-import { deleteImageFiles, getFormFiles, getPublicImageUrls, parseImagePaths, uploadImageFiles } from "@/lib/storage";
-import { validateImageFiles } from "@/lib/image-validation";
+import { deleteImageFiles, getFormFiles, getPublicImageUrls, parseImagePaths, uploadCommunityFiles } from "@/lib/storage";
+import { validateCommunityFiles } from "@/lib/file-utils";
 import type { CommunityPostDetail, CommunityPostWithAuthor, CommunityCommentWithAuthor } from "@/types";
-
-const MAX_COMMUNITY_IMAGES = 4;
 
 async function requireAdmin() {
   const userId = await getSessionUserId();
@@ -104,7 +102,7 @@ export async function createPost(formData: FormData) {
   const content = String(formData.get("content") ?? "").trim();
   const category = String(formData.get("category") ?? "แชร์ความรู้");
   const files = getFormFiles(formData, "images");
-  const validationError = await validateImageFiles(files, MAX_COMMUNITY_IMAGES);
+  const validationError = await validateCommunityFiles(files);
   if (!title || !content) return { error: "กรุณากรอกหัวข้อและเนื้อหา" };
   if (validationError) return { error: validationError };
 
@@ -112,7 +110,7 @@ export async function createPost(formData: FormData) {
   const { data: post, error } = await supabase.from("community_posts").insert({ user_id: userId, title, content, category, image_paths: [] }).select("id").single();
   if (error || !post) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
   if (files.length > 0) {
-    const upload = await uploadImageFiles("community-media", files, `posts/${post.id}`);
+    const upload = await uploadCommunityFiles(files, `posts/${post.id}`);
     if (upload.error) {
       await supabase.from("community_posts").delete().eq("id", post.id);
       return { error: upload.error };
@@ -134,7 +132,7 @@ export async function addComment(formData: FormData) {
   const postId = String(formData.get("postId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
   const files = getFormFiles(formData, "images");
-  const validationError = await validateImageFiles(files, MAX_COMMUNITY_IMAGES);
+  const validationError = await validateCommunityFiles(files);
   if (!postId || !content) return { error: "กรุณาพิมพ์ความคิดเห็น" };
   if (validationError) return { error: validationError };
 
@@ -142,7 +140,7 @@ export async function addComment(formData: FormData) {
   const { data: comment, error } = await supabase.from("community_comments").insert({ post_id: postId, user_id: userId, content, image_paths: [] }).select("id").single();
   if (error || !comment) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
   if (files.length > 0) {
-    const upload = await uploadImageFiles("community-media", files, `comments/${comment.id}`);
+    const upload = await uploadCommunityFiles(files, `comments/${comment.id}`);
     if (upload.error) {
       await supabase.from("community_comments").delete().eq("id", comment.id);
       return { error: upload.error };

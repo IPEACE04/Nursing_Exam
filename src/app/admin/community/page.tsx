@@ -12,6 +12,8 @@ import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import { ImageGallery } from "@/components/shared/image-gallery";
+import { AttachmentList } from "@/components/shared/attachment-list";
+import { isImageUrl } from "@/lib/file-utils";
 
 export default function AdminCommunityPage() {
   const { locale } = useLocale();
@@ -75,7 +77,16 @@ export default function AdminCommunityPage() {
                   <div className="mb-2 flex flex-wrap items-center gap-2"><span className="rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground">{post.category}</span><span className="text-xs text-muted-foreground">{post.author_name}</span></div>
                   <h2 className="text-base font-semibold text-foreground">{post.title}</h2>
                   <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{post.content}</p>
-                  <ImageGallery imageUrls={post.image_urls} className="mt-3 max-w-sm" />
+                  {(() => {
+                    const imageUrls = post.image_urls.filter(isImageUrl);
+                    const attachmentUrls = post.image_urls.filter((url) => !isImageUrl(url));
+                    return (
+                      <>
+                        <ImageGallery imageUrls={imageUrls} className="mt-3 max-w-sm" />
+                        <AttachmentList attachmentUrls={attachmentUrls} className="mt-2.5 max-w-sm" />
+                      </>
+                    );
+                  })()}
                   <div className="mt-3 flex gap-4 text-xs text-muted-foreground"><span>{post.like_count} likes</span><span>{post.comment_count} comments</span></div>
                 </div>
                 <div className="flex shrink-0 gap-2">

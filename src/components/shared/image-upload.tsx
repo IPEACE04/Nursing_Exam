@@ -27,12 +27,14 @@ const OPTIMIZABLE_IMAGE_TYPES = new Set([
   "image/jpg",
   "image/png",
   "image/webp",
+  "image/heic",
+  "image/heif",
 ]);
 
 function isOptimizableImage(file: File): boolean {
   if (OPTIMIZABLE_IMAGE_TYPES.has(file.type.toLowerCase())) return true;
   const ext = getFileExtension(file.name);
-  return ["jpg", "jpeg", "png", "webp"].includes(ext);
+  return ["jpg", "jpeg", "png", "webp", "heic", "heif"].includes(ext);
 }
 
 export function ImageUpload({

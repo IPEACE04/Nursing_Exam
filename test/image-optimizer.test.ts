@@ -14,3 +14,10 @@ test("keeps small images at their original dimensions", () => {
 test("reduces oversized portrait images while preserving aspect ratio", () => {
   assert.deepEqual(calculateImageDimensions(1200, 3000), { width: 640, height: 1600 });
 });
+
+test("target image size is optimized under 1MB for mobile networks and serverless payloads", async () => {
+  const { TARGET_IMAGE_SIZE_BYTES, MAX_IMAGE_DIMENSION } = await import("../src/lib/image-optimizer.ts");
+  assert.ok(TARGET_IMAGE_SIZE_BYTES <= 1024 * 1024, "Target size should be <= 1MB");
+  assert.equal(MAX_IMAGE_DIMENSION, 1600);
+});
+

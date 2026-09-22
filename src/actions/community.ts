@@ -1,10 +1,16 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
 import { getSessionUserId } from "@/lib/auth";
 import { deleteImageFiles, getFormFiles, getPublicImageUrls, parseImagePaths, uploadCommunityFiles } from "@/lib/storage";
-import { validateCommunityFiles } from "@/lib/file-utils";
+import {
+  BLOCKED_FILE_EXTENSIONS,
+  encodeFileNameForStorage,
+  getFileExtension,
+  validateCommunityFiles,
+} from "@/lib/file-utils";
 import type { CommunityPostDetail, CommunityPostWithAuthor, CommunityCommentWithAuthor } from "@/types";
 
 async function requireAdmin() {
@@ -95,33 +101,104 @@ export async function getComments(postId: string) {
   return (comments ?? []).map((comment) => mapComment(comment as Record<string, unknown>));
 }
 
+export interface CommunityUploadTarget {
+  name: string;
+  type?: string;
+  size?: number;
+}
+
+export async function getCommunityUploadUrls(
+  files: CommunityUploadTarget[],
+  prefix: "posts" | "comments" = "posts"
+): Promise<{ uploads: { name: string; path: string; signedUrl: string }[]; error?: string }> {
+  const userId = await getSessionUserId();
+  if (!userId) return { uploads: [], error: "กรุณาเข้าสู่ระบบ" };
+
+  for (const file of files) {
+    const ext = getFileExtension(file.name);
+    if (BLOCKED_FILE_EXTENSIONS.has(ext)) {
+      return { uploads: [], error: `ไม่อนุญาตให้อัปโหลดไฟล์ .${ext} เพื่อความปลอดภัย` };
+    }
+  }
+
+  const supabase = createSupabaseServerClient();
+  const uploads: { name: string; path: string; signedUrl: string }[] = [];
+
+  for (const file of files) {
+    const storageName = encodeFileNameForStorage(file.name);
+    const path = `${prefix}/${userId}/${randomUUID()}_${storageName}`;
+    const { data, error } = await supabase.storage
+      .from("community-media")
+      .createSignedUploadUrl(path);
+
+    if (error || !data?.signedUrl) {
+      console.error("Failed to generate signed upload URL:", error);
+      return { uploads: [], error: "ไม่สามารถเตรียมการอัปโหลดไฟล์ได้ กรุณาลองใหม่" };
+    }
+
+    uploads.push({
+      name: file.name,
+      path,
+      signedUrl: data.signedUrl,
+    });
+  }
+
+  return { uploads };
+}
+
 export async function createPost(formData: FormData) {
   const userId = await getSessionUserId();
   if (!userId) return { error: "กรุณาเข้าสู่ระบบ" };
   const title = String(formData.get("title") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const category = String(formData.get("category") ?? "แชร์ความรู้");
+
+  let preUploadedPaths: string[] = [];
+  const rawImagePaths = formData.get("imagePaths");
+  if (rawImagePaths) {
+    try {
+      preUploadedPaths = parseImagePaths(JSON.parse(String(rawImagePaths)));
+    } catch {
+      preUploadedPaths = parseImagePaths(formData.getAll("imagePaths"));
+    }
+  }
+
   const files = getFormFiles(formData, "images");
-  const validationError = await validateCommunityFiles(files);
+  if (files.length > 0) {
+    const validationError = await validateCommunityFiles(files);
+    if (validationError) return { error: validationError };
+  }
+
   if (!title || !content) return { error: "กรุณากรอกหัวข้อและเนื้อหา" };
-  if (validationError) return { error: validationError };
 
   const supabase = createSupabaseServerClient();
-  const { data: post, error } = await supabase.from("community_posts").insert({ user_id: userId, title, content, category, image_paths: [] }).select("id").single();
+  const { data: post, error } = await supabase
+    .from("community_posts")
+    .insert({ user_id: userId, title, content, category, image_paths: preUploadedPaths })
+    .select("id")
+    .single();
+
   if (error || !post) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
+
   if (files.length > 0) {
     const upload = await uploadCommunityFiles(files, `posts/${post.id}`);
     if (upload.error) {
       await supabase.from("community_posts").delete().eq("id", post.id);
       return { error: upload.error };
     }
-    const { error: updateError } = await supabase.from("community_posts").update({ image_paths: upload.paths }).eq("id", post.id);
+    const combinedPaths = [...preUploadedPaths, ...upload.paths];
+    const { error: updateError } = await supabase
+      .from("community_posts")
+      .update({ image_paths: combinedPaths })
+      .eq("id", post.id);
+
     if (updateError) {
       await deleteImageFiles("community-media", upload.paths);
       await supabase.from("community_posts").delete().eq("id", post.id);
       return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
     }
   }
+
   revalidatePath("/community");
   return { success: true };
 }
@@ -131,27 +208,53 @@ export async function addComment(formData: FormData) {
   if (!userId) return { error: "กรุณาเข้าสู่ระบบ" };
   const postId = String(formData.get("postId") ?? "");
   const content = String(formData.get("content") ?? "").trim();
+
+  let preUploadedPaths: string[] = [];
+  const rawImagePaths = formData.get("imagePaths");
+  if (rawImagePaths) {
+    try {
+      preUploadedPaths = parseImagePaths(JSON.parse(String(rawImagePaths)));
+    } catch {
+      preUploadedPaths = parseImagePaths(formData.getAll("imagePaths"));
+    }
+  }
+
   const files = getFormFiles(formData, "images");
-  const validationError = await validateCommunityFiles(files);
+  if (files.length > 0) {
+    const validationError = await validateCommunityFiles(files);
+    if (validationError) return { error: validationError };
+  }
+
   if (!postId || !content) return { error: "กรุณาพิมพ์ความคิดเห็น" };
-  if (validationError) return { error: validationError };
 
   const supabase = createSupabaseServerClient();
-  const { data: comment, error } = await supabase.from("community_comments").insert({ post_id: postId, user_id: userId, content, image_paths: [] }).select("id").single();
+  const { data: comment, error } = await supabase
+    .from("community_comments")
+    .insert({ post_id: postId, user_id: userId, content, image_paths: preUploadedPaths })
+    .select("id")
+    .single();
+
   if (error || !comment) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
+
   if (files.length > 0) {
     const upload = await uploadCommunityFiles(files, `comments/${comment.id}`);
     if (upload.error) {
       await supabase.from("community_comments").delete().eq("id", comment.id);
       return { error: upload.error };
     }
-    const { error: updateError } = await supabase.from("community_comments").update({ image_paths: upload.paths }).eq("id", comment.id);
+    const combinedPaths = [...preUploadedPaths, ...upload.paths];
+    const { error: updateError } = await supabase
+      .from("community_comments")
+      .update({ image_paths: combinedPaths })
+      .eq("id", comment.id);
+
     if (updateError) {
       await deleteImageFiles("community-media", upload.paths);
       await supabase.from("community_comments").delete().eq("id", comment.id);
       return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
     }
   }
+
   revalidatePath(`/community/${postId}`);
   return { success: true };
 }

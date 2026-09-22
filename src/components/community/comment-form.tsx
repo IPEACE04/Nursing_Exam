@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Send } from "lucide-react";
 import { addComment } from "@/actions/community";
+import { uploadCommunityFilesDirectly } from "@/lib/community-upload";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 import { ImageUpload } from "@/components/shared/image-upload";
@@ -17,6 +18,8 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
   const [content, setContent] = useState("");
   const [isPending, startTransition] = useTransition();
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState("");
   const [images, setImages] = useState<File[]>([]);
 
@@ -24,13 +27,28 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
     e.preventDefault();
     setError("");
 
-    const formData = new FormData();
-    formData.set("postId", postId);
-    formData.set("content", content);
-    images.forEach((image) => formData.append("images", image));
+    setIsUploading(true);
+    setUploadStatus("กำลังเตรียมข้อมูล...");
 
     startTransition(async () => {
       try {
+        let uploadedPaths: string[] = [];
+        if (images.length > 0) {
+          const uploadRes = await uploadCommunityFilesDirectly(images, "comments", setUploadStatus);
+          if (uploadRes.error) {
+            setError(uploadRes.error);
+            setIsUploading(false);
+            return;
+          }
+          uploadedPaths = uploadRes.paths;
+        }
+
+        setUploadStatus("กำลังส่งความคิดเห็น...");
+        const formData = new FormData();
+        formData.set("postId", postId);
+        formData.set("content", content);
+        formData.set("imagePaths", JSON.stringify(uploadedPaths));
+
         const result = await addComment(formData);
         if (result.error) {
           setError(result.error);
@@ -39,8 +57,12 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
           setImages([]);
           onCommentAdded?.();
         }
-      } catch {
+      } catch (err) {
+        console.error("Add comment error:", err);
         setError("ไม่สามารถส่งความคิดเห็นได้ กรุณาลองใหม่");
+      } finally {
+        setIsUploading(false);
+        setUploadStatus("");
       }
     });
   }
@@ -67,11 +89,15 @@ export function CommentForm({ postId, onCommentAdded }: CommentFormProps) {
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={isPending || isOptimizing || !content.trim()}
+          disabled={isPending || isOptimizing || isUploading || !content.trim()}
           className="inline-flex h-9 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
-          {isOptimizing ? t(locale, "image.optimizing") : isPending ? t(locale, "community.sending") : t(locale, "community.send")}
+          {isOptimizing
+            ? t(locale, "image.optimizing")
+            : isUploading || isPending
+              ? uploadStatus || t(locale, "community.sending")
+              : t(locale, "community.send")}
         </button>
       </div>
     </form>

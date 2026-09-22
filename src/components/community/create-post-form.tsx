@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Send } from "lucide-react";
 import { createPost } from "@/actions/community";
+import { uploadCommunityFilesDirectly } from "@/lib/community-upload";
 import { CATEGORIES } from "@/lib/community-constants";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
@@ -25,6 +26,8 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [category, setCategory] = useState("แชร์ความรู้");
   const [isPending, startTransition] = useTransition();
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
   const [error, setError] = useState("");
   const [images, setImages] = useState<File[]>([]);
 
@@ -32,14 +35,29 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
     e.preventDefault();
     setError("");
 
-    const formData = new FormData();
-    formData.set("title", title);
-    formData.set("content", content);
-    formData.set("category", category);
-    images.forEach((image) => formData.append("images", image));
+    setIsUploading(true);
+    setUploadStatus("กำลังเตรียมข้อมูล...");
 
     startTransition(async () => {
       try {
+        let uploadedPaths: string[] = [];
+        if (images.length > 0) {
+          const uploadRes = await uploadCommunityFilesDirectly(images, "posts", setUploadStatus);
+          if (uploadRes.error) {
+            setError(uploadRes.error);
+            setIsUploading(false);
+            return;
+          }
+          uploadedPaths = uploadRes.paths;
+        }
+
+        setUploadStatus("กำลังบันทึกโพสต์...");
+        const formData = new FormData();
+        formData.set("title", title);
+        formData.set("content", content);
+        formData.set("category", category);
+        formData.set("imagePaths", JSON.stringify(uploadedPaths));
+
         const result = await createPost(formData);
         if (result.error) {
           setError(result.error);
@@ -50,8 +68,12 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           setImages([]);
           onPostCreated?.();
         }
-      } catch {
+      } catch (err) {
+        console.error("Create post error:", err);
         setError("ไม่สามารถสร้างโพสต์ได้ กรุณาลองใหม่");
+      } finally {
+        setIsUploading(false);
+        setUploadStatus("");
       }
     });
   }
@@ -121,11 +143,15 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={isPending || isOptimizing || !title.trim() || !content.trim()}
+          disabled={isPending || isOptimizing || isUploading || !title.trim() || !content.trim()}
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send className="size-4" />
-          {isOptimizing ? t(locale, "image.optimizing") : isPending ? t(locale, "community.posting") : t(locale, "community.post")}
+          {isOptimizing
+            ? t(locale, "image.optimizing")
+            : isUploading || isPending
+              ? uploadStatus || t(locale, "community.posting")
+              : t(locale, "community.post")}
         </button>
       </div>
     </form>

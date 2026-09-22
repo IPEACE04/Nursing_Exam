@@ -1,7 +1,8 @@
 import { detectImageType } from "./image-validation.ts";
+import { getFileExtension } from "./file-utils.ts";
 
 export const MAX_IMAGE_DIMENSION = 1600;
-export const TARGET_IMAGE_SIZE_BYTES = 1.2 * 1024 * 1024;
+export const TARGET_IMAGE_SIZE_BYTES = 500 * 1024;
 export const MAX_SOURCE_IMAGE_SIZE_BYTES = 20 * 1024 * 1024;
 
 const QUALITY_STEPS = [0.78, 0.7, 0.62, 0.54];
@@ -47,7 +48,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
 function encodeImage(canvas: HTMLCanvasElement, quality: number): Promise<{ blob: Blob; type: "image/webp" | "image/jpeg" }> {
   return new Promise((resolve, reject) => {
     canvas.toBlob((webpBlob) => {
-      if (webpBlob && webpBlob.size > 0) {
+      if (webpBlob && webpBlob.size > 0 && webpBlob.type === "image/webp") {
         resolve({ blob: webpBlob, type: "image/webp" });
         return;
       }
@@ -70,11 +71,13 @@ function optimizedFileName(file: File, type: "image/webp" | "image/jpeg"): strin
 
 export async function optimizeImageFile(file: File): Promise<File> {
   const detectedType = await detectImageType(file);
-  if (!detectedType) throw new ImageOptimizationError("unsupported");
+  const ext = getFileExtension(file.name);
+  const isLikelyImage = Boolean(detectedType) || file.type.startsWith("image/") || ["jpg", "jpeg", "png", "webp", "heic", "heif"].includes(ext);
+  if (!isLikelyImage) throw new ImageOptimizationError("unsupported");
 
-  const normalizedFile = file.type === detectedType
-    ? file
-    : new File([file], file.name, { type: detectedType, lastModified: file.lastModified });
+  const normalizedFile = detectedType && file.type !== detectedType
+    ? new File([file], file.name, { type: detectedType, lastModified: file.lastModified })
+    : file;
   const image = await loadImage(normalizedFile);
   const { width, height } = calculateImageDimensions(image.naturalWidth, image.naturalHeight);
   const canvas = document.createElement("canvas");

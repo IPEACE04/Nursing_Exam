@@ -69,10 +69,6 @@ function optimizedFileName(file: File, type: "image/webp" | "image/jpeg"): strin
 }
 
 export async function optimizeImageFile(file: File): Promise<File> {
-  if (file.size > MAX_SOURCE_IMAGE_SIZE_BYTES) {
-    throw new ImageOptimizationError("sourceTooLarge");
-  }
-
   const detectedType = await detectImageType(file);
   if (!detectedType) throw new ImageOptimizationError("unsupported");
 

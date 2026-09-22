@@ -10,7 +10,6 @@ import {
   formatFileSize,
   validateCommunityFile,
   validateCommunityFiles,
-  MAX_COMMUNITY_FILE_SIZE_BYTES,
 } from "../src/lib/file-utils.ts";
 
 test("identifies image extensions correctly", () => {
@@ -85,9 +84,9 @@ test("validates community files: accepts safe documents and images", async () =>
   assert.equal(await validateCommunityFile(pngFile), null);
 });
 
-test("validates community files: rejects oversized files", async () => {
-  const bigFile = new File([new Uint8Array(MAX_COMMUNITY_FILE_SIZE_BYTES + 1)], "big.pdf", { type: "application/pdf" });
-  assert.equal(await validateCommunityFile(bigFile), "ขนาดไฟล์ big.pdf ต้องไม่เกิน 10 MB");
+test("validates community files: accepts files of any size without limit", async () => {
+  const hugeFile = new File([new Uint8Array(50 * 1024 * 1024)], "huge.pdf", { type: "application/pdf" });
+  assert.equal(await validateCommunityFile(hugeFile), null);
 });
 
 test("validates community files: handles max files limit and unlimited", async () => {

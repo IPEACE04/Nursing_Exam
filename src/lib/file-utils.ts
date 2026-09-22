@@ -137,23 +137,8 @@ export function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export async function validateCommunityFile(
-  file: File,
-  isPreOptimization = false,
-): Promise<string | null> {
+export async function validateCommunityFile(file: File): Promise<string | null> {
   const ext = getFileExtension(file.name);
-  const isOptimizable = ["jpg", "jpeg", "png", "webp"].includes(ext) || file.type.startsWith("image/");
-  const maxLimit = isPreOptimization && isOptimizable
-    ? 20 * 1024 * 1024 // 20 MB for source photos before optimization
-    : MAX_COMMUNITY_FILE_SIZE_BYTES;
-
-  if (file.size > maxLimit) {
-    const limitMb = Math.round(maxLimit / (1024 * 1024));
-    return `ขนาดไฟล์ ${file.name} ต้องไม่เกิน ${limitMb} MB`;
-  }
-  if (file.size === 0) {
-    return `ไฟล์ ${file.name} ว่างเปล่า`;
-  }
 
   if (BLOCKED_FILE_EXTENSIONS.has(ext)) {
     return `ไม่อนุญาตให้อัปโหลดไฟล์ .${ext} เพื่อความปลอดภัย`;
@@ -172,14 +157,13 @@ export async function validateCommunityFile(
 export async function validateCommunityFiles(
   files: File[],
   maxFiles?: number,
-  isPreOptimization = false,
 ): Promise<string | null> {
   if (maxFiles !== undefined && files.length > maxFiles) {
     return `สามารถแนบไฟล์ได้ไม่เกิน ${maxFiles} ไฟล์`;
   }
 
   for (const file of files) {
-    const error = await validateCommunityFile(file, isPreOptimization);
+    const error = await validateCommunityFile(file);
     if (error) return error;
   }
 

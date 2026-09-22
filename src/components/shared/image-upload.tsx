@@ -76,7 +76,7 @@ export function ImageUpload({
 
     if (allowAllFiles) {
       for (const file of filesToProcess) {
-        const error = await validateCommunityFile(file, true);
+        const error = await validateCommunityFile(file);
         if (error) {
           setImageError(error);
           return;
@@ -94,12 +94,8 @@ export function ImageUpload({
             processedFiles.push(await optimizeImageFile(file));
           } catch (err) {
             console.warn("Optimization fallback:", err);
-            // Fallback to original file on mobile/tablet if under 10 MB
-            if (file.size <= 10 * 1024 * 1024) {
-              processedFiles.push(file);
-            } else {
-              throw err;
-            }
+            // Fallback to original file regardless of size
+            processedFiles.push(file);
           }
         } else {
           processedFiles.push(file);

@@ -340,7 +340,7 @@ export const dict: TranslationDict = {
   "image.error.exceededLimit": { th: "แนบรูปภาพได้สูงสุด {max} รูป (เลือกเฉพาะ {slots} รูปแรก)", en: "Up to {max} images allowed ({slots} selected)" },
   "community.filesAndImages": { th: "รูปภาพและไฟล์แนบ", en: "Images & Attachments" },
   "community.addFileOrImage": { th: "เพิ่มไฟล์ / รูปภาพ", en: "Add file / image" },
-  "community.filesHint": { th: "รูปภาพ, PDF, Word, Excel, ZIP ฯลฯ ไม่เกิน 10 MB ต่อไฟล์", en: "Images, PDF, Word, Excel, ZIP up to 10 MB per file" },
+  "community.filesHint": { th: "รูปภาพ, PDF, Word, Excel, ZIP ฯลฯ ไม่จำกัดขนาดและจำนวนไฟล์", en: "Images, PDF, Word, Excel, ZIP (no size or file limit)" },
   "community.attachmentsTitle": { th: "ไฟล์แนบ", en: "Attachments" },
   "community.attachmentDownload": { th: "ดาวน์โหลด", en: "Download" },
   "file.error.blocked": { th: "ไม่อนุญาตให้อัปโหลดไฟล์ .{ext} เพื่อความปลอดภัย", en: "File type .{ext} is not allowed for security reasons" },

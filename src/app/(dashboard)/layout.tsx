@@ -28,12 +28,12 @@ export default function DashboardLayout({
     }
 
     if (!user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCheckingGate(false);
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
 
     if (pathname.startsWith("/progress") || pathname.startsWith("/exam/")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCheckingGate(false);
       return;
     }

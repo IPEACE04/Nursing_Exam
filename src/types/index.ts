@@ -100,6 +100,7 @@ export interface CommunityPost {
   title: string;
   content: string;
   category: string;
+  is_pinned: boolean;
   created_at: string;
   image_urls: string[];
 }

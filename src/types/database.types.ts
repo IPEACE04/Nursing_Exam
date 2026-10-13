@@ -200,6 +200,7 @@ export interface Database {
           title: string;
           content: string;
           category: string;
+          is_pinned: boolean;
           created_at: string | null;
           image_paths: Json;
         };
@@ -209,6 +210,7 @@ export interface Database {
           title: string;
           content: string;
           category?: string;
+          is_pinned?: boolean;
           created_at?: string | null;
           image_paths?: Json;
         };
@@ -218,6 +220,7 @@ export interface Database {
           title?: string;
           content?: string;
           category?: string;
+          is_pinned?: boolean;
           created_at?: string | null;
           image_paths?: Json;
         };

@@ -34,6 +34,7 @@ function mapPost(row: Record<string, unknown>, counts?: { likes?: number; commen
     title: String(row.title),
     content: String(row.content),
     category: String(row.category),
+    is_pinned: row.is_pinned === true,
     created_at: String(row.created_at),
     image_urls: getPublicImageUrls("community-media", parseImagePaths(row.image_paths)),
     author_name: author?.name ?? "ไม่ระบุ",
@@ -60,10 +61,13 @@ function mapComment(row: Record<string, unknown>): CommunityCommentWithAuthor {
 
 export async function getPosts(category?: string) {
   const supabase = createSupabaseServerClient();
-  let query = supabase.from("community_posts").select("*, profiles:user_id ( name, avatar_url )").order("created_at", { ascending: false });
+  let query = supabase.from("community_posts").select("*, profiles:user_id ( name, avatar_url )")
+    .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false });
   if (category && category !== "ทั้งหมด") query = query.eq("category", category);
-  const { data: posts } = await query;
-  if (!posts) return [];
+  const { data: posts, error } = await query;
+  if (error) throw new Error("ไม่สามารถโหลดโพสต์ได้ กรุณาลองใหม่");
+  if (!posts?.length) return [];
 
   const postIds = posts.map((post) => post.id);
   const [{ data: likes }, { data: comments }] = await Promise.all([
@@ -307,12 +311,15 @@ export async function deleteComment(commentId: string) {
 export async function getAdminPosts(search = "", category = "ทั้งหมด") {
   await requireAdmin();
   const supabase = createSupabaseServerClient();
-  let query = supabase.from("community_posts").select("*, profiles:user_id ( name, avatar_url )").order("created_at", { ascending: false });
+  let query = supabase.from("community_posts").select("*, profiles:user_id ( name, avatar_url )")
+    .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false });
   if (category !== "ทั้งหมด") query = query.eq("category", category);
   const safeSearch = search.trim().replace(/[(),]/g, " ");
   if (safeSearch) query = query.or(`title.ilike.%${safeSearch}%,content.ilike.%${safeSearch}%`);
-  const { data: posts } = await query;
-  if (!posts) return [];
+  const { data: posts, error } = await query;
+  if (error) throw new Error("ไม่สามารถโหลดโพสต์ได้ กรุณาลองใหม่");
+  if (!posts?.length) return [];
   const counts = await Promise.all(posts.map(async (post) => {
     const [{ count: likes }, { count: comments }] = await Promise.all([
       supabase.from("community_likes").select("*", { count: "exact", head: true }).eq("post_id", post.id),
@@ -330,6 +337,37 @@ export async function getAdminPostDetail(postId: string) {
   await requireAdmin();
   const [post, comments] = await Promise.all([getPost(postId), getComments(postId)]);
   return post ? { post, comments } : null;
+}
+
+export async function setPostPinnedAsAdmin(formData: FormData): Promise<{ success: true } | { error: string }> {
+  try {
+    const { supabase } = await requireAdmin();
+    const postId = formData.get("postId");
+    const isPinned = formData.get("isPinned");
+    if (typeof postId !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(postId)
+      || (isPinned !== "true" && isPinned !== "false")) {
+      return { error: "ข้อมูลการปักหมุดไม่ถูกต้อง" };
+    }
+
+    const { data: post, error } = await supabase.from("community_posts")
+      .update({ is_pinned: isPinned === "true" })
+      .eq("id", postId)
+      .select("id")
+      .maybeSingle();
+    if (error) return { error: "ไม่สามารถบันทึกการปักหมุดได้ กรุณาลองใหม่" };
+    if (!post) return { error: "ไม่พบโพสต์" };
+
+    revalidatePath("/admin/community");
+    revalidatePath("/community");
+    revalidatePath(`/admin/community/${postId}`);
+    revalidatePath(`/community/${postId}`);
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") return { error: "กรุณาเข้าสู่ระบบ" };
+    if (error instanceof Error && error.message === "Forbidden") return { error: "คุณไม่มีสิทธิ์ปักหมุดโพสต์" };
+    console.error("Failed to update community post pin:", error);
+    return { error: "ไม่สามารถบันทึกการปักหมุดได้ กรุณาลองใหม่" };
+  }
 }
 
 export async function deletePostAsAdmin(postId: string) {

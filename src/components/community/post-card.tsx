@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle, Paperclip } from "lucide-react";
+import { Heart, MessageCircle, Paperclip, Pin } from "lucide-react";
 import type { CommunityPostWithAuthor } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { getFileExtension, getFileNameFromUrl, isImageUrl } from "@/lib/file-utils";
+import { useLocale } from "@/context/locale-context";
+import { t } from "@/lib/translations";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("th-TH", {
@@ -18,12 +20,19 @@ function formatDate(dateStr: string) {
 }
 
 export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
+  const { locale } = useLocale();
   const imageUrls = post.image_urls.filter(isImageUrl);
   const attachmentUrls = post.image_urls.filter((url) => !isImageUrl(url));
 
   return (
     <Link href={`/community/${post.id}`}>
       <article className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm cursor-pointer">
+        {post.is_pinned && (
+          <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+            <Pin className="size-3" aria-hidden="true" />
+            {t(locale, "community.pinned")}
+          </span>
+        )}
         <div className="flex items-start justify-between gap-3 mb-3">
           <h3 className="text-lg font-semibold tracking-tight text-foreground line-clamp-2">
             {post.title}

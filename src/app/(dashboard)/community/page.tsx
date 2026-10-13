@@ -23,15 +23,18 @@ export default function CommunityPage() {
   const { locale } = useLocale();
   const [posts, setPosts] = useState<CommunityPostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [activeCategory, setActiveCategory] = useState("ทั้งหมด");
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
+    setError(false);
     try {
       const data = await getPosts(activeCategory);
       setPosts(data);
     } catch {
+      setError(true);
       setPosts([]);
     } finally {
       setLoading(false);
@@ -42,9 +45,10 @@ export default function CommunityPage() {
     let cancelled = false;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
+    setError(false);
     getPosts(activeCategory)
       .then((data) => { if (!cancelled) setPosts(data); })
-      .catch(() => { if (!cancelled) setPosts([]); })
+      .catch(() => { if (!cancelled) { setPosts([]); setError(true); } })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [activeCategory]);
@@ -123,6 +127,13 @@ export default function CommunityPage() {
       {/* Posts */}
       {loading ? (
         <LoadingSpinner />
+      ) : error ? (
+        <div role="alert" className="rounded-2xl border border-border bg-card p-6 text-center">
+          <p className="text-sm text-destructive">{t(locale, "community.loadError")}</p>
+          <button onClick={() => void fetchPosts()} className="mt-4 inline-flex h-11 cursor-pointer items-center rounded-xl border border-border px-5 text-sm font-semibold hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring">
+            {t(locale, "community.retry")}
+          </button>
+        </div>
       ) : posts.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card py-12 sm:py-16 text-center">
           <p className="text-base text-muted-foreground">

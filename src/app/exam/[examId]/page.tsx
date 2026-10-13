@@ -110,7 +110,7 @@ export default function ExamPage({
     }
   };
 
-  const timer = useTimer(examId, exam?.time_limit_minutes ?? 60);
+  const timer = useTimer(examId, exam?.time_limit_minutes ?? null);
 
   useEffect(() => {
     if (started && timer.isExpired && !hasAutoSubmitted.current && !submitting) {

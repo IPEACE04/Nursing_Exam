@@ -11,6 +11,7 @@ import {
   Trash2,
   GraduationCap,
   Rocket,
+  Search,
 } from "lucide-react";
 import { togglePublish, deleteExam, createExam, getAdminExams } from "@/actions/admin";
 import { useLocale } from "@/context/locale-context";
@@ -188,12 +189,14 @@ export default function AdminExamsPage() {
       </AnimatePresence>
 
       {/* Search */}
-      <div className="relative max-w-md">
+      <div className="relative max-w-lg">
+        <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
+          aria-label={t(locale, "common.search")}
           placeholder={t(locale, "common.search")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="h-12 w-full rounded-xl border border-border bg-background px-5 pl-10 text-base text-foreground placeholder:text-muted-foreground/60 transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+          className="h-12 w-full rounded-xl border border-border bg-card px-5 pl-11 text-base text-foreground placeholder:text-muted-foreground transition-all duration-150 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
         />
       </div>
 
@@ -214,7 +217,7 @@ export default function AdminExamsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.03 }}
             >
-              <GlassCard className="p-4 sm:p-5">
+              <GlassCard className="p-5 sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center flex-wrap gap-2">
@@ -263,13 +266,15 @@ export default function AdminExamsPage() {
                   <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                     <Link
                       href={`/admin/exams/${exam.id}`}
-                      className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="inline-flex size-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      aria-label={t(locale, "admin.edit.title")}
                     >
                       <Pencil className="size-3.5 sm:size-4" />
                     </Link>
                     <button
                       onClick={() => handleDelete(exam.id)}
-                      className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      className="inline-flex size-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                      aria-label={t(locale, "admin.exams.deleteConfirm")}
                     >
                       <Trash2 className="size-3.5 sm:size-4" />
                     </button>

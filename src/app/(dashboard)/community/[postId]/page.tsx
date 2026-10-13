@@ -123,7 +123,7 @@ export default function PostDetailPage({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-3xl space-y-6"
+      className="mx-auto max-w-4xl space-y-6"
     >
       {/* Back */}
       <Link
@@ -135,10 +135,10 @@ export default function PostDetailPage({
       </Link>
 
       {/* Post */}
-      <article className="rounded-2xl border border-border bg-card p-5 sm:p-6 lg:p-8">
+      <article className="learning-panel p-5 sm:p-7 lg:p-9">
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex-1 min-w-0">
-            <span className="inline-block rounded-full border border-border/60 bg-transparent px-3 py-1 text-xs font-medium text-muted-foreground mb-3">
+            <span className="inline-block rounded-lg bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground mb-3">
               {post.category}
             </span>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
@@ -172,7 +172,7 @@ export default function PostDetailPage({
           <span className="text-xs sm:text-sm truncate">{formatDate(post.created_at)}</span>
         </div>
 
-        <div className="prose prose-sm max-w-none text-foreground leading-relaxed whitespace-pre-wrap break-words">
+        <div className="max-w-[70ch] text-base text-foreground leading-loose whitespace-pre-wrap break-words">
           {post.content}
         </div>
 

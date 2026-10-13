@@ -116,11 +116,11 @@ export default function LoginPage() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="w-full"
     >
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+      <div className="mb-9 text-left">
+        <h1 className="text-3xl sm:text-4xl font-semibold leading-snug tracking-tight text-foreground">
           {t(locale, "auth.welcome")}
         </h1>
-        <p className="mt-2 text-base sm:text-lg text-muted-foreground leading-relaxed">
+        <p className="mt-3 text-base text-muted-foreground leading-relaxed">
           {t(locale, "auth.loginDesc")}
         </p>
       </div>

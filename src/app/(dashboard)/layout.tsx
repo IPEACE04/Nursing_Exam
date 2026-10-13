@@ -7,6 +7,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { MobileNav } from "@/components/shared/mobile-nav";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
 import { getPrePostTestGate } from "@/actions/exam";
+import { WorkspaceHeader } from "@/components/shared/workspace-header";
 
 export default function DashboardLayout({
   children,
@@ -63,10 +64,11 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col lg:pl-[264px] xl:pl-[284px]">
       <Navbar />
-      <main className="flex-1 overflow-y-auto pb-24 md:pb-0">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 md:px-8 xl:max-w-7xl 2xl:max-w-[90rem] py-6 sm:py-8 md:py-10">
+      <WorkspaceHeader />
+      <main className="min-w-0 flex-1 pb-28 lg:pb-0">
+        <div className={`mx-auto w-full max-w-7xl px-5 sm:px-8 xl:px-12 ${pathname === "/dashboard" ? "py-6 sm:py-7 xl:py-8" : "py-7 sm:py-10 xl:py-12"}`}>
           {children}
         </div>
       </main>

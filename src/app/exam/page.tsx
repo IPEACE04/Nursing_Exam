@@ -52,9 +52,8 @@ export default function ExamListPage() {
   const normalExams = exams.filter((e) => (e as unknown as Record<string, unknown>).type !== "pre_post_test");
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8 md:space-y-10 pt-4">
+    <div className="mx-auto max-w-5xl space-y-6 sm:space-y-8 md:space-y-10">
       <PageHeader
-        badge={t(locale, "exam.list.title")}
         title={t(locale, "exam.list.title")}
         description={t(locale, "exam.list.desc")}
       />
@@ -75,7 +74,7 @@ export default function ExamListPage() {
         ) : (
           <>
             {prePostExam && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <ClipboardCheck className="size-4 text-primary" />
                   <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -85,7 +84,7 @@ export default function ExamListPage() {
                 <motion.div variants={itemAnim} className="group">
                   <GlassCard
                     hover
-                    className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between border-primary/20"
+                    className="flex flex-col gap-5 p-6 sm:p-8 sm:flex-row sm:items-center sm:justify-between bg-secondary border-primary/20"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -125,7 +124,7 @@ export default function ExamListPage() {
             )}
 
             {normalExams.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center gap-2 pt-2">
                   <BookOpen className="size-4 text-muted-foreground" />
                   <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -140,7 +139,7 @@ export default function ExamListPage() {
                   >
                     <GlassCard
                       hover
-                      className="flex flex-col gap-4 p-5 sm:p-6 sm:flex-row sm:items-center sm:justify-between"
+                      className="flex flex-col gap-5 p-6 sm:p-8 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div className="flex-1 min-w-0">
                         <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground line-clamp-1">

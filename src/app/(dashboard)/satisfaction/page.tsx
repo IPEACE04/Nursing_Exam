@@ -107,7 +107,6 @@ export default function SatisfactionPage() {
       className="mx-auto max-w-2xl space-y-6 sm:space-y-8"
     >
       <PageHeader
-        badge="Survey"
         title={t(locale, "satisfaction.title")}
         description={t(locale, "satisfaction.desc")}
       />
@@ -149,7 +148,7 @@ export default function SatisfactionPage() {
                           className={`flex flex-1 flex-col items-center gap-1 rounded-xl px-3 sm:px-4 py-3 min-w-[56px] max-w-[100px] transition-all border ${
                             scores[q.id] === r
                               ? "border-primary bg-primary text-primary-foreground"
-                              : "border-border bg-muted text-muted-foreground hover:bg-muted/80"
+                              : "border-border bg-card text-muted-foreground hover:bg-secondary"
                           }`}
                         >
                           <div className="flex items-center gap-0.5">

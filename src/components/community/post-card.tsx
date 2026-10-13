@@ -25,8 +25,8 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
   const attachmentUrls = post.image_urls.filter((url) => !isImageUrl(url));
 
   return (
-    <Link href={`/community/${post.id}`}>
-      <article className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-shadow duration-200 hover:shadow-sm cursor-pointer">
+    <Link href={`/community/${post.id}`} className="group block rounded-2xl">
+      <article className="learning-panel p-5 sm:p-7 transition-colors duration-150 hover:border-primary/30 cursor-pointer">
         {post.is_pinned && (
           <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
             <Pin className="size-3" aria-hidden="true" />
@@ -34,10 +34,10 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
           </span>
         )}
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h3 className="text-lg font-semibold tracking-tight text-foreground line-clamp-2">
+          <h3 className="min-w-0 text-lg sm:text-xl font-semibold leading-relaxed tracking-tight text-foreground line-clamp-2 group-hover:text-primary">
             {post.title}
           </h3>
-          <span className="shrink-0 rounded-full border border-border/60 bg-transparent px-3 py-1 text-xs font-medium text-muted-foreground">
+          <span className="shrink-0 rounded-lg bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
             {post.category}
           </span>
         </div>
@@ -67,7 +67,7 @@ export function PostCard({ post }: { post: CommunityPostWithAuthor }) {
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2 min-w-0">
             <Avatar className="size-8 shrink-0">
               <AvatarImage src={post.author_avatar_url ?? undefined} />

@@ -20,7 +20,7 @@ export function AdminMobileNav() {
   const { locale } = useLocale();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] md:hidden">
+    <nav aria-label={t(locale, "common.navigation")} className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
       <div className="flex items-center justify-around px-2 py-3">
         {adminItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
@@ -31,16 +31,16 @@ export function AdminMobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1.5 rounded-xl px-3 py-1 transition-colors duration-150 min-w-0",
+                "flex flex-col items-center gap-1.5 rounded-xl px-3 py-1 transition-colors duration-150 min-w-0 focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
+              aria-current={isActive ? "page" : undefined}
             >
               <div
                 className={cn(
-                  "rounded-full p-1.5 transition-colors duration-150",
-                  isActive && "bg-primary/5"
+                  "rounded-full p-1.5 transition-colors duration-150"
                 )}
               >
                 <Icon className="size-5" />

@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface CardProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
@@ -19,9 +20,8 @@ export function GlassCard({
   className = "",
   ...props
 }: CardProps) {
-  const cardClassName = `rounded-2xl border border-border bg-card transition-all duration-200 ${
-    hover ? "hover:shadow-sm hover:border-border/70 hover:-translate-y-0.5" : ""
-  } ${className}`;
+  const reducedMotion = useReducedMotion();
+  const cardClassName = cn("learning-panel transition-colors duration-150", hover && "hover:border-primary/30 hover:bg-secondary/20", className);
 
   if (!animated) {
     return <div className={cardClassName}>{children}</div>;
@@ -29,9 +29,9 @@ export function GlassCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay, ease: "easeOut" }}
+      transition={{ duration: reducedMotion ? 0 : 0.2, delay: reducedMotion ? 0 : delay, ease: "easeOut" }}
       className={cardClassName}
       {...props}
     >

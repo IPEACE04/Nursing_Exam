@@ -354,20 +354,20 @@ export default function ExamPage({
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-border bg-background">
+      <header className="sticky top-0 z-30 bg-sidebar text-sidebar-foreground">
         <div className="mx-auto flex h-14 sm:h-18 max-w-6xl items-center justify-between px-4 sm:px-6 md:px-8 xl:px-10">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <GraduationCap className="size-5 sm:size-6 shrink-0 text-primary" />
-            <span className="line-clamp-1 text-sm sm:text-lg font-semibold tracking-tight text-foreground">
+            <GraduationCap className="size-5 sm:size-6 shrink-0 text-sidebar-primary" />
+            <span className="line-clamp-1 text-sm sm:text-lg font-semibold tracking-tight">
               {exam.title}
             </span>
             {isPreTest && (
-              <span className="shrink-0 rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-primary">
+              <span className="shrink-0 rounded-lg bg-sidebar-primary px-2.5 py-1 text-[10px] sm:text-xs font-medium text-sidebar-primary-foreground">
                 PreTest
               </span>
             )}
             {isPostTestReady && (
-              <span className="shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/5 px-2 py-0.5 text-[10px] sm:text-xs font-medium text-emerald-600">
+              <span className="shrink-0 rounded-lg bg-sidebar-primary px-2.5 py-1 text-[10px] sm:text-xs font-medium text-sidebar-primary-foreground">
                 PostTest
               </span>
             )}
@@ -375,19 +375,19 @@ export default function ExamPage({
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setShowMobileNav(true)}
-              className="inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
+              className="inline-flex h-10 items-center justify-center rounded-xl px-3 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent md:hidden"
               aria-label={t(locale, "exam.take.showQuestions")}
             >
               <List className="size-5 sm:size-6" />
             </button>
-            <span className="hidden text-sm text-muted-foreground sm:inline">
+            <span className="hidden text-sm text-sidebar-foreground/80 sm:inline">
               {currentIndex + 1}/{questions.length}
             </span>
             <div
               className={`flex items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base font-medium ${
                 timer.isLow
-                  ? "border border-destructive/20 bg-destructive/8 text-destructive"
-                  : "border border-border bg-muted text-foreground"
+                  ? "bg-destructive text-white"
+                  : "bg-sidebar-accent text-sidebar-foreground tabular-nums"
               }`}
             >
               <Clock className="size-4 sm:size-5" />
@@ -397,7 +397,7 @@ export default function ExamPage({
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl gap-5 sm:gap-6 pt-5 sm:pt-6 pb-20 md:pb-6 px-4 sm:px-6 md:px-8 xl:px-10">
+      <div className="mx-auto flex max-w-7xl gap-5 sm:gap-8 pt-6 sm:pt-9 pb-20 md:pb-10 px-4 sm:px-6 md:px-8 xl:px-10">
         <div className="min-w-0 flex-1">
           <AnimatePresence mode="wait">
             <motion.div
@@ -407,7 +407,7 @@ export default function ExamPage({
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="rounded-2xl border border-border bg-card p-5 sm:p-8">
+              <div className="learning-panel p-5 sm:p-8 lg:p-10">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                     {t(locale, "exam.take.questionN", { n: currentIndex + 1, total: questions.length })}
@@ -416,7 +416,7 @@ export default function ExamPage({
                     {t(locale, "exam.take.answeredN", { n: answeredCount })}
                   </span>
                 </div>
-                <h2 className="mt-4 text-base sm:text-xl leading-relaxed text-foreground">
+                <h2 className="mt-5 whitespace-pre-line text-base sm:text-xl font-medium leading-relaxed text-foreground">
                   {currentQuestion?.question_text}
                 </h2>
 
@@ -434,12 +434,13 @@ export default function ExamPage({
                       return (
                         <button
                           key={key}
+                          aria-pressed={isSelected}
                           onClick={() =>
                             selectAnswer(currentQuestion.id, key)
                           }
-                          className={`flex w-full items-start gap-3 sm:gap-4 rounded-xl border p-4 sm:p-5 text-left text-sm sm:text-base transition-all ${
+                          className={`flex w-full items-start gap-3 sm:gap-4 rounded-xl border p-4 sm:p-5 text-left text-sm sm:text-base transition-colors ${
                             isSelected
-                              ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                              ? "border-primary bg-secondary ring-1 ring-primary/20"
                               : "border-border bg-card hover:border-primary/30 hover:bg-muted/30"
                           }`}
                         >
@@ -452,7 +453,7 @@ export default function ExamPage({
                           >
                             {key}
                           </span>
-                          <span className="pt-1.5 sm:pt-2 leading-relaxed text-foreground">
+                          <span className="min-w-0 break-words pt-1.5 sm:pt-2 leading-relaxed text-foreground">
                             {value}
                             {currentQuestion.option_image_urls?.[key] && (
                               <img src={currentQuestion.option_image_urls[key]} alt="" className="mt-2 max-h-48 max-w-full rounded-lg object-contain" />
@@ -498,7 +499,7 @@ export default function ExamPage({
         </div>
 
         <aside className="hidden w-48 shrink-0 md:block">
-          <div className="sticky top-24 rounded-2xl border border-border bg-card p-3 sm:p-4">
+          <div className="learning-panel sticky top-24 p-3 sm:p-4">
             <p className="mb-2.5 sm:mb-3 text-xs font-medium text-muted-foreground">
               {t(locale, "exam.take.answeredHeader")}
             </p>

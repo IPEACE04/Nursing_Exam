@@ -10,6 +10,7 @@ import { LogOut, User, Shield } from "lucide-react";
 import { studentNavItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { LocaleToggle } from "@/components/shared/locale-toggle";
+import { Brand } from "@/components/shared/brand";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,16 +31,13 @@ export function Navbar() {
     : "?";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background">
-      <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-card lg:fixed lg:inset-y-0 lg:left-0 lg:w-[264px] lg:border-0 lg:bg-sidebar xl:w-[284px]">
+      <div className="flex h-18 items-center justify-between px-5 lg:h-full lg:flex-col lg:items-stretch lg:justify-start lg:px-5 lg:py-8">
         <div className="flex items-center gap-2.5 shrink-0">
-          <img src="/kk.png" alt="NurseUp" className="size-9 rounded-xl object-cover" />
-          <span className="text-sm sm:text-base font-bold tracking-tight text-foreground whitespace-nowrap">
-            NurseUp
-          </span>
+          <Brand className="lg:[&>span]:text-sidebar-foreground" />
         </div>
 
-        <nav className="hidden md:flex items-center gap-1 mx-4">
+        <nav aria-label={t(locale, "common.navigation")} className="hidden lg:mt-12 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:gap-2 lg:overflow-y-auto lg:pb-5">
           {studentNavItems.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -51,23 +49,24 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap",
+                  "learning-nav-link relative isolate",
                   isActive
-                    ? "text-primary font-semibold after:absolute after:bottom-0 after:left-4 after:right-4 after:h-0.5 after:rounded-full after:bg-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "font-semibold text-sidebar-primary"
+                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}
+                aria-current={isActive ? "page" : undefined}
               >
-                <Icon className="size-4 shrink-0" />
+                <Icon className="size-5 shrink-0" />
                 {t(locale, item.label)}
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex items-center gap-1.5 shrink-0">
-          <LocaleToggle />
+        <div className="flex items-center gap-2 shrink-0 lg:flex-wrap lg:justify-between lg:border-t lg:border-sidebar-border lg:pt-5">
+          <div className="lg:rounded-full lg:bg-white/90"><LocaleToggle /></div>
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
+            <DropdownMenuTrigger aria-label={t(locale, "common.profile")} className="flex items-center gap-2 rounded-full transition-opacity hover:opacity-80">
               <Avatar className="size-9 ring-1 ring-border">
                 <AvatarImage src={profile?.avatar_url ?? undefined} />
                 <AvatarFallback className="bg-muted text-xs font-semibold text-primary">

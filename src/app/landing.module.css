@@ -1,0 +1,154 @@
+.page {
+  background: var(--card);
+  color: var(--foreground);
+  min-height: 100svh;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+.navInner, .hero, .tourSection, .journey, .closing, .footerInner {
+  width: min(100%, 1280px);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 48px);
+}
+
+.navInner {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand, .navActions { flex-shrink: 0; }
+.navActions, .footerLinks { display: flex; align-items: center; gap: 24px; }
+.navActions { gap: 18px; }
+.navLogin { font-size: 14px; font-weight: 400; }
+.navLogin, .footerLinks a { transition: color 150ms; }
+.navLogin:hover, .footerLinks a:hover { color: var(--primary); }
+
+.primaryButton, .secondaryButton, .navCta, .lightButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px 24px;
+  border-radius: calc(var(--radius) * 1.4);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  transition: background-color 150ms, color 150ms;
+}
+.primaryButton, .navCta { background: var(--primary); color: var(--primary-foreground); }
+.primaryButton:hover, .navCta:hover { background: color-mix(in oklch, var(--primary), var(--foreground) 12%); }
+.secondaryButton { border: 1px solid var(--border); color: var(--foreground); }
+.secondaryButton:hover { background: var(--secondary); }
+.navCta { min-height: 40px; padding: 10px 18px; gap: 8px; font-size: 14px; }
+.lightButton { background: var(--card); color: var(--primary); flex-shrink: 0; }
+.lightButton:hover { background: var(--secondary); }
+.page svg { flex-shrink: 0; }
+
+.hero {
+  padding-block: 64px 40px;
+  text-align: center;
+}
+.heroCopy { max-width: 940px; margin-inline: auto; }
+.heroCopy, .heroVisual { min-width: 0; }
+.heroTitle {
+  margin: 0;
+  font-size: clamp(36px, 4.2vw, 60px);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  overflow-wrap: break-word;
+}
+.heroTitle span { display: block; color: var(--primary); margin-top: 6px; }
+.heroDescription { max-width: 700px; margin: 22px auto 0; font-size: 16px; line-height: 1.8; color: var(--muted-foreground); }
+.heroActions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.capabilities { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 24px; margin: 24px 0 0; padding: 0; list-style: none; font-size: 13px; color: var(--muted-foreground); }
+.capabilities li { display: flex; align-items: center; gap: 10px; }
+.capabilities svg { color: var(--primary); }
+.heroVisual { margin: 0; background: var(--secondary); border-radius: calc(var(--radius) * 1.8); overflow: hidden; }
+.heroImage { height: 300px; border-radius: 0; }
+.heroCaption { display: flex; align-items: center; gap: 14px; padding: 20px 24px; }
+.heroCaption > svg { color: var(--primary); }
+.heroCaption span { font-size: 13px; color: var(--muted-foreground); }
+
+.tourSection { scroll-margin-top: 104px; padding-bottom: 64px; }
+.tour { display: block; border: 1px solid var(--border); border-radius: calc(var(--radius) * 1.8); padding: 12px; background: var(--card); }
+.tourTabs { display: flex; align-items: stretch; width: 100%; height: auto; gap: 8px; padding: 6px; border: 0; background: var(--secondary); border-radius: calc(var(--radius) * 1.4); overflow-x: auto; }
+.tourTab { flex: 1 0 150px; min-height: 48px; height: auto; padding: 12px 16px; gap: 10px; border: 0; border-radius: calc(var(--radius) * 0.8); font-size: 14px; font-weight: 400; color: var(--muted-foreground); background: transparent; }
+.tourTab[aria-selected="true"] { color: var(--primary-foreground); background: var(--primary); font-weight: 500; }
+.tourTab:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.tourBody { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: center; margin-top: 12px; }
+.tourPanels { min-width: 0; padding: 24px 24px 24px 0; }
+.tourPanel { display: flex; flex-direction: column; align-items: flex-start; animation: panelEnter 180ms ease-out; }
+.tourPanel[hidden] { display: none; }
+.tourIcon { display: flex; align-items: center; justify-content: center; height: 48px; width: 48px; border-radius: calc(var(--radius) * 1.4); color: var(--primary); background: var(--secondary); margin-bottom: 20px; }
+.tourPanel h2 { margin: 0; font-size: 28px; line-height: 1.5; font-weight: 500; letter-spacing: -0.02em; }
+.tourLead { margin-top: 8px; font-size: 16px; line-height: 1.8; }
+.tourDetail { max-width: 48ch; margin-top: 12px; font-size: 14px; line-height: 1.8; color: var(--muted-foreground); }
+.tourLink { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 18px; color: var(--primary); font-size: 14px; font-weight: 500; }
+.tourLink:hover { text-decoration: underline; text-underline-offset: 4px; }
+@keyframes panelEnter { from { opacity: 0.9; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.journeyTitle { max-width: 560px; margin: 0; font-size: clamp(28px, 2.7vw, 36px); font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; }
+.steps h3 { margin: 0; font-size: 18px; font-weight: 500; line-height: 1.6; }
+.steps p { margin-top: 5px; color: var(--muted-foreground); font-size: 14px; line-height: 1.8; }
+
+.journey { padding-block: 64px; scroll-margin-top: 104px; }
+.journeyTitle { max-width: 720px; }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: 32px 0 0; padding: 0; list-style: none; }
+.steps li { min-width: 0; border-top: 1px solid var(--border); padding-top: 20px; }
+.stepNumber { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin-bottom: 16px; border-radius: 50%; color: var(--primary); background: var(--secondary); font-size: 14px; font-weight: 500; }
+.closing { padding-bottom: 64px; }
+.closingPanel { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 36px; background: var(--primary); color: var(--primary-foreground); border-radius: calc(var(--radius) * 1.8); }
+.closingPanel > div { min-width: 0; max-width: 700px; }
+.closingPanel h2 { margin: 0; font-size: clamp(24px, 2.3vw, 30px); font-weight: 400; line-height: 1.5; }
+.closingPanel p { margin-top: 12px; font-size: 14px; line-height: 1.8; }
+.footer { border-top: 1px solid var(--border); }
+.footerInner { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-block: 32px; }
+.footerInner p { margin-top: 14px; font-size: 12px; color: var(--muted-foreground); }
+.footerLinks { flex-wrap: wrap; font-size: 13px; color: var(--muted-foreground); }
+
+@media (max-width: 1023px) {
+  .hero { padding-block: 40px 32px; }
+  .heroTitle { font-size: 44px; }
+  .tourBody { gap: 24px; }
+  .tourPanels { padding-right: 12px; }
+  .heroImage { height: 300px; }
+  .closingPanel { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 767px) {
+  .navInner { min-height: 72px; gap: 12px; }
+  .brand > div > span { display: none; }
+  .navLogin { display: none; }
+  .navActions { gap: 10px; }
+  .navCta { padding-inline: 14px; }
+  .tourBody { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .heroTitle { font-size: clamp(30px, 7vw, 40px); }
+  .heroDescription { font-size: 15px; margin-top: 18px; }
+  .heroImage { height: 230px; }
+  .heroCaption { padding: 18px 20px; }
+  .heroActions > a { flex: 1 1 200px; }
+  .tourSection { padding-bottom: 40px; }
+  .tourTab { flex-basis: 130px; min-height: 44px; font-size: 13px; padding: 10px 12px; }
+  .tourPanels { padding: 16px 12px; }
+  .tourPanel h2 { font-size: 24px; }
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .journey { padding-block: 48px; }
+  .closing { padding-bottom: 48px; }
+  .closingPanel { gap: 24px; padding: 24px; }
+  .lightButton { width: 100%; }
+  .footerInner { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .footerLinks { gap: 20px; }
+}

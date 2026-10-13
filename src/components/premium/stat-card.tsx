@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface StatCardProps {
   icon: ReactNode;
@@ -11,6 +12,7 @@ interface StatCardProps {
   suffix?: string;
   delay?: number;
   accent?: "primary" | "emerald" | "amber" | "purple";
+  compact?: boolean;
 }
 
 const accentStyles = {
@@ -27,6 +29,7 @@ export function StatCard({
   suffix = "",
   delay = 0,
   accent = "primary",
+  compact = false,
 }: StatCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const hasAnimated = useRef(false);
@@ -58,17 +61,17 @@ export function StatCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.35, ease: "easeOut" }}
-      className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
+      className={cn("learning-panel", compact ? "p-4 sm:p-5" : "p-5 sm:p-6")}
     >
-      <div className="flex flex-col gap-2">
-        <div className={`size-6 ${colorClass}`}>
-          {icon}
+      <div className={cn("flex flex-col", compact ? "gap-2" : "gap-4")}>
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <div className={`size-5 [&>svg]:size-5 ${colorClass}`}>{icon}</div>
         </div>
-        <p className="text-sm font-medium text-muted-foreground">{label}</p>
-        <p className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground font-heading">
+        <p className={cn("font-semibold tracking-tight tabular-nums text-foreground font-heading", compact ? "text-2xl sm:text-3xl" : "text-3xl sm:text-4xl")}>
           {displayValue}
           {suffix && <span className="text-base font-medium ml-1 font-sans text-muted-foreground">{suffix}</span>}
         </p>

@@ -133,7 +133,7 @@ export default function ResultPage({
   const incorrectCount = total - score;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 md:px-8 xl:px-10 py-8 sm:py-10">
+    <div className="mx-auto max-w-4xl px-5 sm:px-8 py-8 sm:py-12">
       <motion.div
         variants={container}
         initial="hidden"
@@ -156,7 +156,7 @@ export default function ResultPage({
         </div>
 
         <motion.div variants={itemAnim}>
-          <GlassCard className="p-6 sm:p-10 text-center">
+          <GlassCard className="p-6 sm:p-10 text-center bg-secondary">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -197,7 +197,7 @@ export default function ResultPage({
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-border bg-card p-4 sm:p-5"
+                  className="rounded-xl bg-card/70 p-4 sm:p-5"
                 >
                   <stat.icon className={`mx-auto mb-2.5 size-5 sm:size-6 ${stat.color}`} />
                   <p className="text-lg sm:text-xl font-semibold text-foreground">{stat.value}</p>
@@ -248,7 +248,7 @@ export default function ResultPage({
                       )}
                     </div>
 
-                    <p className="text-base leading-relaxed text-foreground">
+                    <p className="whitespace-pre-line break-words text-base leading-relaxed text-foreground">
                       {r.question_text}
                     </p>
 
@@ -323,7 +323,7 @@ export default function ResultPage({
           </GlassCard>
         </motion.div>
 
-        <motion.div variants={itemAnim} className="flex justify-center gap-4 pb-8">
+        <motion.div variants={itemAnim} className="flex flex-wrap justify-center gap-4 pb-8">
           <button
             onClick={() => router.push("/community")}
             className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-transparent px-6 text-sm font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"

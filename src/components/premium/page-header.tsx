@@ -15,16 +15,12 @@ export function PageHeader({ title, description, action, badge, animated = true 
   const content = (
     <>
       <div>
-        {badge && (
-          <span className="mb-2 inline-block text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            {badge}
-          </span>
-        )}
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+        <h1 className="learning-page-title">
           {title}
         </h1>
+        {badge && <span className="mt-3 inline-flex rounded-lg bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">{badge}</span>}
         {description && (
-          <p className="mt-2 max-w-2xl text-base sm:text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-muted-foreground">
             {description}
           </p>
         )}
@@ -34,15 +30,15 @@ export function PageHeader({ title, description, action, badge, animated = true 
   );
 
   if (!animated) {
-    return <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">{content}</div>;
+    return <div className="learning-page-header">{content}</div>;
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+      className="learning-page-header"
     >
       {content}
     </motion.div>

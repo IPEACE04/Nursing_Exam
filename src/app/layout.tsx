@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai, Sora } from "next/font/google";
+import { Prompt } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth-context";
 import { LocaleProvider } from "@/context/locale-context";
+import { PresentationMotion } from "@/components/shared/presentation-motion";
 
-const ibmPlex = IBM_Plex_Sans_Thai({
-  variable: "--font-sans",
+const prompt = Prompt({
+  variable: "--font-prompt",
   subsets: ["thai", "latin"],
   weight: ["300", "400", "500", "600", "700"],
-});
-
-const sora = Sora({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -38,10 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${ibmPlex.variable} ${sora.variable} h-full`}>
+    <html lang="th" className={`${prompt.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-notebook text-foreground">
         <LocaleProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider><PresentationMotion>{children}</PresentationMotion></AuthProvider>
         </LocaleProvider>
       </body>
     </html>

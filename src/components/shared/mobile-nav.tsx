@@ -12,7 +12,7 @@ export function MobileNav() {
   const { locale } = useLocale();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background pb-[env(safe-area-inset-bottom,0px)] md:hidden">
+    <nav aria-label={t(locale, "common.navigation")} className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card pb-[env(safe-area-inset-bottom,0px)] lg:hidden">
       <div className="flex items-center justify-around px-1.5 py-2 sm:px-2 sm:py-3">
         {studentNavItems.map((item) => {
           const isActive =
@@ -25,16 +25,16 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-0.5 sm:gap-1.5 rounded-lg px-1.5 sm:px-3 py-1 transition-colors duration-150 min-w-0",
+                "flex flex-col items-center gap-0.5 sm:gap-1.5 rounded-lg px-1.5 sm:px-3 py-1 transition-colors duration-150 min-w-0 focus-visible:outline-none focus-visible:underline focus-visible:underline-offset-4",
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
+              aria-current={isActive ? "page" : undefined}
             >
               <div
                 className={cn(
-                  "rounded-full p-1 sm:p-1.5 transition-colors duration-150",
-                  isActive && "bg-primary/5"
+                  "rounded-full p-1 sm:p-1.5 transition-colors duration-150"
                 )}
               >
                 <Icon className="size-4 sm:size-5" />

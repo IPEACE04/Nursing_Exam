@@ -72,36 +72,35 @@ export default function RankingPage() {
       className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       <PageHeader
-        badge="Rankings"
         title={t(locale, "ranking.title")}
         description={t(locale, "ranking.desc")}
       />
 
       {/* Tabs */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2 border-b border-border pb-5">
         <button
           onClick={() => setTab("assignment")}
           className={cn(
-            "inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
+            "inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-colors",
             tab === "assignment"
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground hover:bg-muted/80"
           )}
         >
           <GraduationCap className="size-4" />
-          Assignment Leaderboard
+          {t(locale, "ranking.assignmentTab")}
         </button>
         <button
           onClick={() => setTab("test")}
           className={cn(
-            "inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all",
+            "inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-colors",
             tab === "test"
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground hover:bg-muted/80"
           )}
         >
           <ClipboardCheck className="size-4" />
-          Test Leaderboard
+          {t(locale, "ranking.testTab")}
         </button>
       </div>
 
@@ -120,9 +119,9 @@ export default function RankingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.15, duration: 0.5 }}
                 className={cn(
-                  "relative flex flex-col items-center rounded-2xl border bg-card p-4 sm:p-8 transition-shadow duration-200 hover:shadow-sm",
+                  "relative flex flex-col items-center rounded-2xl border bg-card p-4 sm:p-8",
                   pc.border,
-                  idx === 0 ? "pb-8 sm:pb-12" : idx === 2 ? "pb-7 sm:pb-10" : "pb-7.5 sm:pb-11"
+                  idx === 0 ? "bg-secondary pb-8 sm:pb-12" : idx === 2 ? "pb-7 sm:pb-10" : "pb-7.5 sm:pb-11"
                 )}
               >
                 <div className="relative flex flex-col items-center gap-2 sm:gap-3">

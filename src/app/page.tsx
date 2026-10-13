@@ -1,23 +1,31 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight,
   Activity,
   BarChart3,
   Radio,
   CheckLine,
+  Clock3,
+  GraduationCap,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useLocale } from "@/context/locale-context";
 import { LocaleToggle } from "@/components/shared/locale-toggle";
 import { t } from "@/lib/translations";
+import { Brand } from "@/components/shared/brand";
+import { StudyVisual } from "@/components/shared/study-visual";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import styles from "./landing.module.css";
 
 export default function Home() {
   const router = useRouter();
+  const reducedMotion = useReducedMotion();
+  const [activeFeature, setActiveFeature] = useState("practice");
   const { user, profile, isLoading } = useAuth();
   const { locale } = useLocale();
 
@@ -44,138 +52,136 @@ export default function Home() {
   const features = [
     {
       icon: Activity,
+      id: "practice",
+      visual: "landingPractice" as const,
+      detail: t(locale, "landing.step2Desc"),
       title: t(locale, "landing.f1_title"),
       desc: t(locale, "landing.f1_desc"),
     },
     {
       icon: BarChart3,
+      id: "progress",
+      visual: "landingProgress" as const,
+      detail: t(locale, "landing.step3Desc"),
       title: t(locale, "landing.f2_title"),
       desc: t(locale, "landing.f2_desc"),
     },
     {
       icon: Radio,
+      id: "community",
+      visual: "landingCommunity" as const,
+      detail: t(locale, "landing.communityDetail"),
       title: t(locale, "landing.f3_title"),
       desc: t(locale, "landing.f3_desc"),
     },
     {
       icon: CheckLine,
+      id: "review",
+      visual: "landingReview" as const,
+      detail: t(locale, "landing.reviewDetail"),
       title: t(locale, "landing.f4_title"),
       desc: t(locale, "landing.f4_desc"),
     },
   ];
 
+  const steps = [
+    { title: "landing.step1Title", desc: "landing.step1Desc" },
+    { title: "landing.step2Title", desc: "landing.step2Desc" },
+    { title: "landing.step3Title", desc: "landing.step3Desc" },
+  ];
+  const activeFeatureData = features.find((feature) => feature.id === activeFeature) ?? features[0];
+  const ActiveFeatureIcon = activeFeatureData.icon;
+
   return (
-    <div className="min-h-screen">
-      {/* ── Navbar ──────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background">
-        <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3">
-            <img src="/kk.png" alt="NurseUp" className="size-9 sm:size-10 rounded-xl object-cover" />
-            <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
-              NurseUp
-            </span>
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
+    <div id="top" className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.navInner}>
+          <Link href="/" aria-label="NurseUp" className={styles.brand}><Brand /></Link>
+          <div className={styles.navActions}>
             <LocaleToggle />
-            <Link
-              href="/login"
-              className="px-4 py-2 text-base text-muted-foreground hover:text-foreground transition-colors font-medium"
-            >
-              {t(locale, "landing.login")}
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
-            >
-              {t(locale, "landing.startFree")}
-              <ArrowRight className="size-4" />
-            </Link>
+            <Link href="/login" className={styles.navLogin}>{t(locale, "landing.login")}</Link>
+            <Link href="/register" className={styles.navCta}>{t(locale, "landing.startFree")} <ArrowRight size={16} /></Link>
           </div>
         </div>
       </header>
 
       <main>
-        {/* ── Hero ────────────────────────────────────────────── */}
-        <section className="pt-28 pb-14 sm:pt-36 sm:pb-20 md:pt-40 md:pb-24">
-          <div className="mx-auto max-w-4xl px-5 sm:px-6 text-center">
-
-            <motion.h1
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.05 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-foreground leading-tight"
-            >
-              {t(locale, "landing.hero")}
-              <br />
-              {t(locale, "landing.heroSub")}
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="mx-auto mt-6 max-w-2xl text-lg sm:text-xl leading-relaxed text-muted-foreground"
-            >
-              {t(locale, "landing.desc")}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-sm sm:max-w-none mx-auto"
-            >
-              <Link
-                href="/register"
-                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-primary px-8 text-base font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
-              >
-                {t(locale, "landing.cta")}
-                <ArrowRight className="size-5" />
-              </Link>
-              <Link
-                href="/login"
-                className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-border bg-transparent px-8 text-base font-semibold text-foreground transition-all duration-150 hover:bg-muted active:translate-y-px"
-              >
-                {t(locale, "landing.hasAccount")}
-              </Link>
-            </motion.div>
-          </div>
+        <section className={styles.hero}>
+          <motion.div className={styles.heroCopy} initial={reducedMotion ? false : { opacity: 0.95, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+            <h1 className={styles.heroTitle}>{t(locale, "landing.hero")}<span>{t(locale, "landing.heroSub")}</span></h1>
+            <p className={styles.heroDescription}>{t(locale, "landing.desc")}</p>
+            <div className={styles.heroActions}>
+              <Link href="/register" className={styles.primaryButton}>{t(locale, "landing.cta")} <ArrowRight size={19} /></Link>
+              <Link href="/login" className={styles.secondaryButton}>{t(locale, "landing.hasAccount")} <ArrowRight size={17} /></Link>
+            </div>
+            <ul className={styles.capabilities}>
+              <li><GraduationCap size={19} />{t(locale, "landing.prepost")}</li>
+              <li><Clock3 size={18} />{t(locale, "landing.timedPractice")}</li>
+            </ul>
+          </motion.div>
         </section>
 
-        {/* ── Features ────────────────────────────────────────── */}
-        <section className="pb-20 sm:pb-24 md:pb-28">
-          <div className="mx-auto max-w-4xl px-5 sm:px-6">
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-4">
-              {features.map((f, i) => {
-                const Icon = f.icon;
-                return (
-                  <motion.div
-                    key={f.title}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + i * 0.06 }}
-                    className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
-                  >
-                    <Icon className="mb-3 size-6 text-primary" />
-                    <h3 className="text-base sm:text-lg font-semibold text-foreground">
-                      {f.title}
-                    </h3>
-                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                      {f.desc}
-                    </p>
-                  </motion.div>
-                );
+        <section id="features" className={styles.tourSection}>
+          <Tabs value={activeFeature} onValueChange={(value) => { if (typeof value === "string") setActiveFeature(value); }} className={styles.tour}>
+            <TabsList aria-label={t(locale, "landing.featuresNav")} className={styles.tourTabs}>
+              {features.map((feature) => {
+                const Icon = feature.icon;
+                return <TabsTrigger key={feature.id} value={feature.id} className={styles.tourTab}><Icon size={18} />{feature.title}</TabsTrigger>;
               })}
+            </TabsList>
+            <div className={styles.tourBody}>
+              <figure className={styles.heroVisual}>
+                <StudyVisual key={activeFeatureData.id} variant={activeFeatureData.visual} priority sizes="(min-width: 1280px) 490px, (min-width: 1024px) 42vw, 100vw" className={styles.heroImage} />
+                <figcaption className={styles.heroCaption}><ActiveFeatureIcon size={22} /><span>{activeFeatureData.title}</span></figcaption>
+              </figure>
+              <div className={styles.tourPanels}>
+                {features.map((feature) => {
+                  const Icon = feature.icon;
+                  return (
+                    <TabsContent key={feature.id} value={feature.id} className={styles.tourPanel}>
+                      <div className={styles.tourIcon}><Icon size={26} /></div>
+                      <h2>{feature.title}</h2>
+                      <p className={styles.tourLead}>{feature.desc}</p>
+                      <p className={styles.tourDetail}>{feature.detail}</p>
+                      <Link href="/register" className={styles.tourLink}>{t(locale, "landing.cta")} <ArrowRight size={18} /></Link>
+                    </TabsContent>
+                  );
+                })}
+              </div>
             </div>
+          </Tabs>
+        </section>
+
+        <section id="journey" className={styles.journey}>
+          <h2 className={styles.journeyTitle}>{t(locale, "landing.journeyTitle")}</h2>
+          <ol className={styles.steps}>
+            {steps.map((step, index) => (
+              <li key={step.title}>
+                <span className={styles.stepNumber}>{index + 1}</span>
+                <h3>{t(locale, step.title)}</h3>
+                <p>{t(locale, step.desc)}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className={styles.closing}>
+          <div className={styles.closingPanel}>
+            <div><h2>{t(locale, "landing.finalTitle")}</h2><p>{t(locale, "landing.finalDesc")}</p></div>
+            <Link href="/register" className={styles.lightButton}>{t(locale, "landing.cta")} <ArrowRight size={18} /></Link>
           </div>
         </section>
       </main>
 
-      {/* ── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-border py-8">
-        <p className="text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} NurseUp · Rangsit University
-        </p>
+      <footer className={styles.footer}>
+        <div className={styles.footerInner}>
+          <div><Brand /><p>© {new Date().getFullYear()} NurseUp · Rangsit University</p></div>
+          <nav aria-label={t(locale, "common.navigation")} className={styles.footerLinks}>
+            <Link href="/login">{t(locale, "landing.login")}</Link>
+            <Link href="/register">{t(locale, "auth.register")}</Link>
+            <a href="#top">{t(locale, "landing.backToTop")}</a>
+          </nav>
+        </div>
       </footer>
     </div>
   );

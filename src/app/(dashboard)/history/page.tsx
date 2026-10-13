@@ -108,12 +108,11 @@ export default function HistoryPage() {
       className="space-y-8 sm:space-y-10 md:space-y-12"
     >
       <PageHeader
-        badge="History"
         title={t(locale, "history.title")}
         description={t(locale, "history.desc")}
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-3">
         <GlassCard className="p-5 sm:p-6">
           <div className="flex items-center gap-4 sm:gap-5">
             <ClipboardList className="size-6 text-primary shrink-0" />
@@ -185,7 +184,7 @@ export default function HistoryPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
                 whileHover={{ x: 3 }}
-                className="group flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-4 sm:px-6 sm:py-5 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
+                className="learning-panel group flex items-center justify-between gap-3 px-5 py-4 sm:px-6 sm:py-5 transition-colors duration-150 hover:border-primary/30"
               >
                 <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                   <div className={`flex size-11 sm:size-12 items-center justify-center rounded-xl border text-xs sm:text-sm font-bold transition-all duration-300 group-hover:scale-105 shrink-0 ${

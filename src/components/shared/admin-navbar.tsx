@@ -6,6 +6,7 @@ import { t } from "@/lib/translations";
 import { logout } from "@/actions/auth";
 import { LogOut } from "lucide-react";
 import { LocaleToggle } from "@/components/shared/locale-toggle";
+import { Brand } from "@/components/shared/brand";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,13 +24,13 @@ export function AdminNavbar() {
     : "?";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background">
-      <div className="mx-auto flex h-16 sm:h-20 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-3">
-          <img src="/kk.png" alt="NurseUp" className="size-10 rounded-xl object-cover" />
-          <div>
-            <span className="text-lg font-semibold tracking-tight text-foreground">
-              Admin Panel
+    <header className="sticky top-0 z-40 border-b border-border bg-card">
+      <div className="flex h-18 items-center justify-between gap-3 px-5 sm:px-8">
+        <div className="flex min-w-0 items-center gap-3">
+          <Brand compact className="lg:hidden" />
+          <div className="min-w-0">
+            <span className="block truncate text-sm font-semibold tracking-tight text-foreground sm:text-lg">
+              <span className="hidden sm:inline">NurseUp / </span>{t(locale, "common.adminRole")}
             </span>
             <p className="text-xs text-muted-foreground leading-none">
               {t(locale, "common.adminSubtitle")}
@@ -40,7 +41,7 @@ export function AdminNavbar() {
         <div className="flex items-center gap-2">
           <LocaleToggle />
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-3 rounded-xl p-2 pr-4 transition-colors duration-150 hover:bg-muted">
+          <DropdownMenuTrigger aria-label={t(locale, "common.profile")} className="flex items-center gap-3 rounded-xl p-2 sm:pr-4 transition-colors duration-150 hover:bg-muted">
             <div className="hidden text-right sm:block">
               <p className="text-base font-medium text-foreground">
                 {profile?.name || t(locale, "common.adminFallback")}

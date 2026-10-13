@@ -6,12 +6,6 @@ import { Users, ClipboardList, BarChart3, AlertTriangle, BookOpen } from "lucide
 import { getAdminStats } from "@/actions/admin";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
 import { LoadingSpinner } from "@/components/premium/loading-spinner";
@@ -60,10 +54,6 @@ export default function AdminDashboardPage() {
 
   if (loading) return <LoadingSpinner />;
 
-  const chartConfig = {
-    errorRate: { label: t(locale, "admin.dashboard.worstRate"), color: "var(--chart-5)" },
-  };
-
   return (
     <motion.div
       variants={container}
@@ -72,13 +62,13 @@ export default function AdminDashboardPage() {
       className="space-y-6 sm:space-y-8 md:space-y-10"
     >
       <PageHeader
-        title="Admin Dashboard"
+        title={t(locale, "admin.nav.dashboard")}
         description={t(locale, "admin.dashboard.title")}
       />
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <GlassCard className="p-5 sm:p-6">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-4">
             <Users className="size-6 text-primary shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -89,7 +79,7 @@ export default function AdminDashboardPage() {
           </div>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-4">
             <ClipboardList className="size-6 text-emerald-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -100,7 +90,7 @@ export default function AdminDashboardPage() {
           </div>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-4">
             <BarChart3 className="size-6 text-amber-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -111,7 +101,7 @@ export default function AdminDashboardPage() {
           </div>
         </GlassCard>
         <GlassCard className="p-5 sm:p-6">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start gap-4">
             <BookOpen className="size-6 text-purple-500 shrink-0" />
             <div>
               <p className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -137,45 +127,41 @@ export default function AdminDashboardPage() {
               {t(locale, "admin.dashboard.noAttemptData")}
             </p>
           ) : (
-            <ChartContainer
-              config={chartConfig}
-              className="aspect-[2/1] w-full max-h-80"
-            >
-              <BarChart
-                data={itemAnalysis}
-                layout="vertical"
-                margin={{ left: 20, right: 20 }}
-              >
-                <CartesianGrid
-                  strokeDasharray="4 4"
-                  stroke="var(--border)"
-                  strokeWidth={0.5}
-                  horizontal={false}
-                />
-                <XAxis
-                  type="number"
-                  domain={[0, 100]}
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  type="category"
-                  dataKey="question"
-                  width={200}
-                  tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar
-                  dataKey="errorRate"
-                  fill="var(--chart-5)"
-                  radius={[0, 6, 6, 0]}
-                  barSize={16}
-                />
-              </BarChart>
-            </ChartContainer>
+            <ol className="divide-y divide-border">
+              {itemAnalysis.map((item, index) => {
+                const errorRate = Math.min(100, Math.max(0, Math.round(item.errorRate)));
+
+                return (
+                  <li key={`${item.question}-${index}`} className="py-5 first:pt-0 last:pb-0">
+                    <div className="flex items-start gap-3">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-xs font-semibold text-destructive">
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <p title={item.question} className="line-clamp-2 text-sm font-medium leading-6 text-foreground">
+                            {item.question}
+                          </p>
+                          <span className="shrink-0 text-sm font-semibold tabular-nums text-destructive">
+                            {errorRate}%
+                          </span>
+                        </div>
+                        <div
+                          className="mt-2 h-2 overflow-hidden rounded-full bg-border"
+                          role="progressbar"
+                          aria-label={t(locale, "admin.dashboard.worstRate")}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={errorRate}
+                        >
+                          <div className="h-full rounded-full bg-[var(--chart-5)] transition-[width] duration-300" style={{ width: `${errorRate}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
           )}
         </GlassCard>
       </motion.div>

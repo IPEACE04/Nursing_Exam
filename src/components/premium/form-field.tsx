@@ -38,13 +38,13 @@ export function FormField({
 
   return (
     <div className="relative group">
-      {label && (
+      {(label || placeholder) && (
         <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-foreground">
-          {label}
+          {label || placeholder}
         </label>
       )}
       <div className="relative">
-        <Icon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground/50 transition-colors group-focus-within:text-primary" />
+        <Icon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <input
           ref={inputRef}
           id={id}

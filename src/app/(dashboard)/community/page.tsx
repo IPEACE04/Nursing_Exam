@@ -61,9 +61,9 @@ export default function CommunityPage() {
   return (
     <div className="space-y-6 sm:space-y-8 md:space-y-10">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="learning-page-header">
         <div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+          <h1 className="learning-page-title">
             {t(locale, "community.title")}
           </h1>
           <p className="mt-1 text-base text-muted-foreground leading-relaxed">
@@ -72,10 +72,11 @@ export default function CommunityPage() {
         </div>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
+          className="learning-button shrink-0 self-start"
+          aria-label={t(locale, "community.createPost")}
         >
           <Plus className="size-5" />
-          <span className="hidden sm:inline">{t(locale, "community.createPost")}</span>
+          <span>{t(locale, "community.createPost")}</span>
         </button>
       </div>
 
@@ -98,6 +99,7 @@ export default function CommunityPage() {
               <button
                 onClick={() => setShowCreateForm(false)}
                 className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                aria-label={t(locale, "common.cancel")}
               >
                 <X className="size-5" />
               </button>
@@ -108,15 +110,16 @@ export default function CommunityPage() {
       )}
 
       {/* Category Filter */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 border-b border-border pb-5">
         {CATEGORIES.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`rounded-full px-4 py-2.5 text-sm font-medium transition-all ${
+            aria-pressed={activeCategory === cat}
+            className={`rounded-xl px-5 py-2.5 text-sm font-medium transition-colors ${
               activeCategory === cat
                 ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                : "bg-card text-muted-foreground hover:bg-secondary"
             }`}
           >
             {t(locale, categoryKeyMap[cat] ?? cat)}
@@ -148,7 +151,7 @@ export default function CommunityPage() {
           </button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="mx-auto max-w-4xl space-y-4">
           {posts.map((post, i) => (
             <motion.div
               key={post.id}

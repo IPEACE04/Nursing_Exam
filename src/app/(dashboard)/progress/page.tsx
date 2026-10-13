@@ -74,10 +74,9 @@ export default function ProgressPage() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-3xl space-y-6 sm:space-y-8 md:space-y-10"
+      className="mx-auto max-w-4xl space-y-6 sm:space-y-8 md:space-y-10"
     >
       <PageHeader
-        badge="Progress"
         title={t(locale, "progress.title")}
         description={t(locale, "progress.desc")}
       />
@@ -94,7 +93,7 @@ export default function ProgressPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4 sm:gap-6">
-            <GlassCard className="p-5 sm:p-6 text-center">
+            <GlassCard className="p-5 sm:p-7 text-center bg-secondary">
               <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full border border-border/60 bg-muted">
                 <Target className="size-6 text-chart-2" />
               </div>
@@ -158,7 +157,7 @@ export default function ProgressPage() {
                 {history.map((a, i) => (
                   <div key={i} className="flex items-center gap-1.5">
                     <span className="inline-block size-2.5 rounded-full"
-                      style={{ backgroundColor: i === 0 ? "oklch(0.55 0.10 200)" : i === history.length - 1 ? "oklch(0.52 0.09 235)" : "oklch(0.60 0.10 85)" }}
+                      style={{ backgroundColor: i === 0 ? "var(--chart-2)" : i === history.length - 1 ? "var(--chart-1)" : "var(--chart-4)" }}
                     />
                     <span>{t(locale, "progress.attemptN", { n: i + 1 })}</span>
                     <span className="font-medium text-foreground">{a.percentage}%</span>
@@ -187,7 +186,7 @@ export default function ProgressPage() {
                     ? t(locale, "progress.same")
                     : t(locale, "progress.worse")}
               </p>
-              <div className="mt-5 flex items-center justify-center gap-3 text-sm text-muted-foreground">
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
                 <span>
                   PreTest: {data.preTest.score}/{data.preTest.total} ({data.preTest.percentage}%)
                 </span>

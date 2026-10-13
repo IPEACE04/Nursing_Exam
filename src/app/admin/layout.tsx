@@ -39,12 +39,14 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-dvh min-h-0 flex-col overflow-hidden">
-      <AdminNavbar />
       <div className="flex min-h-0 flex-1 overflow-hidden">
         <AdminSidebar />
-        <main className="min-h-0 min-w-0 flex-1 overflow-y-auto pb-24 md:pb-0">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 md:px-8 xl:max-w-7xl 2xl:max-w-[90rem] py-6 sm:py-8 md:py-10">{children}</div>
-        </main>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          <AdminNavbar />
+          <main className="min-h-0 min-w-0 flex-1 overflow-y-auto pb-28 lg:pb-0">
+            <div className="mx-auto max-w-7xl px-5 sm:px-8 xl:px-12 py-7 sm:py-10 xl:py-12">{children}</div>
+          </main>
+        </div>
       </div>
       <AdminMobileNav />
     </div>

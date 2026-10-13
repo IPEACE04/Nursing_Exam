@@ -35,8 +35,8 @@ export default async function proxy(req: NextRequest) {
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isRoot = pathname === "/";
 
-  // Not authenticated → protect all non-auth routes
-  if (!session && (isAdminRoute || isStudentRoute || isRoot)) {
+  // Guests can visit the landing page; application routes still require a session.
+  if (!session && (isAdminRoute || isStudentRoute)) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", pathname);

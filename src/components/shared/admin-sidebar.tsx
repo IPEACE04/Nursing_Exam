@@ -6,6 +6,7 @@ import { LayoutDashboard, ClipboardList, Smile, ClipboardCheck, MessageCircle } 
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
+import { Brand } from "@/components/shared/brand";
 
 const navItems = [
   { href: "/admin/dashboard", label: "admin.nav.dashboard", icon: LayoutDashboard },
@@ -20,8 +21,9 @@ export function AdminSidebar() {
   const { locale } = useLocale();
 
   return (
-    <aside className="hidden w-64 flex-col border-r border-border bg-card md:flex md:w-64 xl:w-72">
-      <div className="flex flex-1 flex-col gap-1 p-3">
+    <aside className="hidden w-[264px] shrink-0 flex-col bg-sidebar lg:flex xl:w-[284px]">
+      <div className="p-7 pb-9"><Brand inverted /></div>
+      <nav aria-label={t(locale, "common.navigation")} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-5 pb-5">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -31,18 +33,19 @@ export function AdminSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-4 py-3 text-base font-medium transition-colors duration-150",
+                "learning-nav-link relative isolate",
                 isActive
-                  ? "bg-muted text-primary font-semibold"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  ? "font-semibold text-sidebar-primary"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               )}
+              aria-current={isActive ? "page" : undefined}
             >
               <Icon className="size-5" />
               {t(locale, item.label)}
             </Link>
           );
         })}
-      </div>
+      </nav>
     </aside>
   );
 }

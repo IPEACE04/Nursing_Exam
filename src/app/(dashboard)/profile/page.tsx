@@ -132,16 +132,15 @@ export default function ProfilePage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto max-w-2xl space-y-8 sm:space-y-10"
+      className="mx-auto max-w-3xl space-y-8 sm:space-y-10"
     >
       <PageHeader
-        badge="Profile"
         title={t(locale, "profile.title")}
         description={t(locale, "profile.desc")}
       />
 
       <GlassCard className="p-5 sm:p-8">
-        <div className="mb-6 flex items-center gap-4 sm:gap-6">
+        <div className="mb-7 flex items-center gap-4 sm:gap-6 border-b border-border pb-7">
           <div className="relative shrink-0 group">
             <input
               ref={fileInputRef}
@@ -159,6 +158,7 @@ export default function ProfilePage() {
                 }
               }}
               disabled={uploading}
+              aria-label={t(locale, "profile.uploadAvatar")}
               className="relative cursor-pointer disabled:cursor-wait"
             >
               <Avatar className="size-16 sm:size-20 ring-1 ring-border transition-opacity group-hover:opacity-80">

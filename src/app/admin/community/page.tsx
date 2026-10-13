@@ -89,7 +89,7 @@ export default function AdminCommunityPage() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <PageHeader badge="Admin" title={t(locale, "admin.community.title")} description={t(locale, "admin.community.desc")} />
+      <PageHeader title={t(locale, "admin.community.title")} description={t(locale, "admin.community.desc")} />
       <GlassCard className="p-4 sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
@@ -111,7 +111,7 @@ export default function AdminCommunityPage() {
       ) : (
         <div className="space-y-3">
           {posts.map((post) => (
-            <GlassCard key={post.id} className="p-4 sm:p-5">
+            <GlassCard key={post.id} className="p-5 sm:p-7">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap items-center gap-2">

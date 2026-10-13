@@ -128,181 +128,129 @@ export default function DashboardPage() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-6 sm:space-y-8 md:space-y-10"
+      className="space-y-5 sm:space-y-6"
     >
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm text-muted-foreground mb-1">
-            {t(locale, "dashboard.greeting")} <span role="img" aria-label="wave">👋</span>
-          </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-            {t(locale, "dashboard.title")}
-          </h1>
-        </div>
-        <Link
-          href="/exam"
-          className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 active:translate-y-px"
-        >
-          {t(locale, "dashboard.startExam")} <ArrowRight className="size-4" />
-        </Link>
+      <div>
+        <h1 className="text-2xl font-semibold leading-snug tracking-tight text-foreground sm:text-3xl">
+          {t(locale, "dashboard.title")}
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">{t(locale, "dashboard.greeting")}</p>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
-        <StatCard
-          icon={<Activity className="size-6" />}
-          label={t(locale, "dashboard.examsDone")}
-          value={totalExams}
-          suffix={t(locale, "dashboard.times")}
-          delay={0}
-          accent="primary"
-        />
-        <StatCard
-          icon={<Target className="size-6" />}
-          label={t(locale, "dashboard.avgScore")}
-          value={avgScore}
-          suffix="%"
-          delay={0.05}
-          accent="emerald"
-        />
-        <StatCard
-          icon={<Flame className="size-6" />}
-          label={t(locale, "dashboard.bestScore")}
-          value={maxScore}
-          suffix="%"
-          delay={0.1}
-          accent="amber"
-        />
-        <StatCard
-          icon={<BookOpen className="size-6" />}
-          label={t(locale, "dashboard.remaining")}
-          value={remainingCount}
-          suffix={t(locale, "dashboard.sets")}
-          delay={0.15}
-          accent="primary"
-        />
-      </div>
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <section className="learning-panel flex min-w-0 items-center justify-between gap-5 bg-secondary p-5 sm:p-6">
+          <div className="min-w-0">
+            <h2 className="text-xl font-semibold leading-snug text-foreground sm:text-2xl">{t(locale, "dashboard.practiceTitle")}</h2>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{t(locale, "dashboard.practiceDesc")}</p>
+            <Link href="/exam" className="mt-4 inline-flex h-11 items-center gap-3 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+              {t(locale, "dashboard.startExam")} <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </section>
 
-      {/* Satisfaction Survey */}
-      <div className="pb-4">
-        <Link href="/satisfaction">
-          <motion.div
-            className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <ClipboardCheck className="size-6 text-primary" />
-                <div>
-                  <p className="text-base sm:text-lg font-semibold text-foreground">
-                    {t(locale, "dashboard.satisfactionTitle")}
-                  </p>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t(locale, "dashboard.satisfactionDesc")}
-                  </p>
-                </div>
-              </div>
-              <ArrowRight className="size-5 text-muted-foreground shrink-0" />
+        <section className="learning-panel flex flex-col justify-between gap-4 p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-sm font-medium text-muted-foreground">{t(locale, "dashboard.yourRank")}</h2>
+            <Link href="/ranking" className="inline-flex min-h-8 items-center gap-1 text-xs font-medium text-primary hover:underline">
+              {t(locale, "common.viewAll")} <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+          {userRank > 0 ? (
+            <div className="flex items-end gap-3">
+              <span className="font-heading text-5xl font-semibold leading-none tracking-tight text-primary tabular-nums">{userRank}</span>
+              <p className="pb-1 text-xs leading-relaxed text-muted-foreground">{t(locale, "dashboard.ofAllUsers")}</p>
             </div>
-          </motion.div>
-        </Link>
+          ) : (
+            <p className="text-sm text-muted-foreground">{t(locale, "dashboard.noRank")}</p>
+          )}
+        </section>
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3 xl:grid-cols-3">
-        {/* Progress Card */}
-        <div className="lg:col-span-2 rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
-          <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-foreground">{t(locale, "dashboard.progress")}</h2>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        <StatCard compact icon={<Activity className="size-6" />} label={t(locale, "dashboard.examsDone")} value={totalExams} suffix={t(locale, "dashboard.times")} delay={0} accent="primary" />
+        <StatCard compact icon={<Target className="size-6" />} label={t(locale, "dashboard.avgScore")} value={avgScore} suffix="%" delay={0.05} accent="emerald" />
+        <StatCard compact icon={<Flame className="size-6" />} label={t(locale, "dashboard.bestScore")} value={maxScore} suffix="%" delay={0.1} accent="amber" />
+        <StatCard compact icon={<BookOpen className="size-6" />} label={t(locale, "dashboard.remaining")} value={remainingCount} suffix={t(locale, "dashboard.sets")} delay={0.15} accent="primary" />
+      </div>
+
+      <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+        <section className="learning-panel min-w-0 p-5 sm:p-6">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-base font-semibold text-foreground">{t(locale, "dashboard.progress")}</h2>
             <span className="text-xs text-muted-foreground">{t(locale, "dashboard.last20")}</span>
           </div>
-          
           {chartData.length > 1 ? (
             <ProgressChart data={chartData} />
           ) : (
-             <div className="flex h-32 sm:h-40 items-center justify-center">
-                <p className="text-sm text-muted-foreground text-center">
-                  {t(locale, "dashboard.noProgressData")}
-                </p>
-             </div>
+            <div className="flex min-h-44 flex-col items-center justify-center gap-3 rounded-xl bg-secondary/60 px-5 py-6 text-center">
+              <Activity className="size-7 text-primary" />
+              <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{t(locale, "dashboard.noProgressData")}</p>
+              <Link href="/exam" className="inline-flex min-h-8 items-center gap-2 text-sm font-medium text-primary hover:underline">
+                {t(locale, "dashboard.startExam")} <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
           )}
-        </div>
+        </section>
 
-        {/* Ranking Card */}
-        <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
-          <div className="flex items-center justify-between mb-4 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-foreground">{t(locale, "dashboard.yourRank")}</h2>
-            <Link href="/ranking" className="text-xs text-primary hover:underline font-medium">{t(locale, "common.viewAll")}</Link>
+        <section className="learning-panel min-w-0 p-5 sm:p-6">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="text-base font-semibold text-foreground">{t(locale, "dashboard.recentHistory")}</h2>
+            <Link href="/history" className="inline-flex min-h-8 items-center gap-1 text-xs font-medium text-primary hover:underline">
+              {t(locale, "common.viewAll")} <ArrowRight className="size-3.5" />
+            </Link>
           </div>
-          
-          <div className="flex-1 flex flex-col items-center justify-center">
-            {userRank > 0 ? (
-               <div className="text-center">
-                 <span className="text-5xl sm:text-6xl font-bold tracking-tight text-foreground font-heading">{userRank}</span>
-                 <p className="text-sm text-muted-foreground mt-2">{t(locale, "dashboard.ofAllUsers")}</p>
-               </div>
-            ) : (
-               <p className="text-sm text-muted-foreground text-center">
-                 {t(locale, "dashboard.noRank")}
-               </p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* History */}
-      <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 transition-all duration-200 hover:shadow-sm hover:border-border/80 hover:-translate-y-0.5">
-        <div className="flex items-center justify-between mb-4 sm:mb-5">
-          <h2 className="text-base sm:text-lg font-semibold text-foreground">{t(locale, "dashboard.recentHistory")}</h2>
-          <Link href="/history" className="text-xs text-primary hover:underline font-medium">{t(locale, "common.viewAll")}</Link>
-        </div>
-        
-        <div className="space-y-3 sm:space-y-4">
           {attempts.length === 0 ? (
-            <div className="flex h-24 items-center justify-center">
-              <p className="text-sm text-muted-foreground text-center">
-                {t(locale, "dashboard.noHistory")}
-              </p>
+            <div className="flex min-h-44 flex-col items-center justify-center gap-3 rounded-xl bg-secondary/60 px-5 py-6 text-center">
+              <BookOpen className="size-7 text-primary" />
+              <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{t(locale, "dashboard.noHistory")}</p>
+              <Link href="/exam" className="inline-flex min-h-8 items-center gap-2 text-sm font-medium text-primary hover:underline">
+                {t(locale, "dashboard.startExam")} <ArrowRight className="size-3.5" />
+              </Link>
             </div>
           ) : (
-            attempts.slice(0, 5).map((attempt) => (
-              <Link
-                key={attempt.id}
-                href={`/exam/${attempt.exam_id}/result/${attempt.id}`}
-                className="group flex items-center justify-between rounded-xl border border-transparent hover:border-border hover:bg-muted/30 px-4 py-3 transition-all duration-200"
-              >
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                  <div
-                    className={`flex size-10 sm:size-11 items-center justify-center rounded-xl text-xs sm:text-sm font-bold shrink-0 border ${
+            <div className="divide-y divide-border">
+              {attempts.slice(0, 5).map((attempt) => (
+                <Link
+                  key={attempt.id}
+                  href={`/exam/${attempt.exam_id}/result/${attempt.id}`}
+                  className="group flex items-center justify-between gap-3 rounded-xl px-2 py-3 transition-colors duration-150 hover:bg-secondary"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl border text-xs font-semibold tabular-nums ${
                       attempt.percentage >= 80
                         ? "border-emerald-500/20 text-emerald-600"
                         : attempt.percentage >= 50
                           ? "border-amber-500/20 text-amber-600"
                           : "border-destructive/20 text-destructive"
-                    }`}
-                  >
-                    {attempt.percentage}%
+                    }`}>
+                      {attempt.percentage}%
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-foreground">{attempt.exam_title}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{formatDate(attempt.completed_at)}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-sm sm:text-base font-medium text-foreground truncate">
-                      {attempt.exam_title}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {formatDate(attempt.completed_at)}
-                    </p>
+                  <div className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+                    <span className="font-medium tabular-nums">{attempt.score}/{attempt.total_questions}</span>
+                    <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5" />
                   </div>
-                </div>
-                <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground shrink-0">
-                  <span className="font-medium">
-                    {attempt.score}/{attempt.total_questions}
-                  </span>
-                  <ArrowRight className="size-4 transition-transform duration-150 group-hover:translate-x-0.5" />
-                </div>
-              </Link>
-            ))
+                </Link>
+              ))}
+            </div>
           )}
-        </div>
+        </section>
       </div>
+
+      <Link href="/satisfaction" className="group flex items-center justify-between gap-4 rounded-2xl border border-border bg-card px-5 py-4 transition-colors duration-150 hover:bg-secondary sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <ClipboardCheck className="size-5 shrink-0 text-primary" />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground">{t(locale, "dashboard.satisfactionTitle")}</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{t(locale, "dashboard.satisfactionDesc")}</p>
+          </div>
+        </div>
+        <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+      </Link>
     </motion.div>
   );
 }

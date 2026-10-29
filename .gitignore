@@ -41,6 +41,7 @@ yarn-error.log*
 next-env.d.ts
 
 # design reference files
+/.impeccable/review/
 /mm.png
 /profileee.png
 /logo*.PNG

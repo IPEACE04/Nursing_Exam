@@ -7,6 +7,8 @@ import { getSessionUserId } from "@/lib/auth";
 import { validateImageFiles } from "@/lib/image-validation";
 import { deleteImageFiles, getFormFiles, getPublicImageUrl, parseOptionImagePaths, uploadImageFiles } from "@/lib/storage";
 import { toAdminExamListItem } from "@/lib/admin-exam";
+import { ADMIN_USERS_PAGE_SIZE, buildUserScoreRows } from "@/lib/admin-users";
+import type { AdminUserSummary, AdminUserDetail, AdminUserAttempt, ExamAttempt, ExamType } from "@/types";
 
 async function requireAdmin() {
   const userId = await getSessionUserId();
@@ -520,4 +522,100 @@ export async function togglePrePostPublish(formData: FormData) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/pre-post-test");
   revalidatePath("/exam");
+}
+
+const USER_SUMMARY_FIELDS = "id,name,email,student_id,role,created_at";
+const USER_DETAIL_FIELDS = `${USER_SUMMARY_FIELDS},avatar_url,university,gender,age,gpa`;
+const ATTEMPT_FIELDS = "id,user_id,exam_id,score,total_questions,time_spent_seconds,completed_at";
+
+function validUserId(value: unknown): value is string {
+  return typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+function pageStart(page: number) {
+  if (!Number.isSafeInteger(page) || page < 1 || page > 1_000_000) throw new Error("Invalid page");
+  return (page - 1) * ADMIN_USERS_PAGE_SIZE;
+}
+
+export async function getAdminUsers(search = "", page = 1) {
+  const { supabase } = await requireAdmin();
+  if (typeof search !== "string" || search.length > 100) throw new Error("Invalid search");
+  const start = pageStart(page);
+  let query = supabase.from("profiles").select(USER_SUMMARY_FIELDS, { count: "exact" })
+    .order("created_at", { ascending: false }).order("id", { ascending: true });
+  const term = search.trim();
+  if (term) {
+    const pattern = JSON.stringify(`%${term.replace(/[\\%_]/g, "\\$&")}%`);
+    query = query.or(`name.ilike.${pattern},email.ilike.${pattern},student_id.ilike.${pattern}`);
+  }
+  const { data, error, count } = await query.range(start, start + ADMIN_USERS_PAGE_SIZE - 1);
+  if (error) throw new Error("Failed to load users");
+  return { users: (data ?? []) as unknown as AdminUserSummary[], total: count ?? 0 };
+}
+
+export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | null> {
+  const { supabase } = await requireAdmin();
+  if (!validUserId(userId)) return null;
+  const { data, error } = await supabase.from("profiles").select(USER_DETAIL_FIELDS).eq("id", userId).maybeSingle();
+  if (error) throw new Error("Failed to load user");
+  return data as unknown as AdminUserDetail | null;
+}
+
+export async function getAdminUserAttempts(userId: string, page = 1) {
+  const { supabase } = await requireAdmin();
+  const start = pageStart(page);
+  if (!validUserId(userId)) return { attempts: [] as AdminUserAttempt[], total: 0 };
+  const { data, error, count } = await supabase.from("exam_attempts")
+    .select(`${ATTEMPT_FIELDS},exams(title,type)`, { count: "exact" }).eq("user_id", userId)
+    .order("completed_at", { ascending: false }).order("id", { ascending: false })
+    .range(start, start + ADMIN_USERS_PAGE_SIZE - 1);
+  if (error) throw new Error("Failed to load exam history");
+  const attempts = (data ?? []) as unknown as (ExamAttempt & { exams: { title: string; type: ExamType } | null })[];
+  const prePostIds = [...new Set(attempts.filter((attempt) => attempt.exams?.type === "pre_post_test").map((attempt) => attempt.exam_id))];
+  const firstAttempts = new Map(await Promise.all(prePostIds.map(async (examId) => {
+    const { data: first, error: firstError } = await supabase.from("exam_attempts").select("id")
+      .eq("user_id", userId).eq("exam_id", examId)
+      .order("completed_at", { ascending: true }).order("id", { ascending: true }).limit(1).maybeSingle();
+    if (firstError || !first) throw new Error("Failed to classify exam history");
+    return [examId, first.id as string] as const;
+  })));
+  return {
+    attempts: attempts.map(({ exams, ...attempt }): AdminUserAttempt => ({
+      ...attempt,
+      exam_title: exams?.title ?? "",
+      exam_type: exams?.type ?? "normal",
+      test_phase: exams?.type === "pre_post_test" ? (firstAttempts.get(attempt.exam_id) === attempt.id ? "PreTest" : "PostTest") : null,
+    })),
+    total: count ?? 0,
+  };
+}
+
+export async function getAdminUserScoreExport(userIds: string[]) {
+  const { supabase } = await requireAdmin();
+  if (!Array.isArray(userIds) || userIds.length === 0 || !userIds.every(validUserId)) {
+    return { error: "invalidSelection" } as const;
+  }
+  const ids = [...new Set(userIds.map((id) => id.toLowerCase()))];
+  const { data: exams, error: examError } = await supabase.from("exams").select("id").eq("type", "pre_post_test").limit(2);
+  if (examError) return { error: "loadFailed" } as const;
+  if ((exams?.length ?? 0) > 1) return { error: "ambiguousExam" } as const;
+  const users = new Map<string, AdminUserSummary>();
+  const attempts: ExamAttempt[] = [];
+  for (let index = 0; index < ids.length; index += 100) {
+    const batch = ids.slice(index, index + 100);
+    const { data: profiles, error: profileError } = await supabase.from("profiles").select(USER_SUMMARY_FIELDS).in("id", batch).range(0, 99);
+    if (profileError) return { error: "loadFailed" } as const;
+    if (profiles?.length !== batch.length) return { error: "missingUsers" } as const;
+    for (const user of profiles as unknown as AdminUserSummary[]) users.set(user.id, user);
+    if (!exams?.[0]) continue;
+    for (let offset = 0; ; offset += 1000) {
+      const { data: page, error: attemptError } = await supabase.from("exam_attempts").select(ATTEMPT_FIELDS)
+        .eq("exam_id", exams[0].id).in("user_id", batch)
+        .order("completed_at", { ascending: true }).order("id", { ascending: true }).range(offset, offset + 999);
+      if (attemptError) return { error: "loadFailed" } as const;
+      attempts.push(...((page ?? []) as unknown as ExamAttempt[]));
+      if ((page?.length ?? 0) < 1000) break;
+    }
+  }
+  return { rows: buildUserScoreRows(ids.map((id) => users.get(id)!), attempts) };
 }

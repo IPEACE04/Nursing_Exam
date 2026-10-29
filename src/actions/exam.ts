@@ -194,7 +194,22 @@ export async function getHistory() {
     .limit(100);
 
   if (prePostExam?.id) {
-    query = query.neq("exam_id", prePostExam.id);
+    const { data: preTestAttempt, error } = await supabase
+      .from("exam_attempts")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("exam_id", prePostExam.id)
+      .order("completed_at", { ascending: true })
+      .order("id", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    // Keep PreTest hidden; subsequent attempts use the normal result flow.
+    if (error || !preTestAttempt) {
+      query = query.neq("exam_id", prePostExam.id);
+    } else {
+      query = query.neq("id", preTestAttempt.id);
+    }
   }
 
   const { data } = await query;
@@ -343,7 +358,7 @@ export async function submitExam(formData: FormData) {
 
   if (!examId || !answersRaw) throw new Error("Missing data");
 
-  const { data: recentAttempt } = await supabase
+  const { data: recentAttempt, error: recentAttemptError } = await supabase
     .from("exam_attempts")
     .select("id")
     .eq("user_id", userId)
@@ -351,17 +366,7 @@ export async function submitExam(formData: FormData) {
     .gte("completed_at", new Date(Date.now() - SUBMIT_COOLDOWN_MS).toISOString())
     .maybeSingle();
 
-  if (recentAttempt) {
-    redirect(`/exam/${examId}/result/${recentAttempt.id}`);
-  }
-
-  let answers: Record<string, string>;
-  try {
-    answers = JSON.parse(answersRaw);
-  } catch {
-    throw new Error("Invalid answers data");
-  }
-  const rawTimeSpent = parseInt(timeSpentRaw, 10) || 0;
+  if (recentAttemptError) throw new Error("Failed to load exam attempts");
 
   const { data: examMeta } = await supabase
     .from("exams")
@@ -372,6 +377,37 @@ export async function submitExam(formData: FormData) {
   if (!examMeta || !examMeta.is_published) {
     throw new Error("Exam is not available");
   }
+
+  let preTestAttemptId: string | null = null;
+  if (examMeta.type === "pre_post_test") {
+    const { data: firstAttempt, error } = await supabase
+      .from("exam_attempts")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("exam_id", examId)
+      .order("completed_at", { ascending: true })
+      .order("id", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw new Error("Failed to load exam attempts");
+    preTestAttemptId = firstAttempt?.id ?? null;
+  }
+
+  if (recentAttempt) {
+    if (examMeta.type === "pre_post_test") {
+      redirect(recentAttempt.id === preTestAttemptId ? "/progress" : "/history");
+    }
+    redirect(`/exam/${examId}/result/${recentAttempt.id}`);
+  }
+
+  let answers: Record<string, string>;
+  try {
+    answers = JSON.parse(answersRaw);
+  } catch {
+    throw new Error("Invalid answers data");
+  }
+  const rawTimeSpent = parseInt(timeSpentRaw, 10) || 0;
 
   const timeSpentSeconds = Math.min(
     Math.max(0, rawTimeSpent),
@@ -425,7 +461,7 @@ export async function submitExam(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/progress");
 
-  if (examMeta.type === "pre_post_test") {
+  if (examMeta.type === "pre_post_test" && !preTestAttemptId) {
     redirect(`/progress`);
   }
 

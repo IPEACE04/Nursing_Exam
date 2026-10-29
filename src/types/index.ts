@@ -65,6 +65,37 @@ export interface UserAnswer {
   answered_at: string;
 }
 
+export interface AdminUserSummary {
+  id: string;
+  name: string;
+  email: string | null;
+  student_id: string | null;
+  role: "student" | "admin";
+  created_at: string;
+}
+
+export interface AdminUserDetail extends AdminUserSummary {
+  avatar_url: string | null;
+  university: string | null;
+  gender: string | null;
+  age: number | null;
+  gpa: number | null;
+}
+
+export interface AdminUserAttempt extends ExamAttempt {
+  exam_title: string;
+  exam_type: ExamType;
+  test_phase: "PreTest" | "PostTest" | null;
+}
+
+export interface AdminScoreExportRow {
+  id: string;
+  name: string;
+  testType: "PreTest" | "PostTest";
+  score: string;
+  duration: string;
+}
+
 // Composite types for views / joined queries
 export interface ExamWithQuestionCount extends Exam {
   question_count: number;

@@ -10,7 +10,7 @@ import type { CommunityCommentWithAuthor, CommunityPostDetail } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { AttachmentList } from "@/components/shared/attachment-list";
 import { isImageUrl } from "@/lib/file-utils";
@@ -44,7 +44,7 @@ export default function AdminCommunityDetailPage({ params }: { params: Promise<{
     else if (result.error) setError(result.error);
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton variant="detail" />;
   if (!post) return <div className="space-y-4"><Link href="/admin/community" className="inline-flex items-center gap-2 text-sm text-muted-foreground"><ArrowLeft className="size-4" />{t(locale, "admin.community.back")}</Link><p className="text-sm text-destructive">{error || t(locale, "admin.community.notFound")}</p></div>;
 
   return <div className="mx-auto max-w-3xl space-y-6">

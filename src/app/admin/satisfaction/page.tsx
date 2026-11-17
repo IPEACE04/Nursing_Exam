@@ -14,7 +14,7 @@ import { t } from "@/lib/translations";
 import type { SatisfactionCategory } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 
 export default function AdminSatisfactionPage() {
   const { locale } = useLocale();
@@ -62,7 +62,7 @@ export default function AdminSatisfactionPage() {
     fetchData();
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton variant="dashboard" />;
 
   return (
     <div className="space-y-6 sm:space-y-8">

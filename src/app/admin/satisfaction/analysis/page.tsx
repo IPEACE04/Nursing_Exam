@@ -8,7 +8,7 @@ import { t } from "@/lib/translations";
 import type { SatisfactionAnalysis } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import {
   ChartContainer,
   ChartTooltip,
@@ -129,7 +129,7 @@ export default function AnalysisPage() {
     win.onload = () => win.print();
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton variant="dashboard" />;
   if (!analysis) return null;
 
   const chartConfig = {

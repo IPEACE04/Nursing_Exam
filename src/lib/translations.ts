@@ -9,6 +9,9 @@ export const dict: TranslationDict = {
   "nav.history": { th: "ประวัติผลสอบ", en: "Exam History" },
   "nav.progress": { th: "พัฒนาการ", en: "Progress" },
   "nav.ranking": { th: "อันดับ", en: "Ranking" },
+  "nav.guide": { th: "คู่มือการใช้งาน", en: "User Guide" },
+  "guide.description": { th: "วิธีใช้ NurseUp ทีละขั้นตอน ตั้งแต่สมัครสมาชิก ทำข้อสอบ ไปจนถึงดูเฉลย", en: "Step-by-step guide to NurseUp, from signing up to reviewing solutions. Guide content is in Thai." },
+  "guide.contents": { th: "หัวข้อในคู่มือ", en: "Contents" },
 
   "admin.nav.dashboard": { th: "แดชบอร์ด", en: "Dashboard" },
   "admin.nav.users": { th: "User Management", en: "User Management" },
@@ -149,6 +152,7 @@ export const dict: TranslationDict = {
 
   "auth.welcome": { th: "ยินดีต้อนรับ", en: "Welcome" },
   "auth.loginDesc": { th: "เข้าสู่ระบบเพื่อเริ่มทำข้อสอบ", en: "Login to start practicing" },
+  "auth.sessionExpired": { th: "เซสชันหมดอายุ กรุณาเข้าสู่ระบบอีกครั้ง", en: "Your session has expired. Please log in again" },
   "auth.registerSuccess": { th: "ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ", en: "Registered successfully! Please login" },
   "auth.email": { th: "อีเมล", en: "Email" },
   "auth.password": { th: "รหัสผ่าน", en: "Password" },
@@ -237,6 +241,7 @@ export const dict: TranslationDict = {
   "profile.studentId": { th: "รหัสนักศึกษา", en: "Student ID" },
   "profile.changePassword": { th: "เปลี่ยนรหัสผ่าน", en: "Change Password" },
   "profile.changePasswordDesc": { th: "ตั้งรหัสผ่านใหม่สำหรับบัญชีของคุณ", en: "Set a new password for your account" },
+  "profile.currentPassword": { th: "รหัสผ่านปัจจุบัน", en: "Current Password" },
   "profile.newPassword": { th: "รหัสผ่านใหม่", en: "New Password" },
   "profile.confirmPassword": { th: "ยืนยันรหัสผ่าน", en: "Confirm Password" },
   "profile.passwordChanged": { th: "เปลี่ยนรหัสผ่านแล้ว ✓", en: "Password Changed ✓" },
@@ -453,6 +458,7 @@ export const dict: TranslationDict = {
   "community.pinned": { th: "ปักหมุด", en: "Pinned" },
   "community.loadError": { th: "ไม่สามารถโหลดโพสต์ได้ กรุณาลองใหม่", en: "Unable to load posts. Please try again." },
   "community.retry": { th: "ลองใหม่", en: "Retry" },
+  "community.noMore": { th: "แสดงโพสต์ครบแล้ว", en: "You're all caught up" },
   "admin.community.pin": { th: "ปักหมุด", en: "Pin post" },
   "admin.community.unpin": { th: "ถอนหมุด", en: "Unpin post" },
   "admin.community.pinSuccess": { th: "ปักหมุดโพสต์แล้ว", en: "Post pinned" },

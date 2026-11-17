@@ -22,7 +22,7 @@ import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import type { Question } from "@/types";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { ImageUpload } from "@/components/shared/image-upload";
@@ -72,7 +72,7 @@ export default function EditExamPage({
     load();
   }, [examId, router, refreshKey]);
 
-  if (loading || !exam) return <LoadingSpinner />;
+  if (loading || !exam) return <PageSkeleton variant="detail" />;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">

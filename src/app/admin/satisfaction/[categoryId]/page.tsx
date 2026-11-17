@@ -15,7 +15,7 @@ import { t } from "@/lib/translations";
 import type { SatisfactionQuestion, SatisfactionCategory } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 
 export default function CategoryDetailPage({
   params,
@@ -85,7 +85,7 @@ export default function CategoryDetailPage({
     fetchData();
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   return (
     <div className="space-y-6 sm:space-y-8">

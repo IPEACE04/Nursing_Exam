@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { getSessionUserId } from "@/lib/auth";
+import { getSessionProfile } from "@/lib/auth";
 import { validateImageFiles } from "@/lib/image-validation";
 import { deleteImageFiles, getFormFiles, getPublicImageUrl, parseOptionImagePaths, uploadImageFiles } from "@/lib/storage";
 import { toAdminExamListItem } from "@/lib/admin-exam";
@@ -11,18 +11,11 @@ import { ADMIN_USERS_PAGE_SIZE, buildUserScoreRows } from "@/lib/admin-users";
 import type { AdminUserSummary, AdminUserDetail, AdminUserAttempt, ExamAttempt, ExamType } from "@/types";
 
 async function requireAdmin() {
-  const userId = await getSessionUserId();
-  if (!userId) throw new Error("Unauthorized");
-
-  const supabase = createSupabaseServerClient();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .single();
-
-  if (profile?.role !== "admin") throw new Error("Forbidden");
-  return { supabase, userId };
+  // Session check and role read happen in the same query.
+  const profile = await getSessionProfile<{ id: string; role: string }>("id, role");
+  if (!profile) throw new Error("Unauthorized");
+  if (profile.role !== "admin") throw new Error("Forbidden");
+  return { supabase: createSupabaseServerClient(), userId: profile.id };
 }
 
 const OPTION_KEYS = ["A", "B", "C", "D"] as const;

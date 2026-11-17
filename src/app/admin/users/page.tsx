@@ -21,7 +21,7 @@ import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,12 +254,7 @@ function UsersList() {
           )}
         </div>
         {loading ? (
-          <div
-            className="flex min-h-64 items-center justify-center"
-            aria-busy="true"
-          >
-            <LoadingSpinner />
-          </div>
+          <PageSkeleton variant="table" header={false} />
         ) : failed ? (
           <div className="space-y-4 p-8 text-center" role="alert">
             <p>{t(locale, "admin.users.loadError")}</p>
@@ -405,7 +400,7 @@ function UsersList() {
 
 export default function AdminUsersPage() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={<PageSkeleton variant="table" />}>
       <UsersList />
     </Suspense>
   );

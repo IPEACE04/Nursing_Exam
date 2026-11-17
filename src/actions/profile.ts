@@ -2,25 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase-server";
-import { getSessionUserId } from "@/lib/auth";
+import { getSessionUserId, getSessionProfile } from "@/lib/auth";
 import type { Profile } from "@/types";
+
+const CLIENT_PROFILE_FIELDS =
+  "id, name, email, avatar_url, university, gender, age, student_id, gpa, role, created_at, updated_at";
 
 export async function getCurrentProfile(): Promise<{
   user: { id: string; email: string } | null;
   profile: Profile | null;
 }> {
   try {
-    const userId = await getSessionUserId();
-    if (!userId) return { user: null, profile: null };
-
-    const supabase = createSupabaseServerClient();
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
+    // One query: session check + profile. Password/recovery hashes are never sent to the browser.
+    const profile = await getSessionProfile<Profile>(CLIENT_PROFILE_FIELDS);
     if (!profile) return { user: null, profile: null };
 
     return {

@@ -179,8 +179,11 @@ function harness(
     "next/cache": { revalidatePath() {} },
     "next/navigation": {},
     "@/lib/auth": {
-      getSessionUserId: async () =>
-        options.session === undefined ? adminId : options.session,
+      getSessionProfile: async () => {
+        const id = options.session === undefined ? adminId : options.session;
+        const row = rows.profiles.find((profile) => profile.id === id);
+        return row ? { id: row.id, role: row.role } : null;
+      },
     },
     "@/lib/supabase-server": {
       createSupabaseServerClient: () => ({
@@ -293,6 +296,7 @@ test("export preserves selected order and exactly two rows per user, missing and
       testType: "PreTest",
       score: "ยังไม่ได้สอบ",
       duration: "",
+      completedAt: "",
     },
     {
       id: otherId,
@@ -300,6 +304,7 @@ test("export preserves selected order and exactly two rows per user, missing and
       testType: "PostTest",
       score: "ยังไม่ได้สอบ",
       duration: "",
+      completedAt: "",
     },
     {
       id: "001234",
@@ -307,6 +312,7 @@ test("export preserves selected order and exactly two rows per user, missing and
       testType: "PreTest",
       score: "0/20",
       duration: "00:00:00",
+      completedAt: "2026-01-01 07:00",
     },
     {
       id: "001234",
@@ -314,6 +320,7 @@ test("export preserves selected order and exactly two rows per user, missing and
       testType: "PostTest",
       score: "18/20",
       duration: "01:01:01",
+      completedAt: "2026-03-01 07:00",
     },
   ]);
 });

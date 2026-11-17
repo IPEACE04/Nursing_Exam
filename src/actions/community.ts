@@ -11,6 +11,7 @@ import {
   getFileExtension,
   validateCommunityFiles,
 } from "@/lib/file-utils";
+import { POSTS_PAGE_SIZE } from "@/lib/community-constants";
 import type { CommunityPostDetail, CommunityPostWithAuthor, CommunityCommentWithAuthor } from "@/types";
 
 async function requireAdmin() {
@@ -59,11 +60,14 @@ function mapComment(row: Record<string, unknown>): CommunityCommentWithAuthor {
   };
 }
 
-export async function getPosts(category?: string) {
+/** One page of posts; pass the number already loaded as `offset`. Likes/comments are counted for that page only. */
+export async function getPosts(category?: string, offset = 0) {
   const supabase = createSupabaseServerClient();
   let query = supabase.from("community_posts").select("*, profiles:user_id ( name, avatar_url )")
     .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false }) // stable order so pages never overlap or skip
+    .range(offset, offset + POSTS_PAGE_SIZE - 1);
   if (category && category !== "ทั้งหมด") query = query.eq("category", category);
   const { data: posts, error } = await query;
   if (error) throw new Error("ไม่สามารถโหลดโพสต์ได้ กรุณาลองใหม่");

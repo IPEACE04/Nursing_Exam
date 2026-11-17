@@ -12,6 +12,7 @@ import {
   CheckLine,
   Clock3,
   GraduationCap,
+  BookOpen,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useLocale } from "@/context/locale-context";
@@ -99,6 +100,7 @@ export default function Home() {
           <Link href="/" aria-label="NurseUp" className={styles.brand}><Brand /></Link>
           <div className={styles.navActions}>
             <LocaleToggle />
+            <Link href="/guide" className={styles.navGuide} aria-label={t(locale, "nav.guide")}><BookOpen size={17} /><span>{t(locale, "nav.guide")}</span></Link>
             <Link href="/login" className={styles.navLogin}>{t(locale, "landing.login")}</Link>
             <Link href="/register" className={styles.navCta}>{t(locale, "landing.startFree")} <ArrowRight size={16} /></Link>
           </div>
@@ -179,6 +181,7 @@ export default function Home() {
           <nav aria-label={t(locale, "common.navigation")} className={styles.footerLinks}>
             <Link href="/login">{t(locale, "landing.login")}</Link>
             <Link href="/register">{t(locale, "auth.register")}</Link>
+            <Link href="/guide">{t(locale, "nav.guide")}</Link>
             <a href="#top">{t(locale, "landing.backToTop")}</a>
           </nav>
         </div>

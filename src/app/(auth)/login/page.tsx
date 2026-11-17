@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useActionState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { login } from "@/actions/auth";
@@ -15,6 +15,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered");
+  const expired = searchParams.get("expired");
   const [state, formAction, pending] = useActionState(login, undefined);
   const { refreshProfile } = useAuth();
   const { locale } = useLocale();
@@ -36,6 +37,17 @@ function LoginForm() {
           className="mb-6 rounded-xl border border-border bg-muted px-5 py-3.5 text-base text-foreground"
         >
           {t(locale, "auth.registerSuccess")}
+        </motion.div>
+      )}
+
+      {expired && !registered && (
+        <motion.div
+          role="alert"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 rounded-xl border border-destructive/20 bg-destructive/8 px-5 py-3.5 text-base text-destructive"
+        >
+          {t(locale, "auth.sessionExpired")}
         </motion.div>
       )}
 
@@ -116,6 +128,14 @@ export default function LoginPage() {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="w-full"
     >
+      <Link
+        href="/"
+        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        <ArrowLeft className="size-4" />
+        {t(locale, "common.back")}
+      </Link>
+
       <div className="mb-9 text-left">
         <h1 className="text-3xl sm:text-4xl font-semibold leading-snug tracking-tight text-foreground">
           {t(locale, "auth.welcome")}

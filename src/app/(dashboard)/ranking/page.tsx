@@ -9,7 +9,7 @@ import type { LeaderboardEntry } from "@/types";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
@@ -61,7 +61,7 @@ export default function RankingPage() {
     fetchRanking();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   const entries = tab === "assignment" ? assignmentEntries : testEntries;
 

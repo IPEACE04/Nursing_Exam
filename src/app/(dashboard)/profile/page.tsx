@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const [age, setAge] = useState("");
   const [studentId, setStudentId] = useState("");
   const [gpa, setGpa] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [saving, setSaving] = useState(false);
@@ -108,6 +109,7 @@ export default function ProfilePage() {
     setPasswordError("");
 
     const formData = new FormData();
+    formData.set("currentPassword", currentPassword);
     formData.set("newPassword", newPassword);
     formData.set("confirmPassword", confirmPassword);
 
@@ -118,6 +120,7 @@ export default function ProfilePage() {
       return;
     }
 
+    setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
     setPasswordSaved(true);
@@ -316,6 +319,18 @@ export default function ProfilePage() {
         </div>
 
         <form onSubmit={handleChangePassword} className="space-y-5 sm:space-y-6">
+          <FormField
+            id="currentPassword"
+            label={t(locale, "profile.currentPassword")}
+            icon={Lock}
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="••••••••"
+            autoComplete="current-password"
+            required
+          />
+
           <FormField
             id="newPassword"
             label={t(locale, "profile.newPassword")}

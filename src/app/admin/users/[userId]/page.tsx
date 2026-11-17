@@ -11,7 +11,7 @@ import { t } from "@/lib/translations";
 import type { AdminUserDetail } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
 
@@ -128,9 +128,7 @@ function UserDetail({ params }: UserDetailPageProps) {
     return (
       <div className="space-y-6">
         {backLink}
-        <div className="flex min-h-64 items-center justify-center">
-          <LoadingSpinner />
-        </div>
+        <PageSkeleton variant="detail" header={false} />
       </div>
     );
   if (profile === null)
@@ -221,12 +219,7 @@ function UserDetail({ params }: UserDetailPageProps) {
           </p>
         </div>
         {historyLoading ? (
-          <div
-            className="flex min-h-64 items-center justify-center"
-            aria-busy="true"
-          >
-            <LoadingSpinner />
-          </div>
+          <PageSkeleton variant="table" header={false} />
         ) : historyError === historyKey ? (
           <div className="space-y-4 p-8 text-center" role="alert">
             <p>{t(locale, "admin.users.historyError")}</p>
@@ -321,7 +314,7 @@ function UserDetail({ params }: UserDetailPageProps) {
 
 export default function AdminUserDetailPage(props: UserDetailPageProps) {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={<PageSkeleton variant="detail" />}>
       <UserDetail {...props} />
     </Suspense>
   );

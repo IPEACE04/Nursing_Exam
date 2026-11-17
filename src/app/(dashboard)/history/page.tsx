@@ -10,7 +10,7 @@ import { useAuth } from "@/context/auth-context";
 import type { AttemptWithExam } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 
@@ -81,7 +81,7 @@ export default function HistoryPage() {
     fetchHistory();
   }, [user]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   const totalExams = attempts.length;
   const avgScore =

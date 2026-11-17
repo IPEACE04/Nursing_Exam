@@ -18,7 +18,7 @@ import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 
 const container = {
   hidden: { opacity: 0 },
@@ -94,7 +94,7 @@ export default function AdminExamsPage() {
     });
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   const filtered = exams.filter((e) =>
     e.title.toLowerCase().includes(search.toLowerCase())

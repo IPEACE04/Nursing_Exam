@@ -8,7 +8,7 @@ import { getPublishedExams } from "@/actions/exam";
 import type { ExamWithQuestionCount } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 
@@ -42,9 +42,7 @@ export default function ExamListPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      <PageSkeleton />
     );
   }
 

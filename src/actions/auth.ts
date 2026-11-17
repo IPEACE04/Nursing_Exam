@@ -41,7 +41,7 @@ export async function login(_prevState: unknown, formData: FormData) {
     return { error: "Incorrect Email or Password" };
   }
 
-  const token = await createJWT(user.id, user.role);
+  const token = await createJWT(user.id, user.role, user.session_version);
   await setSessionCookie(token);
 
   revalidatePath("/", "layout");
@@ -112,14 +112,14 @@ export async function register(_prevState: unknown, formData: FormData) {
       personal_question: personalQuestion,
       personal_answer_hash,
     })
-    .select("id")
+    .select("id, session_version")
     .single();
 
   if (error) {
     return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
   }
 
-  const token = await createJWT(newUser.id, "student");
+  const token = await createJWT(newUser.id, "student", newUser.session_version);
   await setSessionCookie(token);
 
   revalidatePath("/", "layout");
@@ -216,7 +216,7 @@ export async function resetPasswordWithToken(formData: FormData) {
 
   const { error } = await supabase
     .from("profiles")
-    .update({ password_hash })
+    .update({ password_hash, session_version: randomUUID() })
     .eq("id", payload.userId);
 
   if (error) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
@@ -231,10 +231,11 @@ export async function changePassword(formData: FormData) {
   const userId = await getSessionUserId();
   if (!userId) return { error: "Unauthorized" };
 
+  const currentPassword = formData.get("currentPassword") as string;
   const newPassword = formData.get("newPassword") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
 
-  if (!newPassword || !confirmPassword) {
+  if (!currentPassword || !newPassword || !confirmPassword) {
     return { error: "กรุณากรอกรหัสผ่าน" };
   }
   if (newPassword.length < 6) {
@@ -245,20 +246,42 @@ export async function changePassword(formData: FormData) {
   }
 
   const supabase = createSupabaseServerClient();
+  const { data: user } = await supabase
+    .from("profiles")
+    .select("password_hash, role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (!user?.password_hash || !(await verifyPassword(currentPassword, user.password_hash))) {
+    return { error: "รหัสผ่านปัจจุบันไม่ถูกต้อง" };
+  }
+
   const password_hash = await hashPassword(newPassword);
+  const session_version = randomUUID();
 
   const { error } = await supabase
     .from("profiles")
-    .update({ password_hash })
+    .update({ password_hash, session_version })
     .eq("id", userId);
 
   if (error) return { error: "เกิดข้อผิดพลาด กรุณาลองใหม่" };
+
+  // Other devices are now logged out; keep this one signed in with the new version.
+  await setSessionCookie(await createJWT(userId, user.role, session_version));
 
   revalidatePath("/profile");
   return { success: true };
 }
 
 export async function logout() {
+  const userId = await getSessionUserId();
+  if (userId) {
+    // Revoke the token server-side too, so a copied cookie stops working.
+    await createSupabaseServerClient()
+      .from("profiles")
+      .update({ session_version: randomUUID() })
+      .eq("id", userId);
+  }
   await clearSessionCookie();
   revalidatePath("/", "layout");
   redirect("/login");

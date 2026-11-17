@@ -94,6 +94,7 @@ export interface AdminScoreExportRow {
   testType: "PreTest" | "PostTest";
   score: string;
   duration: string;
+  completedAt: string;
 }
 
 // Composite types for views / joined queries

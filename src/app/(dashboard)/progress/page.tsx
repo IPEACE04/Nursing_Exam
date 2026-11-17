@@ -17,7 +17,7 @@ import { getProgressComparison, getPrePostTestHistory } from "@/actions/exam";
 import type { ProgressComparison } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 
@@ -61,7 +61,7 @@ export default function ProgressPage() {
     });
   }, [user]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton variant="dashboard" />;
   if (!data) return null;
 
   const chartData = history.map((a, i) => ({

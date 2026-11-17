@@ -13,10 +13,10 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { getDashboardData, getPrePostTestGate } from "@/actions/exam";
+import { getDashboardData } from "@/actions/exam";
 import type { AttemptWithExam } from "@/types";
 import { StatCard } from "@/components/premium/stat-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 
@@ -65,10 +65,7 @@ export default function DashboardPage() {
 
     async function fetchData() {
       try {
-        const [data, gate] = await Promise.all([
-          getDashboardData(),
-          getPrePostTestGate(),
-        ]);
+        const data = await getDashboardData();
         const attemptsData = data.attempts as unknown as ExamAttemptRow[];
         if (attemptsData.length > 0) {
           const mapped = attemptsData.map((a) => ({
@@ -88,7 +85,7 @@ export default function DashboardPage() {
           setAttempts(mapped);
         }
         setUserRank(data.rank as number);
-        setRemainingCount(gate.remainingExams.length);
+        setRemainingCount(data.remainingExams);
       } catch {
         setAttempts([]);
         setUserRank(0);
@@ -101,7 +98,7 @@ export default function DashboardPage() {
   }, [user]);
 
   if (isLoading || loadingData) {
-    return <LoadingSpinner />;
+    return <PageSkeleton variant="dashboard" />;
   }
 
   const totalExams = attempts.length;

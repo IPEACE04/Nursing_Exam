@@ -6,7 +6,7 @@ import { useAuth } from "@/context/auth-context";
 import { AdminNavbar } from "@/components/shared/admin-navbar";
 import { AdminSidebar } from "@/components/shared/admin-sidebar";
 import { AdminMobileNav } from "@/components/shared/admin-mobile-nav";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 
 export default function AdminLayout({
   children,
@@ -27,9 +27,7 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      <div className="mx-auto max-w-6xl p-6 sm:p-10"><PageSkeleton /></div>
     );
   }
 

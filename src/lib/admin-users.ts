@@ -13,6 +13,17 @@ export function formatExamDuration(seconds: number): string {
     .join(":");
 }
 
+// Fixed Bangkok time zone: export runs on the server, which may be UTC.
+const examDateFormat = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Asia/Bangkok",
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
+export function formatExamDate(isoDate: string): string {
+  return examDateFormat.format(new Date(isoDate));
+}
+
 export function buildUserScoreRows(
   users: AdminUserSummary[],
   attempts: ExamAttempt[],
@@ -42,6 +53,7 @@ export function buildUserScoreRows(
           ? `${attempt.score}/${attempt.total_questions}`
           : "ยังไม่ได้สอบ",
         duration: attempt ? formatExamDuration(attempt.time_spent_seconds) : "",
+        completedAt: attempt ? formatExamDate(attempt.completed_at) : "",
       };
     });
   });

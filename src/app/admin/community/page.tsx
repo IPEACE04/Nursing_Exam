@@ -10,7 +10,7 @@ import { t } from "@/lib/translations";
 import type { CommunityPostWithAuthor } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { AttachmentList } from "@/components/shared/attachment-list";
 import { isImageUrl } from "@/lib/file-utils";
@@ -106,7 +106,7 @@ export default function AdminCommunityPage() {
         {success && <p className="text-primary">{success}</p>}
         {error && <div className="flex flex-wrap items-center gap-2"><p className="text-destructive">{error}</p><Button variant="outline" size="xs" disabled={pinningPostId !== null} onClick={() => void fetchPosts()}>{t(locale, "community.retry")}</Button></div>}
       </div>
-      {loading ? <LoadingSpinner /> : posts.length === 0 ? (
+      {loading ? <PageSkeleton variant="posts" header={false} /> : posts.length === 0 ? (
         <GlassCard className="p-10 text-center"><MessageCircle className="mx-auto mb-3 size-10 text-muted-foreground/30" /><p className="text-sm text-muted-foreground">{t(locale, "admin.community.noPosts")}</p></GlassCard>
       ) : (
         <div className="space-y-3">

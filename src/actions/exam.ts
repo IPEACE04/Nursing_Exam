@@ -138,11 +138,13 @@ export async function getTestUserRank() {
 
 export async function getDashboardData() {
   const userId = await getSessionUserId();
-  if (!userId) return { attempts: [], exams: [], rank: 0 };
+  if (!userId) return { attempts: [], rank: 0, remainingExams: 0 };
 
   const supabase = createSupabaseServerClient();
-
-  const prePostExam = await getPrePostTestExam();
+  const [state, rankResult] = await Promise.all([
+    loadPrePostState(supabase, userId),
+    supabase.rpc("get_user_rank", { target_user_id: userId }),
+  ]);
 
   let attemptQuery = supabase
     .from("exam_attempts")
@@ -150,31 +152,15 @@ export async function getDashboardData() {
     .eq("user_id", userId)
     .order("completed_at", { ascending: false })
     .limit(50);
-
-  if (prePostExam?.id) {
-    attemptQuery = attemptQuery.neq("exam_id", prePostExam.id);
+  if (state.prePostExam?.id) {
+    attemptQuery = attemptQuery.neq("exam_id", state.prePostExam.id);
   }
-
   const { data: attempts } = await attemptQuery;
-
-  const { data: exams } = await supabase
-    .from("exams")
-    .select("*, questions ( id )")
-    .eq("is_published", true)
-    .neq("type", "pre_post_test")
-    .order("created_at", { ascending: false })
-    .limit(3);
-
-  let rank = 0;
-  try {
-    const { data: rankData } = await supabase.rpc("get_user_rank", { target_user_id: userId });
-    rank = (rankData as number) ?? 0;
-  } catch {}
 
   return {
     attempts: (attempts ?? []) as Record<string, unknown>[],
-    exams: (exams ?? []) as Record<string, unknown>[],
-    rank,
+    rank: (rankResult.data as number) ?? 0,
+    remainingExams: state.remainingExams.length,
   };
 }
 
@@ -230,6 +216,44 @@ export async function getPrePostTestExam() {
   return data as { id: string; title: string; description: string | null; time_limit_minutes: number } | null;
 }
 
+type ServerSupabase = ReturnType<typeof createSupabaseServerClient>;
+
+/** Everything the Pre/Post gate needs, loaded in one parallel round trip. */
+async function loadPrePostState(supabase: ServerSupabase, userId: string) {
+  const [prePostExam, { data: normalExams }, { data: userAttempts }] = await Promise.all([
+    getPrePostTestExam(),
+    supabase.from("exams").select("id, title").eq("is_published", true).eq("type", "normal"),
+    // shortcut: loads all of a user's attempts (capped at the API row limit), fine for per-student volumes.
+    supabase
+      .from("exam_attempts")
+      .select("id, exam_id, score, total_questions, completed_at")
+      .eq("user_id", userId)
+      .order("completed_at", { ascending: true })
+      .order("id", { ascending: true }),
+  ]);
+  const attempts = (userAttempts ?? []) as {
+    id: string; exam_id: string; score: number; total_questions: number; completed_at: string;
+  }[];
+  const prePostAttempts = prePostExam?.id ? attempts.filter((a) => a.exam_id === prePostExam.id) : [];
+  const attemptedIds = new Set(attempts.map((a) => a.exam_id));
+  const remainingExams = (normalExams ?? [])
+    .filter((e) => !attemptedIds.has(e.id))
+    .map((e) => ({ id: e.id as string, title: e.title as string }));
+  return { prePostExam, prePostAttempts, remainingExams };
+}
+
+function toGate(state: Awaited<ReturnType<typeof loadPrePostState>>) {
+  const preTestCompleted = state.prePostAttempts.length > 0;
+  const postTestCompleted = state.prePostAttempts.length >= 2;
+  return {
+    preTestCompleted,
+    postTestUnlocked: preTestCompleted && state.remainingExams.length === 0 && !postTestCompleted,
+    postTestCompleted,
+    prePostExamId: state.prePostExam?.id ?? null,
+    remainingExams: state.remainingExams,
+  };
+}
+
 export async function getPrePostTestGate() {
   const userId = await getSessionUserId();
   if (!userId) return {
@@ -239,48 +263,7 @@ export async function getPrePostTestGate() {
     prePostExamId: null,
     remainingExams: [],
   };
-  const supabase = createSupabaseServerClient();
-
-  const prePostExam = await getPrePostTestExam();
-
-  const { data: attemptsOnPrePost } = await supabase
-    .from("exam_attempts")
-    .select("id, completed_at")
-    .eq("user_id", userId)
-    .eq("exam_id", prePostExam?.id ?? "")
-    .order("completed_at", { ascending: true });
-
-  const preTestCompleted = prePostExam?.id ? (attemptsOnPrePost ?? []).length > 0 : false;
-  const postTestCompleted = prePostExam?.id ? (attemptsOnPrePost ?? []).length >= 2 : false;
-
-  const { data: normalExams } = await supabase
-    .from("exams")
-    .select("id, title")
-    .eq("is_published", true)
-    .eq("type", "normal");
-
-  const { data: normalAttempts } = await supabase
-    .from("exam_attempts")
-    .select("exam_id")
-    .eq("user_id", userId)
-    .in("exam_id", (normalExams ?? []).map((e) => e.id));
-
-  const attemptedNormalIds = new Set((normalAttempts ?? []).map((a) => a.exam_id));
-
-  const remainingExams = (normalExams ?? [])
-    .filter((e) => !attemptedNormalIds.has(e.id))
-    .map((e) => ({ id: e.id, title: e.title }));
-
-  const hasCompletedAllNormal = remainingExams.length === 0;
-  const postTestUnlocked = preTestCompleted && hasCompletedAllNormal && !postTestCompleted;
-
-  return {
-    preTestCompleted,
-    postTestUnlocked,
-    postTestCompleted,
-    prePostExamId: prePostExam?.id ?? null,
-    remainingExams,
-  };
+  return toGate(await loadPrePostState(createSupabaseServerClient(), userId));
 }
 
 export async function getProgressComparison() {
@@ -295,42 +278,20 @@ export async function getProgressComparison() {
     remainingExams: [],
     unlockableExams: false,
   };
-  const supabase = createSupabaseServerClient();
-
-  const prePostExam = await getPrePostTestExam();
-  const gate = await getPrePostTestGate();
-
-  let preTest = null;
-  let postTest = null;
-
-  if (prePostExam?.id) {
-    const { data: attempts } = await supabase
-      .from("exam_attempts")
-      .select("score, total_questions, completed_at")
-      .eq("user_id", userId)
-      .eq("exam_id", prePostExam.id)
-      .order("completed_at", { ascending: true });
-
-    if ((attempts ?? []).length > 0) {
-      const first = attempts![0];
-      preTest = {
-        score: first.score,
-        total: first.total_questions,
-        percentage: first.total_questions > 0 ? Math.round((first.score / first.total_questions) * 100) : 0,
-        completed_at: first.completed_at,
-      };
-    }
-
-    if ((attempts ?? []).length >= 2) {
-      const last = attempts![attempts!.length - 1];
-      postTest = {
-        score: last.score,
-        total: last.total_questions,
-        percentage: last.total_questions > 0 ? Math.round((last.score / last.total_questions) * 100) : 0,
-        completed_at: last.completed_at,
-      };
-    }
-  }
+  const state = await loadPrePostState(createSupabaseServerClient(), userId);
+  const gate = toGate(state);
+  const toResult = (a: { score: number; total_questions: number; completed_at: string } | undefined) =>
+    a
+      ? {
+          score: a.score,
+          total: a.total_questions,
+          percentage: a.total_questions > 0 ? Math.round((a.score / a.total_questions) * 100) : 0,
+          completed_at: a.completed_at,
+        }
+      : null;
+  const attempts = state.prePostAttempts;
+  const preTest = toResult(attempts[0]);
+  const postTest = attempts.length >= 2 ? toResult(attempts[attempts.length - 1]) : null;
 
   const improvement = preTest && postTest ? postTest.percentage - preTest.percentage : 0;
 

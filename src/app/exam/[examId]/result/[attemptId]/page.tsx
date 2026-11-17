@@ -16,7 +16,7 @@ import {
 import { getExamResult } from "@/actions/exam";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import type { QuestionResult } from "@/types";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
@@ -126,7 +126,7 @@ export default function ResultPage({
     fetchResults();
   }, [attemptId, router]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton variant="detail" />;
 
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
   const passed = percentage >= 50;

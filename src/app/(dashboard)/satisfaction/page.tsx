@@ -8,7 +8,7 @@ import { getQuestions, hasSubmitted, submitSurvey } from "@/actions/satisfaction
 import type { SatisfactionQuestion } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { useLocale } from "@/context/locale-context";
 import { t } from "@/lib/translations";
 
@@ -78,7 +78,7 @@ export default function SatisfactionPage() {
     });
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   if (alreadySubmitted || submitted) {
     return (

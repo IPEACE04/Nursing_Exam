@@ -184,3 +184,27 @@ test("history applies its 100-result limit after excluding the first PreTest", a
   assert.equal(history.at(-1)?.id, "post");
   assert.equal(history.some((row) => row.id === "pre"), false);
 });
+
+test("Pre/Post gate unlocks PostTest only after PreTest and every normal exam, from one parallel load", async () => {
+  const { actions, rows } = harness();
+  let gate = await actions.getPrePostTestGate();
+  assert.equal(gate.preTestCompleted, false);
+  assert.deepEqual(Array.from(gate.remainingExams, (exam) => exam.id), ["normal"]);
+
+  rows.exam_attempts.push(attempt("pre", "pre-post", "2026-01-01T00:00:00.000Z"));
+  rows.exam_attempts.push(attempt("someone-else", "normal", "2026-01-01T00:00:00.000Z", "other"));
+  gate = await actions.getPrePostTestGate();
+  assert.equal(gate.preTestCompleted, true);
+  assert.equal(gate.postTestUnlocked, false);
+
+  rows.exam_attempts.push(attempt("normal-1", "normal", "2026-01-02T00:00:00.000Z"));
+  gate = await actions.getPrePostTestGate();
+  assert.equal(gate.postTestUnlocked, true);
+
+  rows.exam_attempts.push({ ...attempt("post", "pre-post", "2026-01-03T00:00:00.000Z"), score: 0 });
+  const progress = await actions.getProgressComparison();
+  assert.equal(progress.hasCompletedPostTest, true);
+  assert.equal(progress.preTest?.percentage, 100);
+  assert.equal(progress.postTest?.percentage, 0);
+  assert.equal(progress.improvement, -100);
+});

@@ -45,6 +45,9 @@ function harness(options: { userId?: string | null; role?: string | null; update
     select() { return this; }
     eq(column: string, value: unknown) { this.filters.push([column, value]); return this; }
     in() { return this; }
+    start = 0;
+    end = Infinity;
+    range(start: number, end: number) { this.start = start; this.end = end; return this; }
     or(value: string) { this.search = value.split("%")[1]; return this; }
     order(column: string, settings: { ascending: boolean }) { this.orders.push({ column, ...settings }); return this; }
     update(changes: Record<string, unknown>) { this.changes = changes; return this; }
@@ -78,7 +81,7 @@ function harness(options: { userId?: string | null; role?: string | null; update
         }
         return 0;
       });
-      return { data: rows, error: null, count: 0 };
+      return { data: rows.slice(this.start, this.end + 1), error: null, count: 0 };
     }
 
     async single() { const result = this.result(); return { ...result, data: result.data?.[0] ?? null }; }
@@ -95,6 +98,7 @@ function harness(options: { userId?: string | null; role?: string | null; update
     "@/lib/supabase-server": { createSupabaseServerClient: () => ({ from: (table: string) => new Query(table) }) },
     "@/lib/storage": { getPublicImageUrls: () => [], parseImagePaths: () => [], getFormFiles: () => [] },
     "@/lib/file-utils": {},
+    "@/lib/community-constants": { POSTS_PAGE_SIZE: 5 },
   };
   runInNewContext(actionCode, { exports, Error, console: { error() {} }, require: (name: string) => name in mocks ? mocks[name] : require(name) });
   return { actions: exports as typeof import("../src/actions/community.ts"), posts, writes, revalidated };
@@ -184,4 +188,12 @@ test("creating a post ignores any client-supplied pin status", async () => {
   assert.equal((await actions.createPost(data)).success, true);
   assert.equal("is_pinned" in writes[0], false);
   assert.equal(posts.at(-1)?.is_pinned, false);
+});
+
+test("feed pages continue from the offset without repeating or skipping posts", async () => {
+  const { actions } = harness();
+  const all = Array.from(await actions.getPosts(), (post) => post.id);
+  const rest = Array.from(await actions.getPosts(undefined, 1), (post) => post.id);
+  assert.deepEqual(rest, all.slice(1));
+  assert.equal((await actions.getPosts(undefined, all.length)).length, 0);
 });

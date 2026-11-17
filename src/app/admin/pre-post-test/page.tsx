@@ -26,7 +26,7 @@ import { t } from "@/lib/translations";
 import type { Question } from "@/types";
 import { PageHeader } from "@/components/premium/page-header";
 import { GlassCard } from "@/components/premium/glass-card";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { scheduleScrollPositionRestore } from "@/lib/scroll-position";
@@ -105,7 +105,7 @@ export default function AdminPrePostTestPage() {
     });
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <PageSkeleton />;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">

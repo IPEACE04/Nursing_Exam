@@ -29,9 +29,10 @@
 .brand, .navActions { flex-shrink: 0; }
 .navActions, .footerLinks { display: flex; align-items: center; gap: 24px; }
 .navActions { gap: 18px; }
-.navLogin { font-size: 14px; font-weight: 400; }
-.navLogin, .footerLinks a { transition: color 150ms; }
-.navLogin:hover, .footerLinks a:hover { color: var(--primary); }
+.navLogin, .navGuide { font-size: 14px; font-weight: 400; }
+.navGuide { display: inline-flex; align-items: center; gap: 6px; }
+.navLogin, .navGuide, .footerLinks a { transition: color 150ms; }
+.navGuide:hover, .navLogin:hover, .footerLinks a:hover { color: var(--primary); }
 
 .primaryButton, .secondaryButton, .navCta, .lightButton {
   display: inline-flex;
@@ -132,6 +133,7 @@
   .navInner { min-height: 72px; gap: 12px; }
   .brand > div > span { display: none; }
   .navLogin { display: none; }
+  .navGuide > span { display: none; }
   .navActions { gap: 10px; }
   .navCta { padding-inline: 14px; }
   .tourBody { grid-template-columns: minmax(0, 1fr); gap: 12px; }

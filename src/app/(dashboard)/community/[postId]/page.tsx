@@ -17,7 +17,7 @@ import type {
 import { LikeButton } from "@/components/community/like-button";
 import { CommentItem } from "@/components/community/comment-item";
 import { CommentForm } from "@/components/community/comment-form";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { ImageGallery } from "@/components/shared/image-gallery";
 import { AttachmentList } from "@/components/shared/attachment-list";
 import { isImageUrl } from "@/lib/file-utils";
@@ -97,9 +97,7 @@ export default function PostDetailPage({
 
   if (loading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      <PageSkeleton variant="detail" />
     );
   }
 

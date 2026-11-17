@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutDashboard, ClipboardList, BarChart3, Trophy, TrendingUp, MessageCircle } from "lucide-react";
+import { LayoutDashboard, ClipboardList, BarChart3, Trophy, TrendingUp, MessageCircle, BookOpen } from "lucide-react";
 
 export interface NavItem {
   href: string;
@@ -14,4 +14,5 @@ export const studentNavItems: NavItem[] = [
   { href: "/history", label: "nav.history", icon: BarChart3 },
   { href: "/progress", label: "nav.progress", icon: TrendingUp },
   { href: "/ranking", label: "nav.ranking", icon: Trophy },
+  { href: "/guide", label: "nav.guide", icon: BookOpen },
 ];

@@ -44,6 +44,7 @@ test("score export is an Excel workbook with text IDs, Thai, missing results, an
       testType: "PreTest" as const,
       score: "0/20",
       duration: "00:00:00",
+      completedAt: "2026-01-01 07:00",
     },
     {
       id: "001234",
@@ -51,6 +52,7 @@ test("score export is an Excel workbook with text IDs, Thai, missing results, an
       testType: "PostTest" as const,
       score: "ยังไม่ได้สอบ",
       duration: "",
+      completedAt: "",
     },
     {
       id: "uuid",
@@ -58,6 +60,7 @@ test("score export is an Excel workbook with text IDs, Thai, missing results, an
       testType: "PreTest" as const,
       score: "5/20",
       duration: "01:01:01",
+      completedAt: "2026-02-01 08:30",
     },
     {
       id: "uuid",
@@ -65,6 +68,7 @@ test("score export is an Excel workbook with text IDs, Thai, missing results, an
       testType: "PostTest" as const,
       score: "20/20",
       duration: "00:10:00",
+      completedAt: "2026-03-01 09:15",
     },
   ];
   const buffer = await writeExcelFile(
@@ -84,6 +88,8 @@ test("score export is an Excel workbook with text IDs, Thai, missing results, an
     "ประเภทสอบ",
     "Score",
     "ระยะเวลา",
+    "วันที่สอบ",
+    "2026-01-01 07:00",
     "001234",
     "นักศึกษา ก",
     "PreTest",

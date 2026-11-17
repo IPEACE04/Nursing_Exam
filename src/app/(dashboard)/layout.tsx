@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { Navbar } from "@/components/shared/navbar";
 import { MobileNav } from "@/components/shared/mobile-nav";
-import { LoadingSpinner } from "@/components/premium/loading-spinner";
+import { PageSkeleton } from "@/components/premium/page-skeleton";
 import { getPrePostTestGate } from "@/actions/exam";
 import { WorkspaceHeader } from "@/components/shared/workspace-header";
 
@@ -28,12 +28,17 @@ export default function DashboardLayout({
     }
 
     if (!user) {
+      // The guide is public: guests read it without the app shell.
+      if (pathname === "/guide") {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setCheckingGate(false);
+        return;
+      }
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
 
-    if (pathname.startsWith("/progress") || pathname.startsWith("/exam/")) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (pathname.startsWith("/progress") || pathname.startsWith("/exam/") || pathname === "/guide") {
       setCheckingGate(false);
       return;
     }
@@ -53,15 +58,15 @@ export default function DashboardLayout({
 
   if (isLoading || checkingGate) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      <div className="mx-auto max-w-6xl p-6 sm:p-10"><PageSkeleton /></div>
     );
   }
 
   if (profile?.role === "admin") {
     return null;
   }
+
+  if (!user) return <>{children}</>;
 
   return (
     <div className="flex min-h-screen flex-col lg:pl-[264px] xl:pl-[284px]">

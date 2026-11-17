@@ -26,6 +26,7 @@ export interface Database {
           password_hash: string | null;
           personal_question: string | null;
           personal_answer_hash: string | null;
+          session_version: string;
         };
         Insert: {
           id: string;
